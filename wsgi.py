@@ -12,7 +12,7 @@ except IOError:
 # line, it's possible required libraries won't be in your searchable path
 #
 
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "cakesite.settings")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "toolssite.settings")
 
 from django.core.wsgi import get_wsgi_application
 application = get_wsgi_application()
