@@ -44,11 +44,10 @@ app = web.Application([
 if __name__ == '__main__':
     if 'OPENSHIFT_APP_NAME' in os.environ and 'OPENSHIFT_PYTHON_IP' in os.environ:
         ip = os.environ['OPENSHIFT_PYTHON_IP']
-        port = os.environ['OPENSHIFT_PYTHON_PORT']
+        port = int(os.environ['OPENSHIFT_PYTHON_PORT'])
         print ip
         print port
-        app.listen(ip, port)
-        app.listen(ip=ip, port=port)
+        app.listen(port, address=ip)
     else:
         app.listen(8080)
 
