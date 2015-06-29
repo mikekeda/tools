@@ -42,6 +42,11 @@ app = web.Application([
 ])
 
 if __name__ == '__main__':
-    app.listen(15000)
+    ip   = 'localhost'
+    port = 8080
+    if os.environ.get('OPENSHIFT_PYTHON_IP'):
+        ip = os.environ.get('OPENSHIFT_PYTHON_IP')
+        port = int(os.environ.get('OPENSHIFT_PYTHON_PORT'))
+    app.listen(port, ip)
 
     ioloop.IOLoop.instance().start()
