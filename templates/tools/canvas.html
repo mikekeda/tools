@@ -760,19 +760,6 @@ button#resize_canv {
             }
         }
         */
-        window.onload = function() {
-            canv = document.getElementById("canvas");
-            canv_img = document.getElementById("canv_img");
-            ctx = canv.getContext("2d");
-            ctx.lineCap = "round";
-            div_num = document.getElementById("num_canv");
-            num_canv = 1;
-            activ_canv = 1;
-            stack = new Array();
-            stackF = new Array();
-            stack[1] = [];
-            stackF[1] = [];
-            stack_pix = [];
 
         function getNameBrouser() {
           var ua = navigator.userAgent.toLowerCase();
@@ -798,49 +785,59 @@ button#resize_canv {
           return "unknown";
         }
 
-        //  alert(getNameBrouser());
+        canv = document.getElementById("canvas");
+        canv_img = document.getElementById("canv_img");
+        ctx = canv.getContext("2d");
+        ctx.lineCap = "round";
+        div_num = document.getElementById("num_canv");
+        num_canv = 1;
+        activ_canv = 1;
+        stack = new Array();
+        stackF = new Array();
+        stack[1] = [];
+        stackF[1] = [];
+        stack_pix = [];
 
-            tools = {
-                'pencil'            :   document.getElementById("pencil"),
-                'elastic'           :   document.getElementById("elastic"),
-                'line'              :   document.getElementById("line"),
-                'polyline'          :   document.getElementById("polyline"),
-                'rectangle'         :   document.getElementById("rectangle"),
-                'circle'            :   document.getElementById("circle"),
-                'pipette'           :   document.getElementById("pipette"),
-                'fill'              :   document.getElementById("fill"),
-                'pan'               :   document.getElementById("pan"),
-                'crop'              :   document.getElementById("crop"),
-                'scale'             :   document.getElementById("scale"),
-        //      "rotate"    :   document.getElementById("rotate")
-            };
+        tools = {
+            'pencil'            :   document.getElementById("pencil"),
+            'elastic'           :   document.getElementById("elastic"),
+            'line'              :   document.getElementById("line"),
+            'polyline'          :   document.getElementById("polyline"),
+            'rectangle'         :   document.getElementById("rectangle"),
+            'circle'            :   document.getElementById("circle"),
+            'pipette'           :   document.getElementById("pipette"),
+            'fill'              :   document.getElementById("fill"),
+            'pan'               :   document.getElementById("pan"),
+            'crop'              :   document.getElementById("crop"),
+            'scale'             :   document.getElementById("scale"),
+    //      "rotate"    :   document.getElementById("rotate")
+        };
 
-            for (var key in tools) {
-                (function(key) {
-                    tools[key].onclick = function() {
-                        change_tool(key);
-                    }
-                })(key);
-            }
-
-            change_tool('pencil');
-
-            settings = {
-                'canv_width'        : document.getElementById("canv_width"),
-                'alfa'              : document.getElementById("alfa"),
-                'color'             : document.getElementById("color"),
-            };
-
-                for (var key in settings) {
-                (function(key) {
-                    settings[key].onchange = function() {
-                        change_settings(key);
-                    }
-                })(key);
-            }
-
-            document.getElementById('files').addEventListener('change', showfile, false);
-            document.getElementById('resize_canv').addEventListener('click', resize_canv, false);
+        for (var key in tools) {
+            (function(key) {
+                tools[key].onclick = function() {
+                    change_tool(key);
+                }
+            })(key);
         }
+
+        change_tool('pencil');
+
+        settings = {
+            'canv_width'        : document.getElementById("canv_width"),
+            'alfa'              : document.getElementById("alfa"),
+            'color'             : document.getElementById("color"),
+        };
+
+            for (var key in settings) {
+            (function(key) {
+                settings[key].onchange = function() {
+                    change_settings(key);
+                }
+            })(key);
+        }
+
+        document.getElementById('files').addEventListener('change', showfile, false);
+        document.getElementById('resize_canv').addEventListener('click', resize_canv, false);
     </script>
 {% endblock %}
