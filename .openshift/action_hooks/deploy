@@ -15,6 +15,3 @@ cat "$OPENSHIFT_REPO_DIR"/static/bower_components/jquery/dist/jquery.min.js "$OP
  
 echo "Executing 'python ${OPENSHIFT_REPO_DIR}manage.py collectstatic --noinput -v0'"
 python "$OPENSHIFT_REPO_DIR"manage.py collectstatic --noinput -v0
-
-echo "Executing 'python ${OPENSHIFT_REPO_DIR}websocket_server.py --noinput -v0'"
-python "$OPENSHIFT_REPO_DIR"websocket_server.py --noinput

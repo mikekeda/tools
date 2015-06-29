@@ -34,7 +34,7 @@
           $element.html($element.html() + html);
         }
 
-        var ws = new WebSocket('ws://' + document.domain + ':8080/ws');
+        var ws = new WebSocket('ws://' + document.domain + ':15888/ws');
         var $message = $('#message');
 
         ws.onopen = function(){
@@ -59,7 +59,7 @@
         };
 
         $("#content").on('click', ".input-group-btn .btn-primary", function(event) {
-          var url = 'http://' + document.domain + ':8080/api';
+          var url = 'http://' + document.domain + ':15888/api';
           $.post(url, { m: $(this).parent().parent().find('input').val() });
           $(this).parent().parent().find('input').val('');
           return false;

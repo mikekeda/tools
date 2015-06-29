@@ -4,10 +4,6 @@ import os
 
 cl = []
 
-class IndexHandler(web.RequestHandler):
-    def get(self):
-        self.render("index.html")
-
 class SocketHandler(websocket.WebSocketHandler):
     def check_origin(self, origin):
         return True
@@ -36,18 +32,14 @@ class ApiHandler(web.RequestHandler):
             c.write_message(data)
 
 app = web.Application([
-    (r'/', IndexHandler),
     (r'/ws', SocketHandler),
     (r'/api', ApiHandler),
 ])
 
 if __name__ == '__main__':
     ip = 'localhost'
-    port = 8080
     if os.environ.get('OPENSHIFT_PYTHON_IP'):
         ip = os.environ.get('OPENSHIFT_PYTHON_IP')
-        port = int(os.environ.get('OPENSHIFT_PYTHON_PORT'))
-    print port, ip
-    app.listen(15001, ip)
+    app.listen(15888, ip)
 
     ioloop.IOLoop.instance().start()
