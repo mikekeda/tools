@@ -48,9 +48,9 @@ if __name__ == '__main__':
         app.listen(ip, port)
     elif 'OPENSHIFT_APP_NAME' in os.environ and 'OPENSHIFT_INTERNAL_IP' in os.environ:
         ip = os.environ['OPENSHIFT_INTERNAL_IP']
-        port = int(os.environ['OPENSHIFT_INTERNAL_IP'])
+        port = int(os.environ['OPENSHIFT_DIY_PORT'])
         app.listen(ip, port)
     else:
-        app.listen(15888)
+        app.listen(30888)
 
     ioloop.IOLoop.instance().start()
