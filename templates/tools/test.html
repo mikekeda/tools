@@ -1,0 +1,14 @@
+{% extends parent_template %}
+{% load i18n %}
+{% block content %}
+    <div id="desk" class="container-fluid" style="height: 300px; border: 1px solid #888; border-radius: 10px; -moz-user-select: none; -khtml-user-select: none; -webkit-user-select: none; -o-user-select: none;"></div>
+    <script type="text/javascript">
+        window.onload = function() {
+            $("#content").on('dblclick', "#desk", function(event) {
+                var posX = event.pageX - $(this).offset().left,
+                    posY = event.pageY - $(this).offset().top;
+                console.log(posX + ' , ' + posY);
+            });
+        };
+    </script>
+{% endblock %}

@@ -1,0 +1,89 @@
+{% load i18n %}
+{% load static from staticfiles %}
+
+<!DOCTYPE html>
+<html lang="uk">
+  <head>
+    <meta charset="utf-8">
+    <meta name="description" content="Cмачні короваї та торти до святкового столу."/>
+    <meta name="robots" content="noindex,nofollow"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="data:image/x-icon;base64,AAABAAEAEBAQAAEABAAoAQAAFgAAACgAAAAQAAAAIAAAAAEABAAAAAAAgAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAYgD/ABcC0QDYv/8AqIvWAM2t/wDVuv8A4c//ABQAxAB6rMIAapuwALig3gCUcMwAR4mmABoA/wAAAAAAAAAAAAAAAAAAANnZqQAAAAAN2dmp0AAAAJ2pqandAAAJmqmpqd2QAA2amqmqmtAACpqaqaqapgAKmpd6qpqmAFp6lVN616ZgV2N1VEY2dVBVtVVVVlVFUAtVtVVVS1UAAGdbzLtWAAAABjUoxmAAAAAAAeLgAAAAAAAAEQAAAAD//wAA8D8AAOAfAADADwAAgAcAAIAHAACAAwAAgAMAAAABAAAAAQAAAAEAAIADAADADwAA4B8AAPh/AAD8/wAA" rel="icon" type="image/x-icon" />
+    <title>{% block title %}{% trans "Cool tools" %}{% endblock %}</title>
+
+    <!-- Bootstrap included -->
+    <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}"/>
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="container">
+      <div class="page-header">    
+        <h1>{% trans "Best tools ever!" %}</h1>
+      </div>
+
+      <nav class="navbar navbar-default">
+        <div class="container-fluid">
+          <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+          </div>
+          <div id="navbar" class="navbar-collapse collapse">
+            <ul class="nav navbar-nav">
+              <li class="{% if active_page == 'home' %}active{% endif %}"><a href="{% url 'main' %}" class="ajax-link">{% trans "Home" %}</a></li>
+            </ul>
+          </div><!--/.nav-collapse -->
+        </div><!--/.container-fluid -->
+      </nav>
+
+      <div class="row">
+        <div class="col-sm-3 sidebar col-xs-12 pull-left">
+          <div class="sidebar-nav">
+            <h3>{% trans "Tools" %}</h3>
+            <div class="navbar navbar-default" role="navigation">
+              <div class="navbar-inner">
+                <ul class="nav">
+                  {% for tool in tools %}
+                    <li class="{% if active_page == tool.slug %}active{% endif %}"><a href="/tool/{{ tool.slug }}" class="ajax-link">{{ tool.name }}</a></li>
+                  {% empty %}
+                    <li class="active"><a href="/">{% trans "No categories" %}</a></li>
+                  {% endfor %}
+                </ul>
+              </div><!--/.nav-collapse -->
+            </div>
+          </div>
+        </div>
+        <div id="content" class="col-sm-9 col-xs-12 content">
+          {% block content %}{% endblock %}
+        </div>
+      </div>
+
+      <footer class="footer navbar-fixed-bottom">
+        <div class="container">
+          <p class="text-muted">
+            <span>{% trans "Created by" %}: <a href="mailto:mriynuk@gmail.com">Voron</a></span>
+            <span class="right">{% trans "Powered by" %}: <a href="https://www.djangoproject.com/">Django</a></span>
+          </p>
+        </div>
+      </footer>
+    </div>
+
+      <!-- Include js -->
+      {% if OPENSHIFT %}
+        <script type="text/javascript" src="{% static 'js/all.js' %}"></script>
+      {% else %}
+        <script type="text/javascript" src="{% static 'bower_components/jquery/dist/jquery.min.js' %}"></script>
+        <script type="text/javascript" src="{% static 'bower_components/bootstrap-sass/assets/javascripts/bootstrap.min.js' %}"></script>
+        <script type="text/javascript" src="{% static 'js/main.js' %}"></script>
+      {% endif %}
+  </body>
+</html>
