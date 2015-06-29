@@ -1,5 +1,6 @@
 from tornado import websocket, web, ioloop
 import json
+import os
 
 cl = []
 
@@ -38,9 +39,14 @@ app = web.Application([
     (r'/', IndexHandler),
     (r'/ws', SocketHandler),
     (r'/api', ApiHandler),
-    (r"/static/(.*)", web.StaticFileHandler, {"path": r"./static/"}),
 ])
 
 if __name__ == '__main__':
-    app.listen(8080)
+    if 'OPENSHIFT_APP_NAME' in os.environ:
+        ip = os.environ['OPENSHIFT_DIY_IP']
+        port = int(os.environ['OPENSHIFT_DIY_PORT'])
+        app.listen(ip, port)
+    else:
+        app.listen(8080)
+
     ioloop.IOLoop.instance().start()
