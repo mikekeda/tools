@@ -51,6 +51,6 @@ if __name__ == '__main__':
         port = int(os.environ['OPENSHIFT_INTERNAL_IP'])
         app.listen(ip, port)
     else:
-        app.listen(8080)
+        app.listen(8888)
 
     ioloop.IOLoop.instance().start()
