@@ -38,8 +38,8 @@ app = web.Application([
 
 if __name__ == '__main__':
     ip = 'localhost'
-    if os.environ.get('OPENSHIFT_PYTHON_IP'):
-        ip = os.environ.get('OPENSHIFT_PYTHON_IP')
+    if os.environ.get('OPENSHIFT_APP_DNS'):
+        ip = os.environ.get('OPENSHIFT_APP_DNS')
     app.listen(15888, ip)
 
     ioloop.IOLoop.instance().start()
