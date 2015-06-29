@@ -45,7 +45,9 @@ if __name__ == '__main__':
     if 'OPENSHIFT_APP_NAME' in os.environ and 'OPENSHIFT_PYTHON_IP' in os.environ:
         ip = os.environ['OPENSHIFT_PYTHON_IP']
         port = int(os.environ['OPENSHIFT_PYTHON_PORT'])
-        app.listen(port)
+        print ip
+        print port
+        app.listen(ip, port)
     else:
         app.listen(8080)
 
