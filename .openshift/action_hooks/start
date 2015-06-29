@@ -5,4 +5,4 @@
 # ruby, etc.
 
 echo "Executing 'python {$OPENSHIFT_REPO_DIR}websocket_server.py --noinput -v0'"
-python "$OPENSHIFT_REPO_DIR"websocket_server.py --noinput -v0
+# python "$OPENSHIFT_REPO_DIR"websocket_server.py --noinput -v0
