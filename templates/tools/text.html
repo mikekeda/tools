@@ -1,0 +1,43 @@
+{% extends parent_template %}
+{% load i18n %}
+{% block content %}
+  <div class="container-fluid">
+  	<textarea name="content" id="text-content" class="col-md-12" rows="10" cols="60" data-placeholder="Type or paste your content here"></textarea>
+  	<button id="upper" class="col-md-4 btn btn-default">{% trans "UPPER CASE" %}</button>
+  	<button id="lower" class="col-md-4 btn btn-default">{% trans "lower case" %}</button>
+  	<button id="capitalized" class="col-md-4 btn btn-default">{% trans "Capitalized Case" %}</button>
+  	<div class="col-md-12 alert-info" role="alert" style="padding: 5px 20px;">
+  		<span id="count-characters">0</span>
+  	</div>
+  </div>
+  <script type="text/javascript">
+    if("undefined" == typeof jQuery) {
+      window.onload = function() {
+        init_app();
+      };
+    }
+    else {
+      init_app();
+    }
+    function init_app() {
+    	var $textarea = $('#content #text-content').first();
+    	String.prototype.capitalize = function(){
+        return this.toLowerCase().replace( /((?:\S[^\.\?\!]*)[\.\?\!]*)/g, function (m) {
+          return m.charAt(0).toUpperCase() + m.substring(1);
+        });
+      };
+    	$textarea.bind('input propertychange', function() {
+    		$('#content #count-characters').text($textarea[0].textLength);
+			});
+			$('#content #lower').click(function(event) {
+				$textarea.val($textarea.val().toLowerCase());
+			});
+			$('#content #upper').click(function(event) {
+				$textarea.val($textarea.val().toUpperCase());
+			});
+			$('#content #capitalized').click(function(event) {
+				$textarea.val($textarea.val().capitalize());
+			});
+    }
+  </script>
+{% endblock %}
