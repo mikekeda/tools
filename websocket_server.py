@@ -40,6 +40,6 @@ if __name__ == '__main__':
     ip = 'localhost'
     if os.environ.get('OPENSHIFT_PYTHON_IP'):
         ip = os.environ.get('OPENSHIFT_PYTHON_IP')
-    app.listen(15888, ip)
+    app.listen(8000, ip)
 
     ioloop.IOLoop.instance().start()
