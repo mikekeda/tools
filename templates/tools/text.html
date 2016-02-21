@@ -2,11 +2,11 @@
 {% load i18n %}
 {% block content %}
   <div class="container-fluid">
-  	<textarea name="content" id="text-content" class="col-md-12" rows="10" cols="60" data-placeholder="Type or paste your content here"></textarea>
-  	<button id="upper" class="col-md-4 btn btn-default">{% trans "UPPER CASE" %}</button>
-  	<button id="lower" class="col-md-4 btn btn-default">{% trans "lower case" %}</button>
-  	<button id="capitalized" class="col-md-4 btn btn-default">{% trans "Capitalized Case" %}</button>
-  	<div class="col-md-12 alert-info" role="alert" style="padding: 5px 20px;">
+  	<textarea name="content" id="text-content" class="col-xs-12" rows="10" cols="60" data-placeholder="Type or paste your content here"></textarea>
+  	<button id="upper" class="col-sm-4 col-xs-12 btn btn-default">{% trans "UPPER CASE" %}</button>
+  	<button id="lower" class="col-sm-4 col-xs-12 btn btn-default">{% trans "lower case" %}</button>
+  	<button id="capitalized" class="col-sm-4 col-xs-12 btn btn-default">{% trans "Capitalized Case" %}</button>
+  	<div class="col-xs-12 alert-info" role="alert" style="padding: 5px 20px;">
   		<span id="count-characters">0</span>
   	</div>
   </div>
