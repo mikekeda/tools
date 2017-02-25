@@ -1,9 +1,5 @@
-Django==1.8.2
-MySQL-python==1.2.5
-Pillow==2.8.1
-Unidecode==0.04.17
-argparse==1.2.1
-backports.ssl-match-hostname==3.4.0.2
-certifi==2015.04.28
-tornado==4.2
-wsgiref==0.1.2
+Django==1.10.5
+olefile==0.44
+Pillow==4.0.0
+psycopg2==2.6.2
+wheel==0.24.0

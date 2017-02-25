@@ -15,14 +15,14 @@ Including another URLconf
 """
 from django.conf.urls import include, url
 from django.contrib import admin
-from django.conf import settings
-from django.conf.urls.static import static
+
+from tool.views import main, tool
 
 urlpatterns = [
-    url(r'^$', 'tool.views.main', name='main'),
-    url(r'^ajax$', 'tool.views.main', name='ajax_main'),
-    url(r'^tool/(?P<page_slug>.+)$', 'tool.views.tool', name='tool'),
-    url(r'^ajax/tool/(?P<page_slug>.+)$', 'tool.views.tool', name='tool'),
+    url(r'^$', main, name='main'),
+    url(r'^ajax$', main, name='ajax_main'),
+    url(r'^tool/(?P<page_slug>.+)$', tool, name='tool'),
+    url(r'^ajax/tool/(?P<page_slug>.+)$', tool, name='tool'),
 
     url(r'^admin/', include(admin.site.urls)),
 ]

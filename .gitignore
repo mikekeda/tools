@@ -1,2 +1,7 @@
-.idea
+.idea/
+db.sqlite3
+node_modules/
+staticfiles/
+media/
+toolssite/settings.py
 *.pyc
