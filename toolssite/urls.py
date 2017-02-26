@@ -19,10 +19,10 @@ from django.contrib import admin
 from tool.views import main, tool
 
 urlpatterns = [
-    url(r'^$', main, name='main'),
-    url(r'^ajax$', main, name='ajax_main'),
+    url(r'^$', tool, name='main', kwargs={'page_slug': 'jira-logs'}),
+    url(r'^ajax$', tool, name='ajax_main', kwargs={'page_slug': 'jira-logs'}),
     url(r'^tool/(?P<page_slug>.+)$', tool, name='tool'),
-    url(r'^ajax/tool/(?P<page_slug>.+)$', tool, name='tool'),
+    url(r'^ajax/tool/(?P<page_slug>.+)$', tool, name='ajax_tool'),
 
     url(r'^admin/', include(admin.site.urls)),
 ]

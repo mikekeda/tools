@@ -1,0 +1,105 @@
+{% extends parent_template %}
+{% load i18n %}
+{% block content %}
+  <style>
+    label {
+      padding: 6px 12px;
+    }
+  </style>
+
+  <div class="container-fluid">
+    <h4>{% trans "Temperature" %}</h4>
+    <div class="row">
+      <div class="form-group col-xs-6">
+        <div class="row content-box col-xs-10">
+          <input type="number" id="temp-C" class="form-control">
+        </div>
+        <label for="temp-C" class="control-label text-left col-xs-2">°C</label>
+      </div>
+      <div class="form-group col-xs-6">
+        <div class="row content-box col-xs-10">
+          <input type="number" id="temp-F" class="form-control">
+        </div>
+        <label for="temp-F" class="control-label text-left col-xs-2">°F</label>
+      </div>
+    </div>
+    <h4>{% trans "Distance" %}</h4>
+    <div class="row">
+      <div class="form-group col-xs-6">
+        <div class="row content-box col-xs-10">
+          <input type="number" id="dist-km" class="form-control">
+        </div>
+        <label for="dist-km" class="control-label text-left col-xs-2">km</label>
+      </div>
+      <div class="form-group col-xs-6">
+        <div class="row content-box col-xs-10">
+          <input type="number" id="dist-mi" class="form-control">
+        </div>
+        <label for="dist-mi" class="control-label text-left col-xs-2">mi</label>
+      </div>
+    </div>
+    <h4>{% trans "Volume" %}</h4>
+    <div class="row">
+      <div class="form-group col-xs-6">
+        <div class="row content-box col-xs-10">
+          <input type="number" id="vol-L" class="form-control">
+        </div>
+        <label for="vol-L" class="control-label text-left col-xs-2">L</label>
+      </div>
+      <div class="form-group col-xs-6">
+        <div class="row content-box col-xs-10">
+          <input type="number" id="vol-gal" class="form-control">
+        </div>
+        <label for="vol-gal" class="control-label text-left col-xs-2">gal</label>
+      </div>
+    </div>
+  </div>
+  <script type="text/javascript">
+    if("undefined" == typeof jQuery) {
+      window.onload = function() {
+        init_app();
+      };
+    }
+    else {
+      init_app();
+    }
+    function init_app() {
+      var $C = $('#content #temp-C').first();
+      var $F = $('#content #temp-F').first();
+      var $km = $('#content #dist-km').first();
+      var $mi = $('#content #dist-mi').first();
+      var $L = $('#content #vol-L').first();
+      var $gal = $('#content #vol-gal').first();
+
+      // Temperature.
+      $C.on('keyup change', function() {
+        var value = parseFloat($(this).val(), 10);
+        $F.val(parseFloat((value * 1.8 + 32).toFixed(2)));
+      });
+      $F.on('keyup change', function() {
+        var value = parseFloat($(this).val(), 10);
+        $C.val(parseFloat(((value - 32) / 1.8).toFixed(2)));
+      });
+
+      // Distance.
+      $km.on('keyup change', function() {
+        var value = parseFloat($(this).val(), 10);
+        $mi.val(parseFloat((value * 0.621371).toFixed(2)));
+      });
+      $mi.on('keyup change', function() {
+        var value = parseFloat($(this).val(), 10);
+        $km.val(parseFloat((value / 0.621371).toFixed(2)));
+      });
+
+      // Volume.
+      $L.on('keyup change', function() {
+        var value = parseFloat($(this).val(), 10);
+        $gal.val(parseFloat((value * 0.264172).toFixed(2)));
+      });
+      $gal.on('keyup change', function() {
+        var value = parseFloat($(this).val(), 10);
+        $L.val(parseFloat((value / 0.264172).toFixed(2)));
+      });
+    }
+  </script>
+{% endblock %}

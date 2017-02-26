@@ -9,7 +9,7 @@ def main(request):
 
 
 def tool(request, page_slug):
-    """Cakes related to category."""
+    """Tool."""
 
     try:
         return render(request, page_slug + ".html", dict(active_page=page_slug))
