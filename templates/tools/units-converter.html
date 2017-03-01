@@ -52,6 +52,12 @@
         </div>
         <label for="vol-gal" class="control-label text-left col-xs-2">gal</label>
       </div>
+      <div class="form-group col-xs-6">
+        <div class="row content-box col-xs-10">
+          <input type="number" id="vol-cap" class="form-control">
+        </div>
+        <label for="vol-cap" class="control-label text-left col-xs-2">caps</label>
+      </div>
     </div>
   </div>
   <script type="text/javascript">
@@ -70,6 +76,7 @@
       var $mi = $('#content #dist-mi').first();
       var $L = $('#content #vol-L').first();
       var $gal = $('#content #vol-gal').first();
+      var $cap = $('#content #vol-cap').first();
 
       // Temperature.
       $C.on('keyup change', function() {
@@ -92,13 +99,19 @@
       });
 
       // Volume.
+      function update_volumes($unit, value) {
+        var value = parseFloat($unit.val(), 10);
+        $.each([[$L, 1], [$gal, 0.264172], [$cap, 0.236588236]], function () {
+          if (!this[0].is($unit)) {
+            this[0].val(parseFloat((this[1] * 0.264172).toFixed(2)));
+          }
+        });
+      }
       $L.on('keyup change', function() {
-        var value = parseFloat($(this).val(), 10);
-        $gal.val(parseFloat((value * 0.264172).toFixed(2)));
+        update_volumes($L);
       });
       $gal.on('keyup change', function() {
-        var value = parseFloat($(this).val(), 10);
-        $L.val(parseFloat((value / 0.264172).toFixed(2)));
+        update_volumes($gal);
       });
     }
   </script>
