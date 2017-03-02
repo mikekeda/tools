@@ -16,13 +16,14 @@ Including another URLconf
 from django.conf.urls import include, url
 from django.contrib import admin
 
-from tool.views import main, tool
+from tool.views import main, tool, worklogs
 
 urlpatterns = [
     url(r'^$', tool, name='main', kwargs={'page_slug': 'jira-logs'}),
     url(r'^ajax$', tool, name='ajax_main', kwargs={'page_slug': 'jira-logs'}),
     url(r'^tool/(?P<page_slug>.+)$', tool, name='tool'),
     url(r'^ajax/tool/(?P<page_slug>.+)$', tool, name='ajax_tool'),
+    url(r'^get-worklogs$', worklogs, name='worklogs'),
 
     url(r'^admin/', include(admin.site.urls)),
 ]

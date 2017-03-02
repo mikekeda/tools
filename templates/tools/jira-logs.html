@@ -1,12 +1,55 @@
 {% extends parent_template %}
 {% load i18n %}
 {% block content %}
+  <style>
+    label {
+      padding: 6px 12px;
+    }
+    .nopadding {
+       padding: 0 !important;
+    }
+    #get-worklogs-form [type="submit"]:not(:disabled) .spinning {
+      display: none;
+    }
+    .glyphicon.spinning {
+      animation: spin 1s infinite linear;
+      -webkit-animation: spin2 1s infinite linear;
+    }
+    @keyframes spin {
+      from { transform: scale(1) rotate(0deg); }
+      to { transform: scale(1) rotate(360deg); }
+    }
+    @-webkit-keyframes spin2 {
+      from { -webkit-transform: rotate(0deg); }
+      to { -webkit-transform: rotate(360deg); }
+    }
+  </style>
+
   <div class="container-fluid">
-	  <h2 class="pull-left">{% trans "Jira logs" %}</h2>
-	  <textarea name="jira-logs" id="jira-logs" class="col-xs-12" rows="10" cols="60" data-placeholder="Type or paste your content here"></textarea>
-	  <p class="col-xs-12 text-muted">{% trans "YYY-999 Log message. 8h" %}</p>
-      <h2 class="pull-left">{% trans "Lab logs" %}</h2><h3 class="pull-right"><span  id="time-sum">0</span>h</h3>
-	  <textarea name="lab-logs" id="lab-logs" disabled="disabled" class="col-xs-12" rows="10" cols="60" data-placeholder="Type or paste your content here"></textarea>
+    <h2>{% trans "Jira credentials" %}</h2>
+    <form id="get-worklogs-form" action="" method="post">
+      {% csrf_token %}
+      <div class="row">
+        <div class="form-group col-md-5 col-sm-6 nopadding">
+          <label for="jira-username" class="control-label text-left col-md-6 col-xs-4">{% trans "Username:" %}</label>
+          <div class="row content-box col-md-6 col-xs-8 nopadding">
+            <input type="text" id="jira-username" name="username" class="form-control">
+          </div>
+        </div>
+        <div class="form-group col-md-5 col-sm-6 nopadding">
+          <label for="jira-password" class="control-label text-left col-md-6 col-xs-4">{% trans "Password:" %}</label>
+          <div class="row content-box col-md-6 col-xs-8 nopadding">
+            <input type="password" id="jira-password" name="password" class="form-control">
+          </div>
+        </div>
+        <button type="submit" class="btn btn-default col-md-2">
+          <span class="glyphicon glyphicon-refresh spinning"></span>
+          <span>{% trans "Get worklogs" %}</span>
+        </button>
+      </div>
+    </form>
+    <h2 class="pull-left">{% trans "Lab logs" %}</h2>
+	<textarea name="lab-logs" id="lab-logs" disabled="disabled" class="col-xs-12" rows="10" cols="60"></textarea>
   </div>
   <script type="text/javascript">
     if("undefined" == typeof jQuery) {
@@ -18,30 +61,36 @@
       init_app();
     }
     function init_app() {
-    	var $jira_logs = $('#content #jira-logs').first(),
-            $lab_logs = $('#content #lab-logs').first(),
-            $time_sum = $('#content #time-sum').first(),
-            lines,
-    	    matches,
-    	    i;
+      var $lab_logs = $('#content #lab-logs').first(),
+          $form = $('#content #get-worklogs-form').first(),
+          $submit_btn = $form.find('[type="submit"]').first(),
+          form_data;
 
-    	$jira_logs.bind('input propertychange', function() {
-    	    $lab_logs.val('');
-    	    $time_sum.text(0);
-    	    lines = $jira_logs.val().split('\n');
+      $form.submit(function(e) {
+        form_data = {};
+        $.each($(this).serializeArray(), function(i, item) {
+          form_data[item.name] = item.value;
+        });
+        $submit_btn.prop('disabled', true);
 
-    	    for (i = 0; i < lines.length; i += 1) {
-                matches = lines[i].match(/(^[A-Z]{3}-\d+)\s(.+)\s(\d+(?:\.\d+|)h$)/);
-                if (matches && matches.length == 4 && matches[1].length && matches[2].length && matches[3].length) {
-                    $lab_logs.val($lab_logs.val() + matches[1] + '{' + matches[3] + '} ' + matches[2] + ' ');
-                    $time_sum.text(parseFloat($time_sum.text()) + parseFloat(matches[3]));
-                }
-                else {
-                    $lab_logs.val('You have errors in your Jira logs. Line: ' + (i+1));
-                    break;
-                }
-    	    }
-		});
+        $.ajax({
+          type: 'POST',
+          url: '/get-worklogs',
+          dataType: 'json',
+          data: form_data,
+          success: function(data) {
+            $lab_logs.val(data['logs'].join('\n'));
+          },
+          error: function(data) {
+            $lab_logs.val(data['status'] + ' ' + data['statusText']);
+          },
+          complete: function() {
+            $submit_btn.prop('disabled', false);
+          }
+        });
+
+        event.preventDefault();
+      });
     }
   </script>
 {% endblock %}
