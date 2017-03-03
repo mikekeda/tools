@@ -25,10 +25,12 @@ def worklogs(request):
     username = request.POST.get('username', '')
     password = request.POST.get('password', '')
     current_date = datetime.today()
-    call = []
 
     response = requests.get(
-        "https://yawavedev.atlassian.net/rest/api/latest/search?jql=worklogDate='{}' AND worklogAuthor='{}'&fields=worklog".format(current_date.strftime("%Y-%m-%d"), username),
+        "https://yawavedev.atlassian.net/rest/api/latest/search?jql=worklogDate='{}' AND worklogAuthor='{}'&fields=worklog".format(
+            current_date.strftime("%Y-%m-%d"),
+            username
+        ),
         auth=(username, password)
     )
 
@@ -36,19 +38,22 @@ def worklogs(request):
         body = response.json()
         result = {
             'logs': [],
+            'time': 0,
         }
 
         for issue in body['issues']:
             response = requests.get(issue['self'] + '/worklog', auth=(username, password))
-            body = response.json()
-            call.append(issue['self'] + '/worklog')
-            logs = list(filter(lambda w:
-                w['author']['key'] == username and dateutil.parser.parse(w['created']).date() == current_date.date(),
-                body['worklogs']
-            ))
-            for log in logs:
-                text = '{}{{{}}} {}'.format(issue['key'], (str(log['timeSpentSeconds'] / 3600)).rstrip('.0') + 'h', log['comment'])
-                result['logs'].append(text)
+            if response.status_code == 200:
+                body = response.json()
+                for log in body['worklogs']:
+                    if log['author']['key'] == username and dateutil.parser.parse(log['created']).date() == current_date.date():
+                        result['time'] += log['timeSpentSeconds'] / 3600
+                        text = '{}{{{}}} {}'.format(
+                            issue['key'],
+                            (str(log['timeSpentSeconds'] / 3600)).rstrip('.0') + 'h',
+                            log['comment']
+                        )
+                        result['logs'].append(text)
 
         return JsonResponse(result)
 

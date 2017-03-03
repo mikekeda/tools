@@ -48,7 +48,7 @@
         </button>
       </div>
     </form>
-    <h2 class="pull-left">{% trans "Lab logs" %}</h2>
+    <h2 class="pull-left">{% trans "Lab logs" %}</h2><h3 class="pull-right"><span  id="time-sum">0</span>h</h3>
 	<textarea name="lab-logs" id="lab-logs" disabled="disabled" class="col-xs-12" rows="10" cols="60"></textarea>
   </div>
   <script type="text/javascript">
@@ -64,6 +64,7 @@
       var $lab_logs = $('#content #lab-logs').first(),
           $form = $('#content #get-worklogs-form').first(),
           $submit_btn = $form.find('[type="submit"]').first(),
+          $total = $('#content #time-sum').first(),
           form_data;
 
       $form.submit(function(e) {
@@ -80,6 +81,7 @@
           data: form_data,
           success: function(data) {
             $lab_logs.val(data['logs'].join('\n'));
+            $total.text(data['time']);
           },
           error: function(data) {
             $lab_logs.val(data['status'] + ' ' + data['statusText']);
