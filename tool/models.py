@@ -1,15 +1,24 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 
-class SimplePage(models.Model):
-    """Simple Page model"""
-    title = models.CharField(max_length=60, unique=True)
-    body = models.TextField(blank=True, null=True)
+class Card(models.Model):
+    """Flashcard model"""
+
+    DIFFICULTIES = (
+        ('easy', 'Easy'),
+        ('middle', 'Middle'),
+        ('difficult', 'Difficult'),
+    )
+
+    word = models.CharField(max_length=60, unique=True)
+    description = models.TextField(blank=True, null=True)
+    difficulty = models.CharField(max_length=10, choices=DIFFICULTIES, default='difficult')
+    user = models.ForeignKey(User, related_name='cards')
     created_date = models.DateTimeField(auto_now_add=True)
     changed_date = models.DateTimeField(auto_now=True)
-    slug = models.SlugField(blank=True, editable=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return u'%s' % (
-            self.title,
+            self.word,
         )

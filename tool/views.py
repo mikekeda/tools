@@ -4,11 +4,13 @@ import dateutil.parser
 from datetime import datetime
 import requests
 
+from tool.models import Card
+
 
 def main(request):
     """Main page."""
 
-    return render(request, "slider.html", dict(active_page="home"))
+    return render(request, "flashcards.html", dict(active_page="home"))
 
 
 def tool(request, page_slug):
@@ -58,3 +60,11 @@ def worklogs(request):
         return JsonResponse(result)
 
     return HttpResponseForbidden()
+
+
+def flashcards(request):
+    """Flashcards."""
+
+    cards = Card.objects.filter(user=request.user).order_by('-id')
+
+    return render(request, "flashcards.html", dict(cards=cards, active_page='flashcards'))

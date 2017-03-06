@@ -1,0 +1,12 @@
+{% extends parent_template %}
+{% load i18n %}
+{% block content %}
+    {% for card in cards %}
+        <div class="w3-card w3-yellow">
+            <h4>{{ card.word }}</h4>
+            <p>{{ card.description }}</p>
+        </div>
+    {% empty %}
+        {% trans "No cards" %}
+    {% endfor %}
+{% endblock %}

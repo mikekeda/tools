@@ -1,6 +1,5 @@
-from tool.models import SimplePage
 from django.conf import settings
-import os, sys
+import os
 
 
 def categories(request):
