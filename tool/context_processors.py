@@ -9,7 +9,7 @@ def categories(request):
     folders = settings.TEMPLATES[0]['DIRS']
     for folder in folders:
         if os.path.exists(folder + '/tools'):
-            tools.extend([f for f in os.listdir(folder + '/tools') if (os.path.isfile(os.path.join(folder + '/tools', f)) and  f.endswith(".html"))])
+            tools.extend([f for f in os.listdir(folder + '/tools') if (os.path.isfile(os.path.join(folder + '/tools', f)) and f.endswith(".html"))])
 
     tools = [{'name': f[:-5].replace('-', ' ').capitalize(), 'slug': f[:-5]} for f in tools]
     tools = sorted(tools, key=lambda k: k['name'])
