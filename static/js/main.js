@@ -1,4 +1,3 @@
-
 $( document ).ready(function() {
 
   function set_active_link(link) {
@@ -8,7 +7,7 @@ $( document ).ready(function() {
     $link.parent('li').addClass('active');
   }
 
-  /* Process ajax links */
+  // Process ajax links.
   $(document).on('click', 'a.ajax-link', function(event) {
     event.preventDefault();
     if (!$(this).parent('li').hasClass("active")) {
@@ -25,19 +24,20 @@ $( document ).ready(function() {
       })
       .fail(function() {
         window.location.replace($link.attr("href"));
-      })
-    };
+      });
+    }
   });
 
-  /* Back button */
-  $(window).on("popstate", function(event) {
+  // Back button.
+  $(window).on('popstate', function(event) {
     if (event.originalEvent.state.content !== null) {
       $('#content').html(event.originalEvent.state.content);
       set_active_link(window.location.pathname);
     }
   });
 
-  $('.flip').click(function() {
+  // Flashcards.
+  $(document).on('click', '.flip', function() {
     $(this).find('.card').toggleClass('flipped');
   });
 
