@@ -22,6 +22,7 @@ def select_parent_template(request):
     parent_template = "dummy_parent.html" if request.is_ajax() else "base.html"
     return {'parent_template': parent_template}
 
+
 def arrival_date(request):
     """Arrival date."""
     return {'today': date.today(), 'arrival_date': date(2017, 9, 24)}
