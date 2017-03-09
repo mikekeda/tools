@@ -18,8 +18,8 @@
                 </div>
             </div>
         </div>
+        {% empty %}
+            {% trans "No cards" %}
+        {% endfor %}
     </div>
-    {% empty %}
-        {% trans "No cards" %}
-    {% endfor %}
 {% endblock %}

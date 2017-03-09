@@ -23,7 +23,7 @@
   </head>
   <body>
     <div class="container">
-      <div class="page-header">    
+      <div class="page-header">
         <h1>{% trans "Best tools ever!" %}</h1>
       </div>
 
@@ -40,6 +40,11 @@
             <ul class="nav navbar-nav">
               <li class="{% if active_page == 'home' %}active{% endif %}"><a href="{% url 'main' %}" class="ajax-link">{% trans "Home" %}</a></li>
             </ul>
+            {% if user.is_authenticated %}
+            <div class="date pull-right">
+              {{ arrival_date|timeuntil:today }} {% trans "left" %}
+            </div>
+            {% endif %}
           </div><!--/.nav-collapse -->
         </div><!--/.container-fluid -->
       </nav>

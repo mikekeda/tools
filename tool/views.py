@@ -57,6 +57,8 @@ def worklogs(request):
 
 def flashcards(request):
     """Flashcards."""
-    cards = Card.objects.filter(user=request.user).order_by('-id')
+    cards = []
+    if request.user.is_authenticated:
+        cards = Card.objects.filter(user=request.user).order_by('-id')
 
     return render(request, "flashcards.html", dict(cards=cards, active_page='flashcards'))
