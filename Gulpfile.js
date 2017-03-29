@@ -56,22 +56,23 @@ gulp.task('sass', function () {
     .pipe(sass({
         includePaths: ['scss'].concat(neat)
     }))
-    .pipe(autoprefixer({
-        browsers: ['last 3 versions'],
-        cascade: false
-    }))
     .pipe(uncss({
         html: ['templates/*.html', 'templates/*/*.html'],
         ignore: [
           new RegExp('.active$'),
           new RegExp('.indicators*'),
           new RegExp('.js-*'),
+          new RegExp('.col-*'),
           new RegExp('.collapsing$'),
           new RegExp('.flipped$'),
           new RegExp('.easy$'),
           new RegExp('.middle$'),
           new RegExp('.difficult$')
         ]
+    }))
+    .pipe(autoprefixer({
+        browsers: ['last 3 versions'],
+        cascade: false
     }))
     .pipe(minifycss())
     .pipe(gulp.dest('static/css'))
@@ -89,7 +90,7 @@ gulp.task('browser-sync', function() {
 /* Watch scss, js and html files, doing different things with each. */
 gulp.task('default', ['scss-lint', 'sass'/*, 'browser-sync'*/], function () {
     /* Watch scss, run the sass task on change. */
-    gulp.watch(['sass/*.scss', 'sass/**/*.scss'], ['scss-lint', 'sass'])
+    gulp.watch(['sass/*.scss', 'sass/**/*.scss'], ['sass', 'scss-lint'])
     /* Watch app.js file, run the scripts task on change. */
     gulp.watch(['static/js/*.js'], ['js-lint', 'js-concat'])
     /* Watch .html files, run the bs-reload task on change. */

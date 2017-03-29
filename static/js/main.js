@@ -1,4 +1,5 @@
-$( document ).ready(function() {
+$(document).ready(function() {
+  "use strict";
 
   function set_active_link(link) {
     var a_selector = 'a[href="' + link + '"]';
