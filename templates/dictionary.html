@@ -46,6 +46,7 @@
           msg = this.innerHTML;
           msg = new SpeechSynthesisUtterance(msg);
           msg.lang = this.getAttribute('lang');
+          window.speechSynthesis.cancel();
           window.speechSynthesis.speak(msg);
         });
       }
