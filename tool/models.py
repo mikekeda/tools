@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.conf import settings
 
 
 class Card(models.Model):
@@ -22,3 +23,19 @@ class Card(models.Model):
         return u'%s' % (
             self.word,
         )
+
+
+class Word(models.Model):
+    """Word model"""
+
+    user = models.ForeignKey(User, related_name='words')
+    created = models.DateTimeField(auto_now_add=True)
+    changed = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return u'%s' % (
+            self.en,
+        )
+
+for lang in settings.LANGUAGES:
+    Word.add_to_class(lang[0], models.CharField(max_length=60, null=True))

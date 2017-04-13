@@ -67,7 +67,8 @@ gulp.task('sass', function () {
           new RegExp('.flipped$'),
           new RegExp('.easy$'),
           new RegExp('.middle$'),
-          new RegExp('.difficult$')
+          new RegExp('.difficult$'),
+          new RegExp('.table-bordered$')
         ]
     }))
     .pipe(autoprefixer({

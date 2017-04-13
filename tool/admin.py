@@ -1,5 +1,5 @@
 from django.contrib import admin
-from tool.models import Card
+from tool.models import Card, Word
 
 
 class CardAdmin(admin.ModelAdmin):
@@ -9,3 +9,4 @@ class CardAdmin(admin.ModelAdmin):
         return db_field.formfield(**kwargs)
 
 admin.site.register(Card, CardAdmin)
+admin.site.register(Word, CardAdmin)

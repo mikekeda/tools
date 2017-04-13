@@ -3,8 +3,9 @@ from django.http import Http404, JsonResponse, HttpResponseForbidden
 import dateutil.parser
 from datetime import datetime
 import requests
+from django.conf import settings
 
-from tool.models import Card
+from tool.models import Card, Word
 
 
 def tool(request, page_slug):
@@ -62,3 +63,16 @@ def flashcards(request):
         cards = Card.objects.filter(user=request.user).order_by('-id')
 
     return render(request, "flashcards.html", dict(cards=cards, active_page='flashcards'))
+
+
+def dictionary(request):
+    """Dictionary."""
+    words = []
+    if request.user.is_authenticated:
+        words = Word.objects.filter(user=request.user).order_by('-id')
+
+    return render(request, "dictionary.html", dict(
+        words=words,
+        languages=settings.LANGUAGES,
+        active_page='dictionary'
+    ))

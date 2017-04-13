@@ -16,7 +16,7 @@ Including another URLconf
 from django.conf.urls import include, url
 from django.contrib import admin
 
-from tool.views import tool, worklogs, flashcards
+from tool.views import tool, worklogs, flashcards, dictionary
 
 urlpatterns = [
     url(r'^$', tool, name='main', kwargs={'page_slug': 'jira-logs'}),
@@ -25,6 +25,8 @@ urlpatterns = [
     url(r'^ajax/tool/(?P<page_slug>.+)$', tool, name='ajax_tool'),
     url(r'^flashcards$', flashcards, name='flashcards'),
     url(r'^ajax/flashcards$', flashcards, name='ajax_flashcards'),
+    url(r'^dictionary', dictionary, name='dictionary'),
+    url(r'^ajax/dictionary', dictionary, name='ajax_dictionary'),
     url(r'^get-worklogs$', worklogs, name='worklogs'),
 
     url(r'^admin/', include(admin.site.urls)),

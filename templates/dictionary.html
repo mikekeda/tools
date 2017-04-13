@@ -1,0 +1,53 @@
+{% extends parent_template %}
+{% load static from staticfiles %}
+{% load i18n %}
+{% load tool_tags %}
+{% block content %}
+    <link rel="stylesheet" type="text/css" href="{% static 'bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css' %}"/>
+    <table id="dictionary" class="table table-striped table-bordered" cellspacing="0" width="100%">
+        <thead>
+            <tr>
+                {% for lang in languages %}
+                    <th>{{ lang.1 }}</th>
+                {% endfor %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for word in words %}
+                <tr>
+                    {% for lang in languages %}
+                        <th lang="{{ lang.0 }}">{{ word|get_item:lang.0 }}</th>
+                    {% endfor %}
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <script type="text/javascript" defer src="{% static 'bower_components/datatables.net/js/jquery.dataTables.min.js' %}"></script>
+    <script type="text/javascript" defer src="{% static 'bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js' %}"></script>
+    <script type="text/javascript">
+      if("undefined" == typeof jQuery) {
+        window.onload = function() {
+          init_app();
+        };
+      }
+      else {
+        init_app();
+      }
+
+      function init_app() {
+        var msg;
+        var $dictionary = $('#dictionary');
+
+        $dictionary.DataTable({
+          'bPaginate': false
+        });
+
+        $dictionary.find('th').click(function() {
+          msg = this.innerHTML;
+          msg = new SpeechSynthesisUtterance(msg);
+          msg.lang = this.getAttribute('lang');
+          window.speechSynthesis.speak(msg);
+        });
+      }
+    </script>
+{% endblock %}

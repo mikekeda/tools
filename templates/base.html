@@ -2,7 +2,7 @@
 {% load static from staticfiles %}
 
 <!DOCTYPE html>
-<html lang="uk">
+<html lang="en">
   <head>
     <meta charset="utf-8">
     <meta name="description" content="Useful tools: get exif data from photo, draw on a canvas, convert an image to base64, lowercase uppercase text."/>
@@ -58,6 +58,7 @@
                 <ul class="nav">
                   {% if user.is_authenticated %}
                     <li class="{% if active_page == 'flashcards' %}active{% endif %}"><a href="{% url 'flashcards' %}" class="ajax-link">{% trans "Flashcards" %}</a></li>
+                    <li class="{% if active_page == 'dictionary' %}active{% endif %}"><a href="{% url 'dictionary' %}" class="ajax-link">{% trans "Dictionary" %}</a></li>
                   {% endif %}
                   {% for tool in tools %}
                     <li class="{% if active_page == tool.slug %}active{% endif %}"><a href="{% url 'tool' tool.slug %}" class="ajax-link">{{ tool.name }}</a></li>
