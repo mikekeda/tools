@@ -38,4 +38,4 @@ class Word(models.Model):
         )
 
 for lang in settings.LANGUAGES:
-    Word.add_to_class(lang[0], models.CharField(max_length=60, null=True))
+    Word.add_to_class(lang[0], models.CharField(max_length=60, null=True, blank=True))

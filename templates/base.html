@@ -39,6 +39,10 @@
           <div id="navbar" class="navbar-collapse collapse">
             <ul class="nav navbar-nav">
               <li class="{% if active_page == 'home' %}active{% endif %}"><a href="{% url 'main' %}" class="ajax-link">{% trans "Home" %}</a></li>
+              {% if user.is_superuser %}
+                <li><a href="/admin/tool/card/add/" class="ajax-link">{% trans "Add card" %}</a></li>
+                <li><a href="/admin/tool/word/add/" class="ajax-link">{% trans "Add word" %}</a></li>
+              {% endif %}
             </ul>
             {% if user.is_authenticated %}
             <div class="date pull-right">
