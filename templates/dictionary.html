@@ -24,7 +24,7 @@
     </table>
     <script type="text/javascript" defer src="{% static 'bower_components/datatables.net/js/jquery.dataTables.min.js' %}"></script>
     <script type="text/javascript" defer src="{% static 'bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js' %}"></script>
-    <script type="text/javascript">
+    <script type="text/javascript" defer>
       if("undefined" == typeof jQuery) {
         window.onload = function() {
           init_app();
@@ -47,7 +47,17 @@
           msg = new SpeechSynthesisUtterance(msg);
           msg.lang = this.getAttribute('lang');
           window.speechSynthesis.cancel();
-          window.speechSynthesis.speak(msg);
+          if (msg.lang == 'uk') {
+            msg = new Audio();
+            msg.onerror = function() {
+              alert("{% trans "Audio file for this word doesn't exists" %}");
+            };
+            msg.src = '/media/audio/' + this.innerHTML + '.mp3';
+            msg.play();
+          }
+          else {
+            window.speechSynthesis.speak(msg);
+          }
         });
       }
     </script>
