@@ -70,7 +70,9 @@ gulp.task('sass', function () {
           new RegExp('.difficult$'),
           new RegExp('.table-bordered$'),
           new RegExp('.fade$'),
-          new RegExp('.in$')
+          new RegExp('.in$'),
+          new RegExp('.dataTables_wrapper'),
+          new RegExp('.form-group input')
         ]
     }))
     .pipe(autoprefixer({
@@ -93,7 +95,7 @@ gulp.task('browser-sync', function() {
 /* Watch scss, js and html files, doing different things with each. */
 gulp.task('default', ['scss-lint', 'sass'/*, 'browser-sync'*/], function () {
     /* Watch scss, run the sass task on change. */
-    gulp.watch(['sass/*.scss', 'sass/**/*.scss'], ['sass', 'scss-lint'])
+    gulp.watch(['sass/*.scss', 'sass/**/*.scss', 'templates/*.html'], ['sass', 'scss-lint'])
     /* Watch app.js file, run the scripts task on change. */
     gulp.watch(['static/js/*.js'], ['js-lint', 'js-concat'])
     /* Watch .html files, run the bs-reload task on change. */

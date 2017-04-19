@@ -30,7 +30,7 @@ ul {
     padding: 40px 20px 10px;
   }
 
-  @media (max-width: 767px) {
+  @media (max-width: $screen-xs-max) {
     .row-xs-only {
       margin: 0 -15px;
     }
@@ -121,5 +121,28 @@ ul {
 
   .inner {
     margin: 10px;
+  }
+}
+
+.add-word-btn ~ .dataTables_wrapper {
+  margin-top: -35px;
+
+  .dataTables_filter {
+    label {
+      float: right;
+    }
+  }
+
+  @media (max-width: 375px) {
+    margin-top: 5px;
+  }
+}
+
+.add-word-form {
+  .form-group {
+    input {
+      padding: 5px 10px;
+      width: 100%;
+    }
   }
 }

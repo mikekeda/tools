@@ -1,11 +1,14 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import Http404, JsonResponse, HttpResponseForbidden
 import dateutil.parser
 from datetime import datetime
 import requests
 from django.conf import settings
+from django.contrib.auth.decorators import login_required
+from django.core.urlresolvers import reverse
 
-from tool.models import Card, Word
+from .models import Card, Word
+from .forms import WordForm
 
 
 def tool(request, page_slug):
@@ -56,6 +59,7 @@ def worklogs(request):
     return HttpResponseForbidden()
 
 
+@login_required
 def flashcards(request):
     """Flashcards."""
     cards = []
@@ -65,14 +69,27 @@ def flashcards(request):
     return render(request, "flashcards.html", dict(cards=cards, active_page='flashcards'))
 
 
+@login_required
 def dictionary(request):
     """Dictionary."""
-    words = []
-    if request.user.is_authenticated:
-        words = Word.objects.filter(user=request.user).order_by('-id')
+    if request.method == 'POST':
+        form = WordForm(data=request.POST)
+        if form.is_valid():
+            word = form.save(commit=False)
+            word.user = request.user
+            word.save()
+
+            return redirect(reverse('dictionary'))
+        else:
+            print(form.errors)
+    else:
+        form = WordForm()
+
+    words = Word.objects.filter(user=request.user).order_by('-id')
 
     return render(request, "dictionary.html", dict(
         words=words,
         languages=settings.LANGUAGES,
+        form=form,
         active_page='dictionary'
     ))
