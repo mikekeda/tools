@@ -34,7 +34,7 @@
 
   <div class="container-fluid">
     <h2>{% trans "Jira credentials" %}</h2>
-    <form id="get-worklogs-form" action="" method="post">
+    <form id="get-worklogs-form" action="{% url 'worklogs' %}" method="post">
       {% csrf_token %}
       <div class="row">
         <div class="form-group col-md-5 col-sm-12 nopadding">
@@ -83,7 +83,7 @@
 
         $.ajax({
           type: 'POST',
-          url: '/get-worklogs',
+          url: "{% url 'worklogs' %}",
           dataType: 'json',
           data: form_data,
           success: function(data) {
