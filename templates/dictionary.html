@@ -22,8 +22,6 @@
             {% endfor %}
         </tbody>
     </table>
-    <script type="text/javascript" defer src="{% static 'bower_components/datatables.net/js/jquery.dataTables.min.js' %}"></script>
-    <script type="text/javascript" defer src="{% static 'bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js' %}"></script>
     <script type="text/javascript" defer>
       if("undefined" == typeof jQuery) {
         window.onload = function() {
@@ -38,8 +36,12 @@
         var msg;
         var $dictionary = $('#dictionary');
 
-        $dictionary.DataTable({
-          'bPaginate': false
+        $.getScript("{% static 'bower_components/datatables.net/js/jquery.dataTables.min.js' %}", function() {
+          $.getScript("{% static 'bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js' %}", function() {
+            $dictionary.DataTable({
+              'bPaginate': false
+            });
+          });
         });
 
         $dictionary.find('th').click(function() {
