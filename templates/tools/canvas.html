@@ -1,15 +1,14 @@
 ﻿{% extends parent_template %}
 {% load i18n %}
 {% block content %}
-<style rel="stylesheet" type="text/css">
-
-div#div2 {
+<style scoped>
+  div#div2 {
     position:fixed;
     bottom: 0px;
     padding: 1%;
-}
+  }
 
-div#div3 {
+  div#div3 {
     position: relative;
     background-color:#fff;
     border:2px solid black;
@@ -19,17 +18,17 @@ div#div3 {
     word-wrap: break-word;
     display: none;
     border-radius:5px;
-}
+  }
 
-.hide {
+  .hide {
     display: none;
-}
+  }
 
-.show {
+  .show {
     display: block;
-}
+  }
 
-div#tool {
+  div#tool {
     width: 160px;
     height:567px;
     float:left;
@@ -37,9 +36,9 @@ div#tool {
     border-radius:10px;
     padding: 1%;
     margin:0.5% 0.5% 0.5% 0;
-}
+  }
 
-div#num_canv {
+  div#num_canv {
     width:530px;
     border:2px solid black;
     border-radius:10px;
@@ -47,66 +46,65 @@ div#num_canv {
     padding: 1%;
     clear:left;
     float:left;
-}
+  }
 
-div#num_canv_control {
+  div#num_canv_control {
     width:170px;
     border:2px solid black;
     border-radius:10px;
     margin:0.5%;
     padding: 1%;
     float:left;
-}
+  }
 
-div#canv_div {
+  div#canv_div {
     position:relative;
     border:2px solid black;
     border-radius:10px;
     margin:0.5%;
     float:left;
     cursor:crosshair;
-}
+  }
 
-.form-item {
+  .form-item {
     margin:5px 0;
-}
+  }
 
-img#canv_img{
+  img#canv_img{
     z-index:-1;
     position:absolute;
     top:0;
     left:0;
-/*  visibility: hidden;*/
-}
+  }
 
-input, select {
+  input, select {
     font-size:14px;
     margin: 2px;
-}
+  }
 
-input#send_mes {
+  input#send_mes {
     float: right;
-}
+  }
 
-input#canv_width, #alfa {
+  input#canv_width, #alfa {
     width:100%;
-}
+  }
 
-input#color {
+  input#color {
     width:35%;
-}
+  }
 
-input#width, #height {
+  input#width, #height {
     width: 60px;
     float: right;
     clear: both;
-}
+  }
 
-label {
+  label {
     clear: both;
-}
+  }
 
-button {
+  button {
     background: -moz-linear-gradient(top, #fff, #ddd);
     background: -webkit-linear-gradient(#fff, #ddd);
     background: -o-linear-gradient(top, #fff, #ddd);
@@ -120,43 +118,44 @@ button {
     min-width: 30px;
     margin: 2px 0;
     font-size:14px;
-}
+  }
 
-button:hover {
+  button:hover {
     background: -moz-linear-gradient(top, #ddd, #ddd);
     background: -webkit-linear-gradient(#ddd, #ddd);
     background: -o-linear-gradient(top, #ddd, #ddd);
-}
+  }
 
-#content-box .active {
+  #content-box .active {
     border:2px solid #777;
     padding: 1px;
-}
+  }
 
-button>img {
+  button>img {
     position: relative;
     top: 1px;
-}
+  }
 
-#drawing-tool > button,
-#drawing-modify > button {
+  #drawing-tool > button,
+  #drawing-modify > button {
     width: 32px;
     height: 32px;
     overflow: hidden;
-}
+  }
 
-button#resize_canv {
+  button#resize_canv {
     float:right;
-}
+  }
 
-#files, #sound {
+  #files, #sound {
     position:absolute;
     opacity: 0;
     z-index: 1;
     width: 28px;
     height: 31px;
     margin-left: -26px;
-}</style>
+  }
+</style>
 
     <div id="div0">
     <div id="tool">
@@ -218,7 +217,7 @@ button#resize_canv {
     <br>
     <div id="canv_div">
       <canvas id="canvas" width="540" height="550" class="show">Канвас не підтримується</canvas>
-      <img id="canv_img" width="540" height="550" class="show">
+      <img id="canv_img" src="//:0" width="540" height="550" class="show" alt="Canvas">
     </div>
     <div id="num_canv">
       <button type="button" id="canvass1" class="active" onclick="change_canvas(1);">1</button>
