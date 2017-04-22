@@ -1,5 +1,6 @@
 from django.contrib import admin
-from tool.models import Card, Word
+
+from .models import Card, Word
 
 
 class CardAdmin(admin.ModelAdmin):
