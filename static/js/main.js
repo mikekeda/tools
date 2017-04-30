@@ -1,8 +1,6 @@
 $(document).ready(function() {
   "use strict";
 
-  $.ajaxSetup({cache: true});
-
   function set_active_link(link) {
     var a_selector = 'a[href="' + link + '"]';
     var $link = $(a_selector);

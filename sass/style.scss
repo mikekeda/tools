@@ -16,6 +16,10 @@ ul {
   padding: 15px 0;
 }
 
+.no-padding {
+  padding: 0;
+}
+
 .container {
   max-width: 1000px;
   min-width: 320px;
@@ -73,22 +77,6 @@ ul {
     transform-style: preserve-3d;
     transition: .5s;
 
-    &.easy {
-      background-color: $brand-success;
-    }
-
-    &.middle {
-      background-color: $brand-warning;
-    }
-
-    &.difficult {
-      background-color: $brand-danger;
-    }
-
-    &.flipped {
-      transform: rotatey(-180deg);
-    }
-
     .face {
       backface-visibility: hidden;
       z-index: 2;
@@ -121,6 +109,49 @@ ul {
 
   .inner {
     margin: 10px;
+  }
+}
+
+.card,
+.difficulty-filter,
+.pagination > li > .difficulty-filter:hover {
+  &.easy {
+    background-color: $brand-success;
+  }
+
+  &.middle {
+    background-color: $brand-warning;
+  }
+
+  &.difficult {
+    background-color: $brand-danger;
+  }
+
+  &.flipped {
+    transform: rotatey(-180deg);
+  }
+
+  .face {
+    backface-visibility: hidden;
+    z-index: 2;
+  }
+}
+
+.difficulty-filters {
+  padding: 12px 0;
+  overflow: hidden;
+}
+
+.difficulty-filter {
+  display: block;
+  float: left;
+  height: 20px;
+  opacity: .3;
+  width: 50px;
+
+  &.active,
+  &:hover {
+    opacity: 1;
   }
 }
 

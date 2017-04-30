@@ -1,27 +1,85 @@
 {% extends parent_template %}
 {% load i18n %}
+{% load static from staticfiles %}
 {% block content %}
-    {% for card in cards %}
-    <div class="card-container col-md-6">
-        <div class="flip">
-            <div class="card {{ card.difficulty }}">
-                <div class="face front">
-                    <h4 class="list-group-item-heading">{{ card.word }}</h4>
-                    <a href="admin/tool/card/{{ card.id }}/change/" class="edit">
-                        <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>
-                    </a>
-                </div>
-                <div class="face back">
-                    <div class="inner text-center">
-                        <p class="list-group-item-text">{{ card.description }}</p>
+    <div class="container-fluid no-padding cards-filters">
+      <div class="col-md-6">
+        <ul class="difficulty-filters">
+          <li><a href="#" class="difficulty-filter difficult active" data-difficulty="difficult"></a></li>
+          <li><a href="#" class="difficulty-filter middle active" data-difficulty="middle"></a></li>
+          <li><a href="#" class="difficulty-filter easy active" data-difficulty="easy"></a></li>
+        </ul>
+      </div>
+      <div class="col-md-6">
+        <div class="input-group pull-right">
+          <input id="card-search" type="text" class="form-control" placeholder="Search">
+        </div><!-- /input-group -->
+      </div><!-- /.col-lg-6 -->
+    </div>
+    <div id="cards">
+        {% for card in cards %}
+        <div class="card-container col-md-6" data-difficulty="{{ card.difficulty }}" data-word="{{ card.word }}">
+            <div class="flip">
+                <div class="card {{ card.difficulty }}">
+                    <div class="face front">
+                        <h4 class="list-group-item-heading">{{ card.word }}</h4>
+                        <a href="admin/tool/card/{{ card.id }}/change/" class="edit">
+                            <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>
+                        </a>
+                    </div>
+                    <div class="face back">
+                        <div class="inner text-center">
+                            <p class="list-group-item-text">{{ card.description }}</p>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
+        {% empty %}
+        <div class="col-md-6">
+            {% trans "No cards" %}
+        </div>
+        {% endfor %}
     </div>
-    {% empty %}
-    <div class="col-md-6">
-        {% trans "No cards" %}
-    </div>
-    {% endfor %}
+
+    <script type="text/javascript" defer>
+      if("undefined" == typeof jQuery) {
+        window.onload = function() {
+          init_app();
+        };
+      }
+      else {
+        init_app();
+      }
+
+      function init_app() {
+        var $cards = $('#cards');
+        var $this;
+        var $difficulty_filters = $('.difficulty-filter');
+        var $card_search = $('#card-search');
+        var substring;
+
+        $difficulty_filters.click(function() {
+          $this = $(this);
+          $this.toggleClass('active');
+          $cards.find('.card-container[data-difficulty=' + $this.data('difficulty') + ']').toggle().toggleClass('difficulty-hidden');
+
+          return false;
+        });
+
+        $card_search.on('input',function(e) {
+          substring = this.value;
+
+          $cards.find('.card-container:not(.difficulty-hidden)').each(function(index) {
+            $this = $(this);
+            if ($this.data('word').indexOf(substring) !== -1) {
+              $this.show();
+            }
+            else {
+              $this.hide();
+            }
+          });
+        });
+      }
+    </script>
 {% endblock %}
