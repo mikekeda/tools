@@ -1,10 +1,12 @@
-from django.shortcuts import render, redirect
-from django.http import Http404, JsonResponse, HttpResponseForbidden
+from django.shortcuts import render, redirect, get_object_or_404
+from django.http import Http404, JsonResponse
+from django.core.exceptions import PermissionDenied
 import dateutil.parser
 from datetime import datetime
 import requests
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 
 from .models import Card, Word
@@ -56,27 +58,34 @@ def worklogs(request):
 
         return JsonResponse(result)
 
-    return HttpResponseForbidden()
+    raise PermissionDenied
 
 
 @login_required
-def flashcards(request):
+def flashcards(request, username=None):
     """Flashcards."""
-    cards = []
-    if request.user.is_authenticated:
-        cards = Card.objects.filter(user=request.user).order_by('-id')
+    if not request.user.is_superuser and username != request.user.username:
+        raise PermissionDenied
+
+    user = get_object_or_404(User, username=username) if username else request.user
+    cards = Card.objects.filter(user=user).order_by('-id')
 
     return render(request, "flashcards.html", dict(cards=cards, active_page='flashcards'))
 
 
 @login_required
-def dictionary(request):
+def dictionary(request, username=None):
     """Dictionary."""
+    if not request.user.is_superuser and username != request.user.username:
+        raise PermissionDenied
+
+    user = get_object_or_404(User, username=username) if username else request.user
+
     if request.method == 'POST':
         form = WordForm(data=request.POST)
         if form.is_valid():
             word = form.save(commit=False)
-            word.user = request.user
+            word.user = user
             word.save()
 
             return redirect(reverse('dictionary'))
@@ -85,7 +94,7 @@ def dictionary(request):
     else:
         form = WordForm()
 
-    words = Word.objects.filter(user=request.user).order_by('-id')
+    words = Word.objects.filter(user=user).order_by('-id')
 
     return render(request, "dictionary.html", dict(
         words=words,
