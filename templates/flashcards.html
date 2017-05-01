@@ -16,9 +16,9 @@
         </div><!-- /input-group -->
       </div><!-- /.col-lg-6 -->
     </div>
-    <div id="cards">
+    <div id="cards" class="sortable">
         {% for card in cards %}
-        <div class="card-container col-md-6" data-difficulty="{{ card.difficulty }}" data-word="{{ card.word }}">
+        <div class="card-container col-md-6" data-difficulty="{{ card.difficulty }}" data-word="{{ card.word }}" data-id="{{ card.id }}">
             <div class="flip">
                 <div class="card {{ card.difficulty }}">
                     <div class="face front">
@@ -58,6 +58,27 @@
         var $difficulty_filters = $('.difficulty-filter');
         var $card_search = $('#card-search');
         var substring;
+        var order;
+
+        $('.sortable').sortable({
+          placeholderClass: 'col-md-6'
+        }).on('sortupdate', function(e, ui) {
+          if (!$cards.hasClass('disabled')) {
+            order = {};
+            $cards.find('.card-container').each(function(index) {
+              order[$(this).data('id')] = index;
+            });
+            $.post("{% url 'card_order' user.username %}", {
+              order: JSON.stringify(order),
+              'csrfmiddlewaretoken': '{{ csrf_token }}'
+            }, function() {
+              $cards.addClass('disabled');
+            })
+            .always(function() {
+              $cards.removeClass('disabled');
+            });
+          }
+        });
 
         $difficulty_filters.click(function() {
           $this = $(this);

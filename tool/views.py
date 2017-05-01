@@ -8,6 +8,8 @@ from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
+from django.utils.translation import ugettext as _
+import json
 
 from .models import Card, Word
 from .forms import WordForm
@@ -68,9 +70,29 @@ def flashcards(request, username=None):
         raise PermissionDenied
 
     user = get_object_or_404(User, username=username) if username else request.user
-    cards = Card.objects.filter(user=user).order_by('-id')
+    cards = Card.objects.filter(user=user).order_by('order')
 
-    return render(request, "flashcards.html", dict(cards=cards, active_page='flashcards'))
+    return render(request, "flashcards.html", dict(cards=cards, user=user, active_page='flashcards'))
+
+
+@login_required
+def card_order(request, username=None):
+    """Change Flashcards order."""
+    if request.is_ajax():
+        if not request.user.is_superuser and username != request.user.username:
+            raise JsonResponse(_("You can't change the order"), safe=False, status=403)
+
+        user = get_object_or_404(User, username=username) if username else request.user
+        cards = Card.objects.filter(user=user)
+        order = request.POST.get('order', '')
+        order = json.loads(order)
+        for card in cards:
+            if str(card.id) in order:
+                card.order = order[str(card.id)]
+                card.save()
+
+        return JsonResponse(_("The order was changed"), safe=False)
+    raise Http404
 
 
 @login_required

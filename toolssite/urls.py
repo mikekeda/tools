@@ -5,7 +5,7 @@ from django.contrib import admin
 from django.conf import settings
 from django.conf.urls.static import static
 
-from tool.views import tool, worklogs, flashcards, dictionary
+from tool.views import tool, worklogs, flashcards, dictionary, card_order
 
 urlpatterns = [
     url(r'^$', tool, name='main', kwargs={'page_slug': 'jira-logs'}),
@@ -21,6 +21,7 @@ urlpatterns = [
     url(r'^ajax/dictionary$', dictionary, name='ajax_dictionary'),
     url(r'^ajax/dictionary/(?P<username>.+)$', dictionary, name='ajax_dictionary_username'),
     url(r'^get-worklogs$', worklogs, name='worklogs'),
+    url(r'^user/(?P<username>.+)/card-order$', card_order, name='card_order'),
 
     url(r'^admin/', include(admin.site.urls)),
 ]

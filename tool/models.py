@@ -16,6 +16,7 @@ class Card(models.Model):
     description = models.TextField(blank=True, null=True)
     difficulty = models.CharField(max_length=10, choices=DIFFICULTIES, default='difficult')
     user = models.ForeignKey(User, related_name='cards')
+    order = models.PositiveSmallIntegerField(default=0)
     created_date = models.DateTimeField(auto_now_add=True)
     changed_date = models.DateTimeField(auto_now=True)
 

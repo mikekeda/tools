@@ -42,6 +42,7 @@ gulp.task('js-concat', function() {
   return gulp.src([
       'static/bower_components/jquery/dist/jquery.min.js',
       'static/bower_components/bootstrap-sass/assets/javascripts/bootstrap.min.js',
+      'static/bower_components/bootstrap-html5sortable/jquery.sortable.min.js',
       'static/js/main.js'
     ])
     .pipe(concat('all.js'))
@@ -72,7 +73,8 @@ gulp.task('sass', function () {
           new RegExp('.fade$'),
           new RegExp('.in$'),
           new RegExp('.dataTables_wrapper'),
-          new RegExp('.form-group input')
+          new RegExp('.form-group input'),
+          new RegExp('.sortable-placeholder')
         ]
     }))
     .pipe(autoprefixer({
