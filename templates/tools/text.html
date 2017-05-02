@@ -1,5 +1,9 @@
 {% extends parent_template %}
 {% load i18n %}
+
+{% block title %}{% trans "Text manipulation" %}{% endblock %}
+{% block description %}{% trans "Capitalize text, convert text to lowercase or uppercase. Count amount of letters in the text." %}{% endblock description %}
+
 {% block content %}
   <div class="container-fluid">
   	<textarea name="content" id="text-content" class="col-xs-12" rows="10" cols="60" data-placeholder="Type or paste your content here"></textarea>

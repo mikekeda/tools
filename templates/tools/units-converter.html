@@ -1,5 +1,9 @@
 {% extends parent_template %}
 {% load i18n %}
+
+{% block title %}{% trans "Unit convector" %}{% endblock %}
+{% block description %}{% trans "Convert units for temperature, distance, volume, area, mass." %}{% endblock description %}
+
 {% block content %}
   <style scoped>
     label {

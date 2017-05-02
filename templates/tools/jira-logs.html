@@ -1,5 +1,9 @@
 {% extends parent_template %}
 {% load i18n %}
+
+{% block title %}{% trans "Get Jira worklogs" %}{% endblock %}
+{% block description %}{% trans "Get worklogs from Jira (only for Yawave)." %}{% endblock description %}
+
 {% block content %}
   <style scoped>
     label {
