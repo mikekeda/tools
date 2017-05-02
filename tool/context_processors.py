@@ -3,7 +3,7 @@ from datetime import date
 import os
 
 
-def categories(request):
+def categories(request=None):
     """Get all tools."""
     tools = []
     folders = settings.TEMPLATES[0]['DIRS']

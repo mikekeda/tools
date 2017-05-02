@@ -4,14 +4,21 @@ from django.conf.urls import include, url
 from django.contrib import admin
 from django.conf import settings
 from django.conf.urls.static import static
+from django.contrib.sitemaps.views import sitemap
 
 from tool.views import tool, worklogs, flashcards, dictionary, card_order
+from tool.sitemaps import StaticViewSitemap
+
+sitemaps = {
+    'static': StaticViewSitemap,
+}
+
 
 urlpatterns = [
-    url(r'^$', tool, name='main', kwargs={'page_slug': 'jira-logs'}),
-    url(r'^ajax$', tool, name='ajax_main', kwargs={'page_slug': 'jira-logs'}),
-    url(r'^tool/(?P<page_slug>.+)$', tool, name='tool'),
-    url(r'^ajax/tool/(?P<page_slug>.+)$', tool, name='ajax_tool'),
+    url(r'^$', tool, name='main', kwargs={'slug': 'jira-logs'}),
+    url(r'^ajax$', tool, name='ajax_main', kwargs={'slug': 'jira-logs'}),
+    url(r'^tool/(?P<slug>.+)$', tool, name='tool'),
+    url(r'^ajax/tool/(?P<slug>.+)$', tool, name='ajax_tool'),
     url(r'^flashcards$', flashcards, name='flashcards'),
     url(r'^flashcards/(?P<username>.+)$', flashcards, name='flashcards_username'),
     url(r'^ajax/flashcards$', flashcards, name='ajax_flashcards'),
@@ -23,6 +30,8 @@ urlpatterns = [
     url(r'^get-worklogs$', worklogs, name='worklogs'),
     url(r'^user/(?P<username>.+)/card-order$', card_order, name='card_order'),
 
+    url(r'^sitemap\.xml$', sitemap, {'sitemaps': sitemaps},
+        name='django.contrib.sitemaps.views.sitemap'),
     url(r'^admin/', include(admin.site.urls)),
 ]
 

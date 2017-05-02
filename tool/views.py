@@ -15,10 +15,10 @@ from .models import Card, Word
 from .forms import WordForm
 
 
-def tool(request, page_slug):
+def tool(request, slug):
     """Tool."""
     try:
-        return render(request, page_slug + ".html", dict(active_page=page_slug))
+        return render(request, slug + ".html", dict(active_page=slug))
     except Exception:
         raise Http404
 
