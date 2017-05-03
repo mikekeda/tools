@@ -1,5 +1,6 @@
 .idea/
 db.sqlite3
+mydatabase
 node_modules/
 staticfiles/
 media/
