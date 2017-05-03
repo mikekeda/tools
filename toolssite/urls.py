@@ -30,6 +30,7 @@ urlpatterns = [
     url(r'^get-worklogs$', worklogs, name='worklogs'),
     url(r'^user/(?P<username>.+)/card-order$', card_order, name='card_order'),
 
+    url(r'^oauth/', include('social_django.urls', namespace='social')),
     url(r'^sitemap\.xml$', sitemap, {'sitemaps': sitemaps},
         name='django.contrib.sitemaps.views.sitemap'),
     url(r'^admin/', include(admin.site.urls)),
