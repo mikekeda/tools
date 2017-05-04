@@ -43,13 +43,13 @@
               {% endif %}
             </ul>
             <ul class="nav navbar-nav navbar-right">
-              {% if user.is_superuser %}
+              {% if user.is_authenticated %}
                 <li><a href="{% url 'logout' %}" class="ajax-link">{% trans "Logout" %}</a></li>
               {% else %}
                 <li><a href="{% url 'login' %}" class="ajax-link">{% trans "Login" %}</a></li>
               {% endif %}
             </ul>
-            {% if user.is_authenticated %}
+            {% if user.is_superuser %}
             <div class="date pull-right">
               {{ arrival_date|timeuntil:today }} {% trans "left" %}
             </div>
