@@ -69,7 +69,7 @@ def worklogs(request):
 @login_required
 def flashcards(request, username=None):
     """Flashcards."""
-    if not request.user.is_superuser and username != request.user.username:
+    if not request.user.is_superuser and username and username != request.user.username:
         raise PermissionDenied
 
     user = get_object_or_404(User, username=username) if username else request.user
@@ -82,7 +82,7 @@ def flashcards(request, username=None):
 def card_order(request, username=None):
     """Change Flashcards order."""
     if request.is_ajax():
-        if not request.user.is_superuser and username != request.user.username:
+        if not request.user.is_superuser and username and username != request.user.username:
             raise JsonResponse(_("You can't change the order"), safe=False, status=403)
 
         user = get_object_or_404(User, username=username) if username else request.user
@@ -101,7 +101,7 @@ def card_order(request, username=None):
 @login_required
 def dictionary(request, username=None):
     """Dictionary."""
-    if not request.user.is_superuser and username != request.user.username:
+    if not request.user.is_superuser and username and username != request.user.username:
         raise PermissionDenied
 
     user = get_object_or_404(User, username=username) if username else request.user
