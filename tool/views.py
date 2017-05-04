@@ -6,13 +6,16 @@ from datetime import datetime
 import requests
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model, login, logout, authenticate
+from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext as _
 import json
 
 from .models import Card, Word
 from .forms import WordForm
+
+User = get_user_model()
 
 
 def tool(request, slug):
@@ -124,3 +127,22 @@ def dictionary(request, username=None):
         form=form,
         active_page='dictionary'
     ))
+
+
+def log_in(request):
+    form = AuthenticationForm()
+    if request.method == 'POST':
+        form = AuthenticationForm(data=request.POST)
+        if form.is_valid():
+            login(request, form.get_user())
+            return redirect(reverse('main'))
+        else:
+            print(form.errors)
+
+    return render(request, 'login.html', {'form': form})
+
+
+@login_required
+def log_out(request):
+    logout(request)
+    return redirect(reverse('login'))
