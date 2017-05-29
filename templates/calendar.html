@@ -1,0 +1,25 @@
+{% extends parent_template %}
+{% load static from staticfiles %}
+{% load i18n %}
+{% load widget_tweaks %}
+
+{% block content %}
+    <div id="calendar"></div>
+    <script type="text/javascript">
+        if("undefined" == typeof jQuery) {
+          window.onload = function() {
+            init_app();
+          };
+        }
+        else {
+          init_app();
+        }
+        function init_app() {
+            // page is now ready, initialize the calendar...
+            $('#calendar').fullCalendar({
+                // put your options and callbacks here
+              events: '/schedule/api/occurrences?calendar_slug=example'
+            })
+        }
+    </script>
+{% endblock content %}

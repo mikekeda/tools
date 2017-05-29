@@ -6,7 +6,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib.sitemaps.views import sitemap
 
-from tool.views import tool, worklogs, flashcards, dictionary, card_order, log_in, log_out
+from tool.views import tool, worklogs, calendar, dictionary, flashcards, card_order, log_in, log_out
 from tool.sitemaps import StaticViewSitemap
 
 sitemaps = {
@@ -19,6 +19,7 @@ urlpatterns = [
     url(r'^ajax$', tool, name='ajax_main', kwargs={'slug': 'jira-logs'}),
     url(r'^tool/(?P<slug>.+)$', tool, name='tool'),
     url(r'^ajax/tool/(?P<slug>.+)$', tool, name='ajax_tool'),
+    url(r'^calendar$', calendar, name='calendar'),
     url(r'^flashcards$', flashcards, name='flashcards'),
     url(r'^flashcards/(?P<username>.+)$', flashcards, name='flashcards_username'),
     url(r'^ajax/flashcards$', flashcards, name='ajax_flashcards'),

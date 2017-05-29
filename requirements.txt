@@ -2,7 +2,10 @@ Django==1.11.1
 Pillow==4.1.1
 PyJWT==1.5.0
 defusedxml==0.5.0
+django-annoying==0.10.3
+django-scheduler==0.8.4
 django-widget-tweaks==1.4.1
+icalendar==3.11.4
 oauthlib==2.0.2
 olefile==0.44
 psycopg2==2.7.1

@@ -66,8 +66,9 @@
               <div class="navbar-inner">
                 <ul class="nav">
                   {% if user.is_authenticated %}
-                    <li class="{% if active_page == 'flashcards' %}active{% endif %}"><a href="{% url 'flashcards' %}" class="ajax-link">{% trans "Flashcards" %}</a></li>
+                    <li class="{% if active_page == 'calendar' %}active{% endif %}"><a href="{% url 'calendar' %}" class="ajax-link">{% trans "Calendar" %}</a></li>
                     <li class="{% if active_page == 'dictionary' %}active{% endif %}"><a href="{% url 'dictionary' %}" class="ajax-link">{% trans "Dictionary" %}</a></li>
+                    <li class="{% if active_page == 'flashcards' %}active{% endif %}"><a href="{% url 'flashcards' %}" class="ajax-link">{% trans "Flashcards" %}</a></li>
                   {% endif %}
                   {% for tool in tools %}
                     <li class="{% if active_page == tool.slug %}active{% endif %}"><a href="{% url 'tool' tool.slug %}" class="ajax-link">{{ tool.name }}</a></li>

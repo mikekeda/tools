@@ -11,6 +11,7 @@ from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext as _
 import json
+from schedule.models import Calendar, CalendarRelation, Event, Rule
 
 from .models import Card, Word
 from .forms import WordForm
@@ -76,6 +77,14 @@ def flashcards(request, username=None):
     cards = Card.objects.filter(user=user).order_by('order')
 
     return render(request, "flashcards.html", dict(cards=cards, user=user, active_page='flashcards'))
+
+
+@login_required
+def calendar(request):
+    """Calendar."""
+    calendar = Calendar.objects.get_or_create(name='My calendar', slug=request.user.username)
+
+    return render(request, "calendar.html")
 
 
 @login_required
