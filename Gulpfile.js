@@ -43,6 +43,8 @@ gulp.task('js-concat', function() {
       'static/bower_components/jquery/dist/jquery.min.js',
       'static/bower_components/bootstrap-sass/assets/javascripts/bootstrap.min.js',
       'static/bower_components/bootstrap-html5sortable/jquery.sortable.min.js',
+      'static/bower_components/moment/min/moment.min.js',
+      'static/bower_components/fullcalendar/dist/fullcalendar.min.js',
       'static/js/main.js'
     ])
     .pipe(concat('all.js'))

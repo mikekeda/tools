@@ -34,6 +34,7 @@ urlpatterns = [
     url(r'^logout$', log_out, name='logout'),
 
     url(r'^oauth/', include('social_django.urls', namespace='social')),
+    url(r'^schedule/', include('schedule.urls')),
     url(r'^sitemap\.xml$', sitemap, {'sitemaps': sitemaps},
         name='django.contrib.sitemaps.views.sitemap'),
     url(r'^admin/', include(admin.site.urls)),
