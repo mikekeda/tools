@@ -6,3 +6,5 @@ staticfiles/
 media/
 toolssite/settings.py
 *.pyc
+celerybeat.pid
+celerybeat-schedule
