@@ -1,6 +1,7 @@
 .idea/
 db.sqlite3
 mydatabase
+dump.rdb
 node_modules/
 staticfiles/
 media/
