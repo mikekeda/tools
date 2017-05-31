@@ -1,25 +1,27 @@
-# Create your tasks here
-from __future__ import absolute_import, unicode_literals
-from celery import shared_task
+from django.conf import settings
+import requests
 from celery.task.schedules import crontab
 from celery.decorators import periodic_task
 
 
-@shared_task
-def add(x, y):
-    return x + y
+@periodic_task(run_every=(crontab(minute='*/5')), name='send_notification', ignore_result=True)
+def send_notification():
+    """Send email notification about events."""
+    # send_mail(
+    #     'Subject here',
+    #     'Here is the message.',
+    #     'site.hackua.com@gmail.com',
+    #     ['mriynuk@gmail.com'],
+    #     fail_silently=False,
+    # )
 
-
-@shared_task
-def mul(x, y):
-    return x * y
-
-
-@shared_task
-def xsum(numbers):
-    return sum(numbers)
-
-
-@periodic_task(run_every=(crontab(minute='*/1')), name="some_task", ignore_result=True)
-def some_task():
-    print(1)
+    requests.post(
+        'https://api.mailgun.net/v3/{}/messages'.format(settings.MAILGUN_DOMAIN_NAME),
+        auth=("api", settings.MAILGUN_API_KEY),
+        data={
+            'from': 'Tools site <notify@{}>'.format(settings.MAILGUN_DOMAIN_NAME),
+            'to': 'Mike <mriynuk@gmail.com>',
+            'subject': 'Hello test message',
+            'text': 'Testing some Mailgun!'
+        }
+    )
