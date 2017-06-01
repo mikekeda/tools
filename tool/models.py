@@ -5,7 +5,6 @@ from django.conf import settings
 
 class Card(models.Model):
     """Flashcard model"""
-
     DIFFICULTIES = (
         ('easy', 'Easy'),
         ('middle', 'Middle'),
@@ -28,7 +27,6 @@ class Card(models.Model):
 
 class Word(models.Model):
     """Word model"""
-
     user = models.ForeignKey(User, related_name='words')
     created = models.DateTimeField(auto_now_add=True)
     changed = models.DateTimeField(auto_now=True)

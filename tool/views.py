@@ -103,7 +103,7 @@ def card_order(request, username=None):
                 card.order = order[str(card.id)]
                 card.save()
 
-        return JsonResponse(_("The order was changed"), safe=False)
+        return JsonResponse(_('The order was changed'), safe=False)
     raise Http404
 
 
@@ -123,8 +123,6 @@ def dictionary(request, username=None):
             word.save()
 
             return redirect(reverse('dictionary'))
-        else:
-            print(form.errors)
     else:
         form = WordForm()
 
@@ -145,8 +143,6 @@ def log_in(request):
         if form.is_valid():
             login(request, form.get_user())
             return redirect(reverse('main'))
-        else:
-            print(form.errors)
 
     return render(request, 'login.html', {'form': form})
 

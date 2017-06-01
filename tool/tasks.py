@@ -6,7 +6,7 @@ from django.utils import timezone
 from schedule.models import Event
 
 
-@periodic_task(run_every=(crontab(minute='*/5')), name='send_notification', ignore_result=True)
+@periodic_task(run_every=(crontab(minute='*/15')), name='send_notification', ignore_result=True)
 def send_notification():
     """Send email notification about events."""
     # send_mail(
@@ -20,15 +20,19 @@ def send_notification():
     end = timezone.now() + timezone.timedelta(minutes=60)
     events = Event.objects.filter(start__gt=start, start__lte=end)
     for event in events:
-        print(event.creator.email)
+        name = event.creator.username
+        if event.creator.first_name:
+            name = '{} {}'.format(event.creator.first_name, event.creator.last_name)
 
-    # requests.post(
-    #     'https://api.mailgun.net/v3/{}/messages'.format(settings.MAILGUN_DOMAIN_NAME),
-    #     auth=("api", settings.MAILGUN_API_KEY),
-    #     data={
-    #         'from': 'Tools site <notify@{}>'.format(settings.MAILGUN_DOMAIN_NAME),
-    #         'to': 'Mike <mriynuk@gmail.com>',
-    #         'subject': 'Hello test message',
-    #         'text': 'Testing some Mailgun!'
-    #     }
-    # )
+        text = event.description if event.description else 'No description provided'
+
+        requests.post(
+            'https://api.mailgun.net/v3/{}/messages'.format(settings.MAILGUN_SERVER_NAME),
+            auth=('api', settings.MAILGUN_ACCESS_KEY),
+            data={
+                'from': 'Tools site <notify@{}>'.format(settings.MAILGUN_SERVER_NAME),
+                'to': '{} <{}>'.format(name, event.creator.email),
+                'subject': '{} will start today at {}'.format(event.title, event.start.strftime('%H:%M')),
+                'text': text
+            }
+        )
