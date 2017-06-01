@@ -6,8 +6,8 @@ from datetime import datetime
 import requests
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth import get_user_model, login, logout, authenticate
-from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
+from django.contrib.auth import get_user_model, login, logout
+from django.contrib.auth.forms import AuthenticationForm
 from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext as _
 import json
