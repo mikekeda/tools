@@ -82,7 +82,10 @@ def flashcards(request, username=None):
 @login_required
 def calendar(request):
     """Calendar."""
-    calendar = Calendar.objects.get_or_create(name='My calendar', slug=request.user.username)
+    Calendar.objects.get_or_create(
+        slug=request.user.username,
+        defaults={'name': '{} Calendar'.format(request.user.username)},
+    )
 
     return render(request, "calendar.html")
 
