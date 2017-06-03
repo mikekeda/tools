@@ -16,7 +16,9 @@
         }
         function init_app() {
             $('#calendar').fullCalendar({
-                events: '/schedule/api/occurrences?calendar_slug={{ user.username }}'
+                events: '/schedule/api/occurrences?calendar_slug={{ user.username }}',
+                ignoreTimezone: false,
+                timezone: 'local',
             })
         }
     </script>
