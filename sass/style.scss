@@ -1,6 +1,7 @@
 // include bootstrap-sass
 @import '../static/bower_components/bootstrap-sass/assets/stylesheets/bootstrap';
 @import '../static/bower_components/fullcalendar/dist/fullcalendar.min.css';
+@import '../static/bower_components/eonasdan-bootstrap-datetimepicker/src/sass/bootstrap-datetimepicker-build.scss';
 
 // fix for "fonts/bootstrap/glyphicons-halflings-regular.woff2 Failed to load resource: the server responded with a status of 404 (Not Found)"
 @font-face {
@@ -39,6 +40,10 @@ ul {
 
 .mt-6 {
   margin-top: 4.2rem !important;
+}
+
+.modal {
+  z-index: 990;
 }
 
 .date {
@@ -202,11 +207,18 @@ ul {
   }
 }
 
-.add-word-form {
+.add-word-form,
+.add-event-form {
   .form-group {
-    input {
+    input,
+    textarea {
       padding: 5px 10px;
+      resize: none;
       width: 100%;
     }
   }
+}
+
+.fc-event-container:hover {
+  cursor: pointer;
 }

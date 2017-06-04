@@ -42,4 +42,9 @@ $(document).ready(function() {
     $(this).find('.card').toggleClass('flipped');
   });
 
+  // Datetimepicker.
+  $('.datetimepicker').datetimepicker({
+    format: 'YYYY-MM-DD HH:mm',
+  });
+
 });

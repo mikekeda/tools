@@ -14,7 +14,7 @@ import json
 from schedule.models import Calendar, CalendarRelation, Event, Rule
 
 from .models import Card, Word
-from .forms import WordForm
+from .forms import WordForm, EventForm
 
 User = get_user_model()
 
@@ -82,12 +82,28 @@ def flashcards(request, username=None):
 @login_required
 def calendar(request):
     """Calendar."""
-    Calendar.objects.get_or_create(
+    calendar, created = Calendar.objects.get_or_create(
         slug=request.user.username,
         defaults={'name': '{} Calendar'.format(request.user.username)},
     )
 
-    return render(request, "calendar.html")
+    if request.method == 'POST':
+        form = EventForm(data=request.POST)
+        if form.is_valid():
+            event = form.save(commit=False)
+            event.creator = request.user
+            event.calendar = calendar
+            event.color_event = '#' + event.color_event
+            event.save()
+
+            return redirect(reverse('calendar'))
+    else:
+        form = EventForm()
+
+    return render(request, "calendar.html", dict(
+        form=form,
+        active_page='calendar'
+    ))
 
 
 @login_required
