@@ -35,3 +35,41 @@ def send_notification():
             'Tools site <notify@{}>'.format(settings.MAILGUN_SERVER_NAME),
             ['{} <{}>'.format(name, event.creator.email)],
         )
+
+
+@periodic_task(run_every=(crontab(minute=0, hour='10')), name='daily_notification', ignore_result=True)
+def daily_notification():
+    """Send daily email notification about upcoming events."""
+    start = timezone.now()
+    end = start + timezone.timedelta(days=1)
+    events = Event.objects.filter(start__gt=start, start__lte=end)
+
+    user_events = {}
+    for event in events:
+        if event.creator.username in user_events:
+            user_events[event.creator.username].append(event)
+        else:
+            user_events[event.creator.username] = [event]
+
+    for username in user_events:
+        text = ''
+        name = username
+        if user_events[username][0].creator.first_name:
+            name = '{} {}'.format(
+                user_events[username][0].creator.first_name,
+                user_events[username][0].creator.last_name
+            )
+
+        for event in user_events[username]:
+            text += '{} ({}) {}\n'.format(
+                event.start.strftime('%H:%M'),
+                settings.CELERY_TIMEZONE,
+                event.title
+            )
+
+        send_mail(
+            "Today's events",
+            text,
+            'Tools site <notify@{}>'.format(settings.MAILGUN_SERVER_NAME),
+            ['{} <{}>'.format(name, user_events[username][0].creator.email)],
+        )
