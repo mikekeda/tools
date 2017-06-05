@@ -1,7 +1,47 @@
 {% extends parent_template %}
 {% load i18n %}
+{% load widget_tweaks %}
 {% load static from staticfiles %}
 {% block content %}
+    <!-- Button trigger modal -->
+    <button type="button" class="add-btn btn btn-default btn-md" data-toggle="modal" data-target="#add-card">
+      {% trans "Add card" %}
+    </button>
+
+    <!-- Modal -->
+    <div class="modal{% if form.errors %} error{% endif %}" id="add-card" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="add-card-label">{% trans "Add card" %}</h4>
+          </div>
+          <div class="modal-body">
+            <form action="{% url active_page %}" method="post" class="add-form clearfix form-horizontal">
+                {% csrf_token %}
+                {% for field in form %}
+                    <div class="form-group">
+                        <label class="control-label col-sm-2">{{ field.label_tag }}</label>
+                        <div class="col-sm-10">
+                            {{ field }}
+                        </div>
+                        {% if field.errors %}
+                            <div class="alert alert-warning col-sm-10 pull-right" role="alert">
+                              {{ field.errors }}
+                            </div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Close" %}</button>
+                  <button type="submit" class="btn btn-primary btn-md pull-right">{% trans "Save" %}</button>
+                </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div class="container-fluid no-padding cards-filters">
       <div class="col-md-6">
         <ul class="difficulty-filters">

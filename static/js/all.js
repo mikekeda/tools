@@ -92,4 +92,7 @@ $(document).ready(function() {
     format: 'YYYY-MM-DD HH:mm',
   });
 
+  // Show from if there are errors.
+  $('.modal.error').modal('show');
+
 });

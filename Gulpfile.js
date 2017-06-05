@@ -68,6 +68,7 @@ gulp.task('sass', function () {
           new RegExp('.indicators*'),
           new RegExp('.js-*'),
           new RegExp('.col-*'),
+          new RegExp('.modal$'),
           new RegExp('.collapsing$'),
           new RegExp('.tooltip$'),
           new RegExp('.tooltip-*'),

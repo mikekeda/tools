@@ -25,4 +25,4 @@ def select_parent_template(request):
 
 def arrival_date(request):
     """Arrival date."""
-    return {'today': date.today(), 'arrival_date': date(2017, 9, 24)}
+    return {'today': date.today(), 'arrival_date': date(2017, 11, 22)}

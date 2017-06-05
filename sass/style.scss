@@ -193,7 +193,7 @@ ul {
   }
 }
 
-.add-word-btn ~ .dataTables_wrapper {
+.add-btn ~ .dataTables_wrapper {
   margin-top: -35px;
 
   .dataTables_filter {
@@ -207,8 +207,7 @@ ul {
   }
 }
 
-.add-word-form,
-.add-event-form {
+.add-form {
   .form-group {
     input,
     textarea {

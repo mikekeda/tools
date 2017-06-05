@@ -14,7 +14,7 @@ import json
 from schedule.models import Calendar, CalendarRelation, Event, Rule
 
 from .models import Card, Word
-from .forms import WordForm, EventForm
+from .forms import WordForm, EventForm, CardForm
 
 User = get_user_model()
 
@@ -76,7 +76,23 @@ def flashcards(request, username=None):
     user = get_object_or_404(User, username=username) if username else request.user
     cards = Card.objects.filter(user=user).order_by('order')
 
-    return render(request, "flashcards.html", dict(cards=cards, user=user, active_page='flashcards'))
+    if request.method == 'POST':
+        form = CardForm(data=request.POST)
+        if form.is_valid():
+            card = form.save(commit=False)
+            card.user = user
+            card.save()
+
+            return redirect(reverse('flashcards'))
+    else:
+        form = CardForm()
+
+    return render(request, "flashcards.html", dict(
+        cards=cards,
+        user=user,
+        form=form,
+        active_page='flashcards')
+    )
 
 
 @login_required

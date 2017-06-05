@@ -1,7 +1,13 @@
 from django import forms
 from schedule.models import Event
 
-from .models import Word
+from .models import Word, Card
+
+
+class EventForm(forms.ModelForm):
+    class Meta:
+        model = Event
+        fields = ('title', 'description', 'start', 'end', 'color_event', )
 
 
 class WordForm(forms.ModelForm):
@@ -10,7 +16,7 @@ class WordForm(forms.ModelForm):
         exclude = ('user',)
 
 
-class EventForm(forms.ModelForm):
+class CardForm(forms.ModelForm):
     class Meta:
-        model = Event
-        fields = ('title', 'description', 'start', 'end', 'color_event', )
+        model = Card
+        exclude = ('user', 'order',)

@@ -6,20 +6,20 @@
     <link rel="stylesheet" type="text/css" href="{% static 'bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css' %}"/>
 
     <!-- Button trigger modal -->
-    <button type="button" class="add-word-btn btn btn-default btn-md" data-toggle="modal" data-target="#add-word">
+    <button type="button" class="add-btn btn btn-default btn-md" data-toggle="modal" data-target="#add-word">
       {% trans "Add word" %}
     </button>
 
     <!-- Modal -->
-    <div class="modal" id="add-word" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal{% if form.errors %} error{% endif %}" id="add-word" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
       <div class="modal-dialog" role="document">
         <div class="modal-content">
           <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-            <h4 class="modal-title" id="add-word-label">{% trans "Add word" %}</h4>
+            <h4 class="modal-title" id="add-label">{% trans "Add word" %}</h4>
           </div>
           <div class="modal-body">
-            <form action="{% url 'dictionary' %}" method="post" class="add-word-form clearfix form-horizontal">
+            <form action="{% url active_page %}" method="post" class="add-form clearfix form-horizontal">
                 {% csrf_token %}
                     {% for field in form %}
                     <div class="form-group">
