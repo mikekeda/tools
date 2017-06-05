@@ -3,11 +3,6 @@
 {% load widget_tweaks %}
 {% load static from staticfiles %}
 {% block content %}
-    <!-- Button trigger modal -->
-    <button type="button" class="add-btn btn btn-default btn-md" data-toggle="modal" data-target="#add-card">
-      {% trans "Add card" %}
-    </button>
-
     <!-- Modal -->
     <div class="modal{% if form.errors %} error{% endif %}" id="add-card" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
       <div class="modal-dialog" role="document">
@@ -42,21 +37,27 @@
       </div>
     </div>
 
-    <div class="container-fluid no-padding cards-filters">
-      <div class="col-md-6">
+    <div class="container-fluid no-padding row cards-filters">
+      <div class="col-md-4">
+        <!-- Button trigger modal -->
+        <button type="button" class="add-btn btn btn-default btn-md" data-toggle="modal" data-target="#add-card">
+          {% trans "Add card" %}
+        </button>
+      </div>
+      <div class="col-md-4 col-sm-6">
         <ul class="difficulty-filters">
           <li><a href="#" class="difficulty-filter difficult active" data-difficulty="difficult"></a></li>
           <li><a href="#" class="difficulty-filter middle active" data-difficulty="middle"></a></li>
           <li><a href="#" class="difficulty-filter easy active" data-difficulty="easy"></a></li>
         </ul>
       </div>
-      <div class="col-md-6">
+      <div class="col-md-4 col-sm-6">
         <div class="input-group pull-right">
           <input id="card-search" type="text" class="form-control" placeholder="Search">
         </div><!-- /input-group -->
       </div><!-- /.col-lg-6 -->
     </div>
-    <div id="cards" class="sortable">
+    <div id="cards" class="row sortable">
         {% for card in cards %}
         <div class="card-container col-md-6" data-difficulty="{{ card.difficulty }}" data-word="{{ card.word }}" data-id="{{ card.id }}">
             <div class="flip">
