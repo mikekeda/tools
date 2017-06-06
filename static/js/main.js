@@ -50,4 +50,7 @@ $(document).ready(function() {
   // Show from if there are errors.
   $('.modal.error').modal('show');
 
+  // Set up and initialize editable.
+  $.fn.editable.defaults.mode = 'inline';
+
 });

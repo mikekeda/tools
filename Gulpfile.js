@@ -47,6 +47,7 @@ gulp.task('js-concat', function() {
       'static/bower_components/fullcalendar/dist/fullcalendar.min.js',
       'static/bower_components/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js',
       'static/bower_components/jscolor-picker/jscolor.min.js',
+      'static/bower_components/x-editable/dist/bootstrap3-editable/js/bootstrap-editable.min.js',
       'static/js/main.js'
     ])
     .pipe(concat('all.js'))
@@ -91,7 +92,8 @@ gulp.task('sass', function () {
           new RegExp('.bootstrap-datetimepicker-widget'),
           new RegExp('.glyphicon$'),
           new RegExp('.glyphicon-*'),
-          new RegExp('.fc-event-container$')
+          new RegExp('.fc-event-container$'),
+          new RegExp('.editable-buttons$')
         ]
     }))
     .pipe(autoprefixer({

@@ -1,7 +1,8 @@
 // include bootstrap-sass
 @import '../static/bower_components/bootstrap-sass/assets/stylesheets/bootstrap';
 @import '../static/bower_components/fullcalendar/dist/fullcalendar.min.css';
-@import '../static/bower_components/eonasdan-bootstrap-datetimepicker/src/sass/bootstrap-datetimepicker-build.scss';
+@import '../static/bower_components/eonasdan-bootstrap-datetimepicker/src/sass/bootstrap-datetimepicker-build';
+@import '../static/bower_components/x-editable/dist/bootstrap3-editable/css/bootstrap-editable.css';
 
 // fix for "fonts/bootstrap/glyphicons-halflings-regular.woff2 Failed to load resource: the server responded with a status of 404 (Not Found)"
 @font-face {
