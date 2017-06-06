@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Card, Word
+from .models import Profile, Card, Word
 from schedule.models import Event, Calendar
 from schedule.admin import EventAdmin
 
@@ -28,6 +28,7 @@ class ToolEventAdmin(EventAdmin):
                 kwargs['initial'] = calendar.id
         return db_field.formfield(**kwargs)
 
+admin.site.register(Profile)
 admin.site.register(Card, CardAdmin)
 admin.site.register(Word, WordAdmin)
 admin.site.unregister(Event)

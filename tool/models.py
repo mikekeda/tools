@@ -3,6 +3,17 @@ from django.contrib.auth.models import User
 from django.conf import settings
 
 
+class Profile(models.Model):
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL, related_name='profile')
+    avatar = models.ImageField(upload_to='avatars/', default='avatars/no-avatar.png')
+
+    def __str__(self):
+        return u'%s' % (
+            self.user.username,
+        )
+
+
 class Card(models.Model):
     """Flashcard model"""
     DIFFICULTIES = (

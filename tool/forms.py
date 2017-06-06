@@ -1,7 +1,13 @@
 from django import forms
 from schedule.models import Event
 
-from .models import Word, Card
+from .models import Profile, Word, Card
+
+
+class AvatarForm(forms.ModelForm):
+    class Meta:
+        model = Profile
+        fields = ('avatar',)
 
 
 class EventForm(forms.ModelForm):

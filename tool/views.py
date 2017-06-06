@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.http import Http404, JsonResponse
-from django.core.exceptions import PermissionDenied
+from django.http import Http404, JsonResponse, HttpResponseRedirect
+from django.core.exceptions import PermissionDenied, ValidationError
 import dateutil.parser
 from datetime import datetime
 import requests
@@ -13,8 +13,8 @@ from django.utils.translation import ugettext as _
 import json
 from schedule.models import Calendar, CalendarRelation, Event, Rule
 
-from .models import Card, Word
-from .forms import WordForm, EventForm, CardForm
+from .models import Card, Word, Profile
+from .forms import WordForm, EventForm, CardForm, AvatarForm
 
 User = get_user_model()
 
@@ -120,6 +120,46 @@ def calendar(request):
         form=form,
         active_page='calendar'
     ))
+
+@login_required
+def profile_view(request, username):
+    """User profile."""
+    user = get_object_or_404(User, username=username)
+    Profile.objects.get_or_create(user=user)
+    form = AvatarForm(data=request.POST)
+
+    return render(request, 'profile.html', {
+        'profile_user': user,
+        'is_current_user': user == request.user,
+        'form': form,
+    })
+
+
+@login_required
+def update_profile(request):
+    """Update user."""
+    if request.method == 'POST':
+        avatar = request.FILES.get('avatar', '')
+        if avatar:
+            profile = get_object_or_404(Profile, user=request.user)
+            form = AvatarForm(request.POST, request.FILES, instance=profile)
+            if form.is_valid():
+                form.save()
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+        else:
+            allowed_fields = ['first_name', 'last_name', 'email']
+            field = request.POST.get('name', '')
+            value = request.POST.get('value', '')
+            if field and field in allowed_fields:
+                setattr(request.user, field, value)
+                try:
+                    request.user.clean_fields()
+                    request.user.save()
+                    return JsonResponse({'success': True})
+                except ValidationError as e:
+                    return JsonResponse(', '.join(e.message_dict[field]), safe=False, status=422)
+
+    return JsonResponse(_("You can't change this field"), safe=False, status=403)
 
 
 @login_required
