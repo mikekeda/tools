@@ -43,6 +43,15 @@ ul {
   margin-top: 4.2rem !important;
 }
 
+.img-fluid {
+    max-width: 100%;
+    height: auto;
+}
+
+.rounded-circle {
+    border-radius: 50%;
+}
+
 .modal {
   z-index: 990;
 }
