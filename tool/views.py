@@ -13,7 +13,7 @@ from django.utils.translation import ugettext as _
 import json
 from schedule.models import Calendar, CalendarRelation, Event, Rule
 
-from .models import Card, Word, Profile
+from .models import TIMEZONES, Card, Word, Profile
 from .forms import WordForm, EventForm, CardForm, AvatarForm
 
 User = get_user_model()
@@ -125,13 +125,20 @@ def calendar(request):
 def profile_view(request, username):
     """User profile."""
     user = get_object_or_404(User, username=username)
-    Profile.objects.get_or_create(user=user)
+    profile, created = Profile.objects.get_or_create(user=user)
     form = AvatarForm(data=request.POST)
+
+    timezones = '['
+    for val, text in TIMEZONES:
+        timezones += '{value: "' + val + '", text: "' + text + '"},'
+    timezones += ']'
 
     return render(request, 'profile.html', {
         'profile_user': user,
+        'profile': profile,
         'is_current_user': user == request.user,
         'form': form,
+        'timezones': timezones,
     })
 
 

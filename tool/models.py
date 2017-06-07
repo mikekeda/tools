@@ -1,15 +1,16 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.conf import settings
+import datetime
 import pytz
+
+TIMEZONES = [(tz, tz + ' ' + datetime.datetime.now(pytz.timezone(tz)).strftime('%z')) for tz in pytz.common_timezones]
 
 
 class Profile(models.Model):
-    CHOICES = [(tz, tz) for tz in pytz.common_timezones]
-
     user = models.OneToOneField(
         settings.AUTH_USER_MODEL, related_name='profile')
-    timezone = models.CharField(max_length=64, choices=CHOICES, default='UTC')
+    timezone = models.CharField(max_length=64, choices=TIMEZONES, default='UTC')
     avatar = models.ImageField(upload_to='avatars/', default='avatars/no-avatar.png')
 
     def __str__(self):
