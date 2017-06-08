@@ -98,7 +98,7 @@ def flashcards(request, username=None):
 @login_required
 def calendar(request):
     """Calendar."""
-    calendar, created = Calendar.objects.get_or_create(
+    calendar_obj, created = Calendar.objects.get_or_create(
         slug=request.user.username,
         defaults={'name': '{} Calendar'.format(request.user.username)},
     )
@@ -108,7 +108,7 @@ def calendar(request):
         if form.is_valid():
             event = form.save(commit=False)
             event.creator = request.user
-            event.calendar = calendar
+            event.calendar = calendar_obj
             event.color_event = '#' + event.color_event
             event.save()
 
@@ -120,6 +120,7 @@ def calendar(request):
         form=form,
         active_page='calendar'
     ))
+
 
 @login_required
 def profile_view(request, username):
@@ -146,18 +147,25 @@ def profile_view(request, username):
 def update_profile(request):
     """Update user."""
     if request.method == 'POST':
+        profile = get_object_or_404(Profile, user=request.user)
         avatar = request.FILES.get('avatar', '')
         if avatar:
-            profile = get_object_or_404(Profile, user=request.user)
             form = AvatarForm(request.POST, request.FILES, instance=profile)
             if form.is_valid():
                 form.save()
             return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
         else:
-            allowed_fields = ['first_name', 'last_name', 'email']
             field = request.POST.get('name', '')
             value = request.POST.get('value', '')
-            if field and field in allowed_fields:
+
+            if field == 'timezone':
+                if value in [t for t, _ in TIMEZONES]:
+                    profile.timezone = value
+                    profile.save()
+                    return JsonResponse({'success': True})
+                else:
+                    return JsonResponse(_("This value not allowed"), safe=False, status=403)
+            elif field in ['first_name', 'last_name', 'email']:
                 setattr(request.user, field, value)
                 try:
                     request.user.clean_fields()
