@@ -126,7 +126,6 @@ def calendar(request):
 def profile_view(request, username):
     """User profile."""
     user = get_object_or_404(User, username=username)
-    profile, created = Profile.objects.get_or_create(user=user)
     form = AvatarForm(data=request.POST)
 
     timezones = '['
@@ -136,7 +135,6 @@ def profile_view(request, username):
 
     return render(request, 'profile.html', {
         'profile_user': user,
-        'profile': profile,
         'is_current_user': user == request.user,
         'form': form,
         'timezones': timezones,

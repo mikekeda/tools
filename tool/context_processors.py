@@ -2,6 +2,8 @@ from django.conf import settings
 from datetime import date
 import os
 
+from .models import Profile
+
 
 def categories(request=None):
     """Get all tools."""
@@ -26,3 +28,9 @@ def select_parent_template(request):
 def arrival_date(request):
     """Arrival date."""
     return {'today': date.today(), 'arrival_date': date(2017, 11, 22)}
+
+
+def user_profile(request):
+    """User profile."""
+    profile, created = Profile.objects.get_or_create(user=request.user)
+    return {'profile': profile}

@@ -10,7 +10,7 @@ TIMEZONES = [(tz, tz + ' ' + datetime.datetime.now(pytz.timezone(tz)).strftime('
 class Profile(models.Model):
     user = models.OneToOneField(
         settings.AUTH_USER_MODEL, related_name='profile')
-    timezone = models.CharField(max_length=64, choices=TIMEZONES, default='UTC')
+    timezone = models.CharField(max_length=64, choices=TIMEZONES, blank=True, null=True)
     avatar = models.ImageField(upload_to='avatars/', default='avatars/no-avatar.png')
 
     def __str__(self):
