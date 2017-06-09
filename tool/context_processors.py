@@ -32,5 +32,8 @@ def arrival_date(request):
 
 def user_profile(request):
     """User profile."""
-    profile, created = Profile.objects.get_or_create(user=request.user)
+    profile = None
+    if request.user.is_authenticated:
+        profile, created = Profile.objects.get_or_create(user=request.user)
+
     return {'profile': profile}
