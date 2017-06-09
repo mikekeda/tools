@@ -1,0 +1,17 @@
+{% extends parent_template %}
+{% load i18n %}
+
+{% block title %}{% trans "Users" %}{% endblock title %}
+
+{% block content %}
+  <div class="bg-white mt-5">
+
+  <ul class="list-group">
+    {% for user in users %}
+      <li data-username="{{ user.username }}" class="list-group-item justify-content-between">
+        <a href="{% url 'user' user.username %}" class="ajax-link name text-muted">{{ user.username }}</a>
+      </li>
+    {% endfor %}
+  </ul>
+  </div>
+{% endblock content %}

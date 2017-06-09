@@ -6,6 +6,7 @@ from datetime import datetime
 import requests
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
+from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth import get_user_model, login, logout
 from django.contrib.auth.forms import AuthenticationForm
 from django.core.urlresolvers import reverse
@@ -142,6 +143,17 @@ def profile_view(request, username):
         'is_current_user': user == request.user,
         'form': form,
         'timezones': timezones,
+    })
+
+
+@staff_member_required
+def users_list(request):
+    """User profile."""
+    users = User.objects.all()
+
+    return render(request, 'user_list.html', {
+        'users': users,
+        'active_page': 'users'
     })
 
 

@@ -6,7 +6,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib.sitemaps.views import sitemap
 
-from tool.views import tool, worklogs, calendar, dictionary, flashcards, profile_view, update_profile, card_order, log_in, log_out
+from tool.views import tool, worklogs, calendar, dictionary, flashcards, users_list, profile_view, update_profile, card_order, log_in, log_out
 from tool.sitemaps import StaticViewSitemap
 
 sitemaps = {
@@ -29,6 +29,8 @@ urlpatterns = [
     url(r'^ajax/dictionary$', dictionary, name='ajax_dictionary'),
     url(r'^ajax/dictionary/(?P<username>.+)$', dictionary, name='ajax_dictionary_username'),
     url(r'^get-worklogs$', worklogs, name='worklogs'),
+    url(r'^users$', users_list, name='users'),
+    url(r'^ajax/users$', users_list, name='ajax_users'),
     url(r'^user/(?P<username>[^/]+)$', profile_view, name='user'),
     url(r'^ajax/user/(?P<username>[^/]+)$', profile_view, name='ajax_user'),
     url(r'^user/(?P<username>[^/]+)/calendar$', calendar, name='user_calendar'),
