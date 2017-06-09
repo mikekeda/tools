@@ -59,23 +59,25 @@
                 </div>
             </div>
             <div class="col-lg-4 pull-lg-8 text-center">
-                <img src="{{ profile.avatar.url }}" class="m-x-auto img-fluid rounded-circle" alt="avatar">
                 {% if is_current_user %}
-                <h5 class="mt-2">{% trans "Upload a different photo" %}</h5>
-                <form action="{% url 'update_profile' %}" method="post" enctype="multipart/form-data" id="avatar-upload">
-                    {% csrf_token %}
-                        {% for field in form %}
-                            <label class="custom-file text-left">
-                                {{ field|add_class:"custom-file-input" }}
-                                <span class="custom-file-control"></span>
-                            </label>
-                        {% if field.errors %}
-                            <div class="alert alert-warning col-sm-9 offset-sm-3" role="alert">
-                              {{ field.errors }}
-                            </div>
-                        {% endif %}
-                    {% endfor %}
-                </form>
+                    <img src="{{ profile.avatar.url }}" class="m-x-auto img-fluid rounded-circle" alt="avatar">
+                    <h5 class="mt-2">{% trans "Upload a different photo" %}</h5>
+                    <form action="{% url 'update_profile' %}" method="post" enctype="multipart/form-data" id="avatar-upload">
+                        {% csrf_token %}
+                            {% for field in form %}
+                                <label class="custom-file text-left">
+                                    {{ field|add_class:"custom-file-input" }}
+                                    <span class="custom-file-control"></span>
+                                </label>
+                            {% if field.errors %}
+                                <div class="alert alert-warning col-sm-9 offset-sm-3" role="alert">
+                                  {{ field.errors }}
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    </form>
+                {% else %}
+                    <img src="{{ profile_user.profile.avatar.url }}" class="m-x-auto img-fluid rounded-circle" alt="avatar">
                 {% endif %}
             </div>
         </div>
