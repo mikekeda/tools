@@ -49,7 +49,7 @@
                                     {% if is_current_user %}
                                         <a href="#" id="timezone" class="editable" data-type="select" data-value="{{ profile.timezone }}" data-source='{{ timezones }}' data-pk="timezone" data-url="{% url 'update_profile' %}" data-placeholder="{% trans 'Enter email' %}" data-params="{csrfmiddlewaretoken:'{{csrf_token}}'}">{{ profile.timezone }}</a>
                                     {% else %}
-                                        {{ profile_user.email }}
+                                        {{ profile_user.profile.timezone }}
                                     {% endif %}
                                 </div>
                             </div>
