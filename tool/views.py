@@ -96,18 +96,22 @@ def flashcards(request, username=None):
 
 
 @login_required
-def calendar(request):
+def calendar(request, username=None):
     """Calendar."""
+    if not request.user.is_superuser and username and username != request.user.username:
+        raise PermissionDenied
+
+    user = get_object_or_404(User, username=username) if username else request.user
     calendar_obj, created = Calendar.objects.get_or_create(
-        slug=request.user.username,
-        defaults={'name': '{} Calendar'.format(request.user.username)},
+        slug=user.username,
+        defaults={'name': '{} Calendar'.format(user.username)},
     )
 
     if request.method == 'POST':
         form = EventForm(data=request.POST)
         if form.is_valid():
             event = form.save(commit=False)
-            event.creator = request.user
+            event.creator = user
             event.calendar = calendar_obj
             event.color_event = '#' + event.color_event
             event.save()
