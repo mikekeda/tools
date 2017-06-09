@@ -90,6 +90,7 @@ gulp.task('sass', function () {
           new RegExp('.form-group input'),
           new RegExp('.sortable-placeholder'),
           new RegExp('.bootstrap-datetimepicker-widget'),
+          new RegExp('.datepicker'),
           new RegExp('.glyphicon$'),
           new RegExp('.glyphicon-*'),
           new RegExp('.fc-event-container$'),

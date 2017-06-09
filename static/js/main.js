@@ -45,7 +45,6 @@ $(document).ready(function() {
   // Datetimepicker.
   $('.datetimepicker').datetimepicker({
     format: 'YYYY-MM-DD HH:mm',
-    debug: true,
   });
 
   // Show from if there are errors.
