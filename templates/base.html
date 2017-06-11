@@ -37,8 +37,14 @@
           </div>
           <div id="navbar" class="navbar-collapse collapse">
             <ul class="nav navbar-nav">
-              <li class="{% if active_page == 'home' %}active{% endif %}"><a href="{% url 'main' %}" class="ajax-link">{% trans "Home" %}</a></li>
-              <li class="{% if active_page == 'users' %}active{% endif %}"><a href="{% url 'users' %}" class="ajax-link">{% trans "Users" %}</a></li>
+              <li class="{% if active_page == 'home' %}active{% endif %}">
+                <a href="{% url 'main' %}" class="ajax-link">{% trans "Home" %}</a>
+              </li>
+              {% if user.is_superuser %}
+                <li class="{% if active_page == 'users' %}active{% endif %}">
+                  <a href="{% url 'users' %}" class="ajax-link">{% trans "Users" %}</a>
+                </li>
+              {% endif %}
             </ul>
             <ul class="nav navbar-nav navbar-right">
               {% if user.is_authenticated %}
