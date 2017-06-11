@@ -52,7 +52,7 @@
                   <a href="{% url 'user' user.username %}" class="ajax-link"><span class="glyphicon glyphicon-user"></span> {{ user.username }}</a>
                 </li>
                 <li>
-                  <a href="{% url 'logout' %}" class="ajax-link"><span class="glyphicon glyphicon-log-out"></span> {% trans "Logout" %}</a>
+                  <a href="{% url 'logout' %}"><span class="glyphicon glyphicon-log-out"></span> {% trans "Logout" %}</a>
                 </li>
               {% else %}
                 <li>
