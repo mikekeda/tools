@@ -32,7 +32,7 @@ gulp.task('js-lint', function() {
 
 /* Sass lint */
 gulp.task('scss-lint', function() {
-  return gulp.src('sass/*.scss')
+  return gulp.src('sass/style.scss')
     .pipe(cache('scsslint'))
     .pipe(scsslint());
 });

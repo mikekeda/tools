@@ -12,7 +12,7 @@
             <h4 class="modal-title" id="add-card-label">{% trans "Add card" %}</h4>
           </div>
           <div class="modal-body">
-            <form action="{% url active_page %}" method="post" class="add-form clearfix form-horizontal">
+            <form action="{{ form_action }}" method="post" class="add-form clearfix form-horizontal">
                 {% csrf_token %}
                 {% for field in form %}
                     <div class="form-group">
@@ -41,7 +41,7 @@
       <div class="col-md-4">
         <!-- Button trigger modal -->
         <button type="button" class="add-btn btn btn-default btn-md" data-toggle="modal" data-target="#add-card">
-          {% trans "Add card" %}
+          <span class="glyphicon glyphicon-plus"></span> {% trans "Add card" %}
         </button>
       </div>
       <div class="col-md-4 col-sm-6">

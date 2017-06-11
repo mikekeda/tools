@@ -1,11 +1,26 @@
 $(document).ready(function() {
   "use strict";
 
+  // Set up and initialize editable.
+  $.fn.editable.defaults.mode = 'inline';
+
+  var $content = $('#content');
+
   function set_active_link(link) {
     var a_selector = 'a[href="' + link + '"]';
     var $link = $(a_selector);
     $('li.active > a').parent().removeClass('active');
     $link.parent('li').addClass('active');
+  }
+
+  function page_init() {
+    // Initialize datetimepicker.
+    $content.find('.datetimepicker').datetimepicker({
+      format: 'YYYY-MM-DD HH:mm',
+    });
+
+    // Initialize jscolor.
+    jscolor.installByClassName('jscolor');
   }
 
   // Process ajax links.
@@ -20,6 +35,7 @@ $(document).ready(function() {
       .done(function(data) {
         $('#content').html(data);
         set_active_link($link.attr("href"));
+        page_init();
         $(".modal-backdrop.in").remove();
         history.pushState({content: data}, null, $link.attr("href"));
       })
@@ -37,20 +53,15 @@ $(document).ready(function() {
     }
   });
 
+  // Show from if there are errors.
+  $('.modal.error').modal('show');
+
   // Flashcards.
   $(document).on('click', '.flip', function() {
     $(this).find('.card').toggleClass('flipped');
   });
 
-  // Datetimepicker.
-  $('.datetimepicker').datetimepicker({
-    format: 'YYYY-MM-DD HH:mm',
-  });
-
-  // Show from if there are errors.
-  $('.modal.error').modal('show');
-
-  // Set up and initialize editable.
-  $.fn.editable.defaults.mode = 'inline';
+  // Initialize datetimepicker and jscolor.
+  page_init();
 
 });

@@ -6,7 +6,7 @@
 {% block content %}
     <!-- Button trigger modal -->
     <button type="button" class="add-btn btn btn-default btn-md" data-toggle="modal" data-target="#add-event">
-      {% trans "Add event" %}
+      <span class="glyphicon glyphicon-plus"></span> {% trans "Add event" %}
     </button>
 
     <!-- Modal -->
@@ -18,7 +18,7 @@
             <h4 class="modal-title" id="add-label">{% trans "Add event" %}</h4>
           </div>
           <div class="modal-body">
-            <form action="{% url active_page %}" method="post" class="add-form clearfix form-horizontal">
+            <form action="{{ form_action }}" method="post" class="add-form clearfix form-horizontal">
                 {% csrf_token %}
                 {% for field in form %}
                     <div class="form-group">
@@ -61,7 +61,7 @@
         }
         function init_app() {
             $('#calendar').fullCalendar({
-                events: '/schedule/api/occurrences?calendar_slug={{ user.username }}&timezone={{ profile.timezone }}',
+                events: '/schedule/api/occurrences?calendar_slug={{ profile_user.username }}&timezone={{ profile.timezone }}',
                 ignoreTimezone: false,
                 timezone: 'local',
                 timeFormat: 'H:mm',

@@ -7,7 +7,7 @@
 
     <!-- Button trigger modal -->
     <button type="button" class="add-btn btn btn-default btn-md" data-toggle="modal" data-target="#add-word">
-      {% trans "Add word" %}
+      <span class="glyphicon glyphicon-plus"></span> {% trans "Add word" %}
     </button>
 
     <!-- Modal -->
@@ -19,7 +19,7 @@
             <h4 class="modal-title" id="add-label">{% trans "Add word" %}</h4>
           </div>
           <div class="modal-body">
-            <form action="{% url active_page %}" method="post" class="add-form clearfix form-horizontal">
+            <form action="{{ form_action }}" method="post" class="add-form clearfix form-horizontal">
                 {% csrf_token %}
                     {% for field in form %}
                     <div class="form-group">

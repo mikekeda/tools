@@ -9,7 +9,7 @@
   <ul class="list-group">
     {% for user in users %}
       <li data-username="{{ user.username }}" class="list-group-item justify-content-between">
-        <a href="{% url 'user' user.username %}" class="ajax-link name text-muted">{{ user.username }}</a>
+        <a href="{% url 'user' user.username %}" class="ajax-link name text-muted"><span class="glyphicon glyphicon-user"></span> {{ user.username }}</a>
       </li>
     {% endfor %}
   </ul>

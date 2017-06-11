@@ -12,7 +12,7 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext as _
 import json
-from schedule.models import Calendar, CalendarRelation, Event, Rule
+from schedule.models import Calendar
 
 from .models import TIMEZONES, Card, Word, Profile
 from .forms import WordForm, EventForm, CardForm, AvatarForm
@@ -21,7 +21,7 @@ User = get_user_model()
 
 
 def tool(request, slug):
-    """Tool."""
+    """Show needed tool."""
     try:
         return render(request, slug + ".html", dict(active_page=slug))
     except Exception:
@@ -29,7 +29,7 @@ def tool(request, slug):
 
 
 def worklogs(request):
-    """Worklogs."""
+    """Jira Worklogs."""
     username = request.POST.get('username', '')
     password = request.POST.get('password', '')
     current_date = datetime.today()
@@ -76,6 +76,10 @@ def flashcards(request, username=None):
 
     user = get_object_or_404(User, username=username) if username else request.user
     cards = Card.objects.filter(user=user).order_by('order')
+    if user == request.user:
+        form_action = reverse('flashcards')
+    else:
+        form_action = reverse('user_flashcards', args=[user.username])
 
     if request.method == 'POST':
         form = CardForm(data=request.POST)
@@ -84,7 +88,7 @@ def flashcards(request, username=None):
             card.user = user
             card.save()
 
-            return redirect(reverse('flashcards'))
+            return redirect(form_action)
     else:
         form = CardForm()
 
@@ -92,7 +96,8 @@ def flashcards(request, username=None):
         cards=cards,
         user=user,
         form=form,
-        active_page='flashcards')
+        form_action=form_action,
+        active_page=form_action.lstrip('/'))
     )
 
 
@@ -107,6 +112,10 @@ def calendar(request, username=None):
         slug=user.username,
         defaults={'name': '{} Calendar'.format(user.username)},
     )
+    if user == request.user:
+        form_action = reverse('calendar')
+    else:
+        form_action = reverse('user_calendar', args=[user.username])
 
     if request.method == 'POST':
         form = EventForm(data=request.POST)
@@ -117,13 +126,15 @@ def calendar(request, username=None):
             event.color_event = '#' + event.color_event
             event.save()
 
-            return redirect(reverse('calendar'))
+            return redirect(form_action)
     else:
         form = EventForm()
 
     return render(request, "calendar.html", dict(
+        profile_user=user,
         form=form,
-        active_page='calendar'
+        form_action=form_action,
+        active_page=form_action.lstrip('/')
     ))
 
 
@@ -131,6 +142,7 @@ def calendar(request, username=None):
 def profile_view(request, username):
     """User profile."""
     user = get_object_or_404(User, username=username)
+    profile, created = Profile.objects.get_or_create(user=user)
     form = AvatarForm(data=request.POST)
 
     timezones = '['
@@ -138,28 +150,29 @@ def profile_view(request, username):
         timezones += '{value: "' + val + '", text: "' + text + '"},'
     timezones += ']'
 
-    return render(request, 'profile.html', {
-        'profile_user': user,
-        'is_current_user': user == request.user,
-        'form': form,
-        'timezones': timezones,
-    })
+    return render(request, 'profile.html', dict(
+        profile_user=user,
+        profile=profile,
+        is_current_user=user == request.user,
+        form=form,
+        timezones=timezones
+    ))
 
 
 @staff_member_required
 def users_list(request):
-    """User profile."""
+    """Users list."""
     users = User.objects.all()
 
-    return render(request, 'user_list.html', {
-        'users': users,
-        'active_page': 'users'
-    })
+    return render(request, 'user_list.html', dict(
+        users=users,
+        active_page=users
+    ))
 
 
 @login_required
 def update_profile(request):
-    """Update user."""
+    """Update user callback."""
     if request.method == 'POST':
         profile = get_object_or_404(Profile, user=request.user)
         avatar = request.FILES.get('avatar', '')
@@ -193,7 +206,7 @@ def update_profile(request):
 
 @login_required
 def card_order(request, username=None):
-    """Change Flashcards order."""
+    """Change Flashcards order callback."""
     if request.is_ajax():
         if not request.user.is_superuser and username and username != request.user.username:
             raise JsonResponse(_("You can't change the order"), safe=False, status=403)
@@ -218,6 +231,10 @@ def dictionary(request, username=None):
         raise PermissionDenied
 
     user = get_object_or_404(User, username=username) if username else request.user
+    if user == request.user:
+        form_action = reverse('dictionary')
+    else:
+        form_action = reverse('user_dictionary', args=[user.username])
 
     if request.method == 'POST':
         form = WordForm(data=request.POST)
@@ -226,7 +243,7 @@ def dictionary(request, username=None):
             word.user = user
             word.save()
 
-            return redirect(reverse('dictionary'))
+            return redirect(form_action)
     else:
         form = WordForm()
 
@@ -236,11 +253,13 @@ def dictionary(request, username=None):
         words=words,
         languages=settings.LANGUAGES,
         form=form,
-        active_page='dictionary'
+        form_action=form_action,
+        active_page=form_action.lstrip('/')
     ))
 
 
 def log_in(request):
+    """User login page."""
     form = AuthenticationForm()
     if request.method == 'POST':
         form = AuthenticationForm(data=request.POST)
@@ -253,5 +272,6 @@ def log_in(request):
 
 @login_required
 def log_out(request):
+    """User logout callback."""
     logout(request)
     return redirect(reverse('login'))

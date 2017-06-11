@@ -1,15 +1,8 @@
 // include bootstrap-sass
-@import '../static/bower_components/bootstrap-sass/assets/stylesheets/bootstrap';
+@import 'bootstrap';
 @import '../static/bower_components/fullcalendar/dist/fullcalendar.min.css';
 @import '../static/bower_components/eonasdan-bootstrap-datetimepicker/src/sass/bootstrap-datetimepicker-build';
 @import '../static/bower_components/x-editable/dist/bootstrap3-editable/css/bootstrap-editable.css';
-
-// fix for "fonts/bootstrap/glyphicons-halflings-regular.woff2 Failed to load resource: the server responded with a status of 404 (Not Found)"
-@font-face {
-  font-family: 'Glyphicons Halflings';
-  src: url('../bower_components/bootstrap-sass/assets/fonts/bootstrap/glyphicons-halflings-regular.eot');
-  src: url('../bower_components/bootstrap-sass/assets/fonts/bootstrap/glyphicons-halflings-regular.eot?#iefix') format('embedded-opentype'), url('../bower_components/bootstrap-sass/assets/fonts/bootstrap/glyphicons-halflings-regular.woff2') format('woff2'), url('../bower_components/bootstrap-sass/assets/fonts/bootstrap/glyphicons-halflings-regular.woff') format('woff'), url('../bower_components/bootstrap-sass/assets/fonts/bootstrap/glyphicons-halflings-regular.ttf') format('truetype'), url('../bower_components/bootstrap-sass/assets/fonts/bootstrap/glyphicons-halflings-regular.svg#glyphicons_halflingsregular') format('svg');
-}
 
 ul {
   list-style-type: none;
@@ -44,12 +37,12 @@ ul {
 }
 
 .img-fluid {
-    max-width: 100%;
-    height: auto;
+  height: auto;
+  max-width: 100%;
 }
 
 .rounded-circle {
-    border-radius: 50%;
+  border-radius: 50%;
 }
 
 .modal {

@@ -11,7 +11,7 @@
     <meta name="description" content="{% block description %}{% trans 'Useful tools: get exif data from photo, draw on a canvas, convert an image to base64, lowercase uppercase text.' %}{% endblock description %}"/>
 
     <!-- Bootstrap included -->
-    <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}?v=7"/>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}?v=8"/>
 
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -42,10 +42,16 @@
             </ul>
             <ul class="nav navbar-nav navbar-right">
               {% if user.is_authenticated %}
-                <li><a href="{% url 'user' user.username %}" class="ajax-link">{{ user.username }}</a></li>
-                <li><a href="{% url 'logout' %}" class="ajax-link">{% trans "Logout" %}</a></li>
+                <li>
+                  <a href="{% url 'user' user.username %}" class="ajax-link"><span class="glyphicon glyphicon-user"></span> {{ user.username }}</a>
+                </li>
+                <li>
+                  <a href="{% url 'logout' %}" class="ajax-link"><span class="glyphicon glyphicon-log-out"></span> {% trans "Logout" %}</a>
+                </li>
               {% else %}
-                <li><a href="{% url 'login' %}" class="ajax-link">{% trans "Login" %}</a></li>
+                <li>
+                  <a href="{% url 'login' %}" class="ajax-link"><span class="glyphicon glyphicon-log-in"></span> {% trans "Login" %}</a>
+                </li>
               {% endif %}
             </ul>
             {% if user.is_superuser %}
@@ -65,9 +71,15 @@
               <div class="navbar-inner">
                 <ul class="nav">
                   {% if user.is_authenticated %}
-                    <li class="{% if active_page == 'calendar' %}active{% endif %}"><a href="{% url 'calendar' %}" class="ajax-link">{% trans "Calendar" %}</a></li>
-                    <li class="{% if active_page == 'dictionary' %}active{% endif %}"><a href="{% url 'dictionary' %}" class="ajax-link">{% trans "Dictionary" %}</a></li>
-                    <li class="{% if active_page == 'flashcards' %}active{% endif %}"><a href="{% url 'flashcards' %}" class="ajax-link">{% trans "Flashcards" %}</a></li>
+                    <li class="{% if active_page == 'calendar' %}active{% endif %}">
+                      <a href="{% url 'calendar' %}" class="ajax-link"><span class="glyphicon glyphicon-calendar"></span> {% trans "Calendar" %}</a>
+                    </li>
+                    <li class="{% if active_page == 'dictionary' %}active{% endif %}">
+                      <a href="{% url 'dictionary' %}" class="ajax-link"><span class="glyphicon glyphicon-book"></span> {% trans "Dictionary" %}</a>
+                    </li>
+                    <li class="{% if active_page == 'flashcards' %}active{% endif %}">
+                      <a href="{% url 'flashcards' %}" class="ajax-link"><span class="glyphicon glyphicon-tags"></span> {% trans "Flashcards" %}</a>
+                    </li>
                   {% endif %}
                   {% for tool in tools %}
                     <li class="{% if active_page == tool.slug %}active{% endif %}"><a href="{% url 'tool' tool.slug %}" class="ajax-link">{{ tool.name }}</a></li>
@@ -94,7 +106,7 @@
       </footer>
     </div>
       <!-- Include js -->
-      <script type="text/javascript" src="{% static 'js/all.js' %}?v=7"></script>
+      <script type="text/javascript" src="{% static 'js/all.js' %}?v=8"></script>
       <script>
         // Update user timezone if it's not set.
         if ('{{ profile.timezone }}' === 'None') {
