@@ -13,6 +13,7 @@ from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext as _
 import json
 from schedule.models import Calendar
+import pytz
 
 from .models import TIMEZONES, Card, Word, Profile
 from .forms import WordForm, EventForm, CardForm, AvatarForm
@@ -120,9 +121,13 @@ def calendar(request, username=None):
     if request.method == 'POST':
         form = EventForm(data=request.POST)
         if form.is_valid():
+            user_timezone = pytz.timezone(request.user.profile.timezone)
+
             event = form.save(commit=False)
             event.creator = user
             event.calendar = calendar_obj
+            event.start = user_timezone.localize(event.start.replace(tzinfo=None))
+            event.end = user_timezone.localize(event.end.replace(tzinfo=None))
             event.color_event = '#' + event.color_event
             event.save()
 
