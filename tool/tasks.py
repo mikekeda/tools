@@ -73,12 +73,12 @@ def daily_notification():
                 user_events[username][0].creator.last_name
             )
 
-        local_time = timezone.localtime(
-            event.start,
-            pytz.timezone(event.creator.profile.timezone)
-        ).strftime('%H:%M')
-
         for event in user_events[username]:
+            local_time = timezone.localtime(
+                event.start,
+                pytz.timezone(event.creator.profile.timezone)
+            ).strftime('%H:%M')
+
             text += '{} {}\n'.format(local_time, event.title)
 
         send_mail(
