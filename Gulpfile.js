@@ -49,6 +49,7 @@ gulp.task('js-concat', function() {
       'static/bower_components/jscolor-picker/jscolor.min.js',
       'static/bower_components/x-editable/dist/bootstrap3-editable/js/bootstrap-editable.min.js',
       'static/bower_components/annyang/dist/annyang.min.js',
+      'static/js/voice-commands.js',
       'static/js/main.js'
     ])
     .pipe(concat('all.js'))

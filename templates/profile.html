@@ -10,16 +10,24 @@
         <div>
             <ul class="nav nav-tabs">
                 <li role="presentation" class="active">
-                    <a class="ajax-link" href="{% url 'user' profile_user.username %}">{% trans "Profile" %}</a>
+                    <a class="ajax-link"  data-annyang="user profile" href="{% url 'user' profile_user.username %}">
+                        {% trans "Profile" %}
+                    </a>
                 </li>
                 <li role="presentation">
-                    <a class="ajax-link" href="{% url 'user_calendar' profile_user.username %}">{% trans "Calendar" %}</a>
+                    <a class="ajax-link" data-annyang="user calendar" href="{% url 'user_calendar' profile_user.username %}">
+                        {% trans "Calendar" %}
+                    </a>
                 </li>
                 <li role="presentation">
-                    <a class="ajax-link" href="{% url 'user_dictionary' profile_user.username %}">{% trans "Dictionary" %}</a>
+                    <a class="ajax-link" data-annyang="user dictionary" href="{% url 'user_dictionary' profile_user.username %}">
+                        {% trans "Dictionary" %}
+                    </a>
                 </li>
                 <li role="presentation">
-                    <a class="ajax-link" href="{% url 'user_flashcards' profile_user.username %}">{% trans "Flashcards" %}</a>
+                    <a class="ajax-link" data-annyang="user cards" href="{% url 'user_flashcards' profile_user.username %}">
+                        {% trans "Flashcards" %}
+                    </a>
                 </li>
             </ul>
             <div class="col-lg-8 pull-right">

@@ -38,25 +38,31 @@
           <div id="navbar" class="navbar-collapse collapse">
             <ul class="nav navbar-nav">
               <li class="{% if active_page == 'home' %}active{% endif %}">
-                <a href="{% url 'main' %}" class="ajax-link">{% trans "Home" %}</a>
+                <a href="{% url 'main' %}"  data-annyang="home" class="ajax-link">{% trans "Home" %}</a>
               </li>
               {% if user.is_superuser %}
                 <li class="{% if active_page == 'users' %}active{% endif %}">
-                  <a href="{% url 'users' %}" class="ajax-link">{% trans "Users" %}</a>
+                  <a href="{% url 'users' %}" data-annyang="users" class="ajax-link">{% trans "Users" %}</a>
                 </li>
               {% endif %}
             </ul>
             <ul class="nav navbar-nav navbar-right">
               {% if user.is_authenticated %}
                 <li>
-                  <a href="{% url 'user' user.username %}" class="ajax-link"><span class="glyphicon glyphicon-user"></span> {{ user.username }}</a>
+                  <a href="{% url 'user' user.username %}" data-annyang="profile" class="ajax-link">
+                    <span class="glyphicon glyphicon-user"></span> {{ user.username }}
+                  </a>
                 </li>
                 <li>
-                  <a href="{% url 'logout' %}"><span class="glyphicon glyphicon-log-out"></span> {% trans "Logout" %}</a>
+                  <a href="{% url 'logout' %}" data-annyang="log out">
+                    <span class="glyphicon glyphicon-log-out"></span> {% trans "Logout" %}
+                  </a>
                 </li>
               {% else %}
                 <li>
-                  <a href="{% url 'login' %}" class="ajax-link"><span class="glyphicon glyphicon-log-in"></span> {% trans "Login" %}</a>
+                  <a href="{% url 'login' %}" data-annyang="login" class="ajax-link">
+                    <span class="glyphicon glyphicon-log-in"></span> {% trans "Login" %}
+                  </a>
                 </li>
               {% endif %}
             </ul>
@@ -78,17 +84,25 @@
                 <ul class="nav">
                   {% if user.is_authenticated %}
                     <li class="{% if active_page == 'calendar' %}active{% endif %}">
-                      <a href="{% url 'calendar' %}" class="ajax-link"><span class="glyphicon glyphicon-calendar"></span> {% trans "Calendar" %}</a>
+                      <a href="{% url 'calendar' %}" data-annyang="calendar" class="ajax-link">
+                        <span class="glyphicon glyphicon-calendar"></span> {% trans "Calendar" %}
+                      </a>
                     </li>
                     <li class="{% if active_page == 'dictionary' %}active{% endif %}">
-                      <a href="{% url 'dictionary' %}" class="ajax-link"><span class="glyphicon glyphicon-book"></span> {% trans "Dictionary" %}</a>
+                      <a href="{% url 'dictionary' %}" data-annyang="dictionary" class="ajax-link">
+                        <span class="glyphicon glyphicon-book"></span> {% trans "Dictionary" %}
+                      </a>
                     </li>
                     <li class="{% if active_page == 'flashcards' %}active{% endif %}">
-                      <a href="{% url 'flashcards' %}" class="ajax-link"><span class="glyphicon glyphicon-tags"></span> {% trans "Flashcards" %}</a>
+                      <a href="{% url 'flashcards' %}" data-annyang="flash cards" class="ajax-link">
+                        <span class="glyphicon glyphicon-tags"></span> {% trans "Flashcards" %}
+                      </a>
                     </li>
                   {% endif %}
                   {% for tool in tools %}
-                    <li class="{% if active_page == tool.slug %}active{% endif %}"><a href="{% url 'tool' tool.slug %}" class="ajax-link">{{ tool.name }}</a></li>
+                    <li class="{% if active_page == tool.slug %}active{% endif %}">
+                      <a href="{% url 'tool' tool.slug %}" data-annyang="{{ tool.name|lower }}" class="ajax-link">{{ tool.name }}</a>
+                    </li>
                   {% empty %}
                     <li class="active"><a href="/">{% trans "No categories" %}</a></li>
                   {% endfor %}
