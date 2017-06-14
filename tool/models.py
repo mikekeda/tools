@@ -23,7 +23,7 @@ class Card(models.Model):
     """Flashcard model"""
     DIFFICULTIES = (
         ('easy', 'Easy'),
-        ('middle', 'Middle'),
+        ('middle', 'Medium'),
         ('difficult', 'Difficult'),
     )
 

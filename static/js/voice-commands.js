@@ -4,7 +4,7 @@ $(document).ready(function() {
   if (annyang) {
     // Define the functions our commands will run.
     var hello = function() {
-      var msg = new SpeechSynthesisUtterance('Hello user. WHat I can do for you?');
+      var msg = new SpeechSynthesisUtterance('Hello user. WHat can I do for you?');
       window.speechSynthesis.cancel();
       window.speechSynthesis.speak(msg);
     };
@@ -34,8 +34,19 @@ $(document).ready(function() {
         window.speechSynthesis.speak(msg);
       }
     };
-    var close_modal = function() {
+    var save_modal = function() {
+      $('.modal.in').find('button[type="submit"]').trigger('click');
+    };
+    var cancel_modal = function() {
       $('.modal.in').modal('hide');
+    };
+    var annyang_time = function() {
+      var currentdate = new Date();
+      var msg = currentdate.getHours() + ' hours and ' + currentdate.getMinutes() + ' minutes';
+
+      msg = new SpeechSynthesisUtterance(msg);
+      window.speechSynthesis.cancel();
+      window.speechSynthesis.speak(msg);
     };
     var annyang_stop = function() {
       annyang.abort();
@@ -51,10 +62,12 @@ $(document).ready(function() {
       'hello (there)':        hello,
       'go to *page':          goto,
       'add *item':            add_item,
-      'clean':                close_modal,
-      'stop':                 annyang_stop,
-//      'show :type report':    showTPS,
-//      'let\'s get started':   getStarted,
+      'save':                 save_modal,
+      'cancel':               cancel_modal,
+//      'today\'s events':      annyang_events,
+      'what time is it':      annyang_time,
+//      'play me something':    annyang_paly,
+      'goodbye':              annyang_stop,
     };
     // OPTIONAL: activate debug mode for detailed logging in the console
     annyang.debug();
