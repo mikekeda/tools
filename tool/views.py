@@ -11,8 +11,9 @@ from django.contrib.auth import get_user_model, login, logout
 from django.contrib.auth.forms import AuthenticationForm
 from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext as _
+from django.utils import timezone
 import json
-from schedule.models import Calendar
+from schedule.models import Calendar, Event
 import pytz
 
 from .models import TIMEZONES, Card, Word, Profile
@@ -226,6 +227,26 @@ def card_order(request, username=None):
                 card.save()
 
         return JsonResponse(_('The order was changed'), safe=False)
+    raise Http404
+
+
+@login_required
+def user_events(request):
+    """Get today's events."""
+    if request.is_ajax():
+        start = timezone.now()
+        end = start + timezone.timedelta(days=1)
+        events = Event.objects.filter(start__gt=start, start__lte=end, creator=request.user).select_related('creator')
+
+        user_events = []
+        for event in events:
+            local_time = timezone.localtime(
+                event.start,
+                pytz.timezone(event.creator.profile.timezone)
+            ).strftime('%H:%M')
+            user_events.append(local_time + ' ' + event.title)
+        return JsonResponse(' and '.join(user_events), safe=False)
+
     raise Http404
 
 

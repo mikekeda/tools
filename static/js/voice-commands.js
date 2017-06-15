@@ -40,6 +40,19 @@ $(document).ready(function() {
     var cancel_modal = function() {
       $('.modal.in').modal('hide');
     };
+    var annyang_events = function() {
+      var text = 'No events for today';
+      var msg;
+
+      $.getJSON('events', function(events) {
+        if (events) {
+          text = events;
+        }
+        msg = new SpeechSynthesisUtterance(text);
+        window.speechSynthesis.cancel();
+        window.speechSynthesis.speak(msg);
+      });
+    };
     var annyang_time = function() {
       var currentdate = new Date();
       var msg = currentdate.getHours() + ' hours and ' + currentdate.getMinutes() + ' minutes';
@@ -64,7 +77,7 @@ $(document).ready(function() {
       'add *item':            add_item,
       'save':                 save_modal,
       'cancel':               cancel_modal,
-//      'today\'s events':      annyang_events,
+      'today\'s events':      annyang_events,
       'what time is it':      annyang_time,
 //      'play me something':    annyang_paly,
       'goodbye':              annyang_stop,
