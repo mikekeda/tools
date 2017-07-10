@@ -63,7 +63,6 @@
             $('#calendar').fullCalendar({
                 events: '/schedule/api/occurrences?calendar_slug={{ profile_user.username }}&timezone={{ profile.timezone }}',
                 ignoreTimezone: false,
-                timezone: 'local',
                 timeFormat: 'H:mm',
                 eventClick: function(calEvent, jsEvent, view) {
                     window.location.href = '/admin/schedule/event/' + calEvent.event_id + '/change/';
