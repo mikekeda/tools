@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.http import Http404, JsonResponse, HttpResponseRedirect
 from django.core.exceptions import PermissionDenied, ValidationError
 import dateutil.parser
-from datetime import datetime
+from datetime import datetime, timedelta
 import requests
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
@@ -15,9 +15,10 @@ from django.utils import timezone
 import json
 from schedule.models import Calendar, Event
 import pytz
+import re
 
 from .models import TIMEZONES, Card, Word, Profile
-from .forms import WordForm, EventForm, CardForm, AvatarForm
+from .forms import WordForm, EventForm, CardForm, AvatarForm, FlightsForm
 
 User = get_user_model()
 
@@ -281,6 +282,89 @@ def dictionary(request, username=None):
         form=form,
         form_action=form_action,
         active_page=form_action.lstrip('/')
+    ))
+
+
+@login_required
+def flights_view(request):
+    """Check tickets."""
+    if request.method == 'POST':
+        form = FlightsForm(data=request.POST)
+
+        if form.is_valid():
+            url = settings.QPXEXPRESS_URL + settings.QPXEXPRESS_API_KEY
+            headers = {'content-type': 'application/json'}
+
+            origin = form.cleaned_data['origin']
+            destination = form.cleaned_data['destination']
+            round_trip = form.cleaned_data['round_trip']
+            date_start = form.cleaned_data['date_start']
+
+            params = {
+                'request': {
+                    'slice': [
+                        {
+                            'origin': origin,
+                            'destination': destination,
+                            'date': str(date_start)
+                        }
+                    ],
+                    'passengers': {
+                        'adultCount': 1,
+                        'infantInLapCount': 0,
+                        'infantInSeatCount': 0,
+                        'childCount': 0,
+                        'seniorCount': 0
+                    },
+                    'solutions': 10,
+                    'refundable': False
+                }
+            }
+
+            if round_trip:
+                date_back = form.cleaned_data['date_back']
+
+                params['request']['slice'].append({
+                    'origin': destination,
+                    'destination': origin,
+                    'date': str(date_back)
+                })
+
+            response = requests.post(url, data=json.dumps(params), headers=headers)
+            data = response.json()
+            result = []
+
+            if response.status_code == 200:
+                if 'tripOption' in data['trips']:
+                    for fly in data['trips']['tripOption']:
+                        slice_data = []
+                        for slice in fly['slice']:
+                            route = slice['segment'][0]['leg'][0]['origin']
+                            for segment in slice['segment']:
+                                route += '->' + segment['leg'][0]['destination']
+
+                            slice_data.append({
+                                'stops': len(slice['segment']) - 1,
+                                'slice': route,
+                                'duration': str(timedelta(minutes=slice['duration']))[:-3]
+                            })
+
+                            result.append({
+                                'price (USD)': float(re.sub(r'[^0-9.]', '', fly['saleTotal'])),
+                                'slice': slice_data
+                            })
+            else:
+                result = {
+                    'status': response.status_code,
+                    'statusText': data['error']['message']
+                }
+
+            return JsonResponse(result, safe=False)
+    else:
+        form = FlightsForm()
+
+    return render(request, 'flights.html', dict(
+        form=form,
     ))
 
 

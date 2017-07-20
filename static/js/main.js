@@ -18,6 +18,9 @@ $(document).ready(function() {
     $content.find('.datetimepicker').datetimepicker({
       format: 'YYYY-MM-DD HH:mm',
     });
+    $content.find('.datetimepicker-date').datetimepicker({
+      format: 'YYYY-MM-DD',
+    });
 
     // Initialize jscolor.
     jscolor.installByClassName('jscolor');

@@ -19,21 +19,6 @@
         padding: 0 0 5px 15px !important;
       }
     }
-    #get-worklogs-form [type="submit"]:not(:disabled) .spinning {
-      display: none;
-    }
-    .glyphicon.spinning {
-      animation: spin 1s infinite linear;
-      -webkit-animation: spin2 1s infinite linear;
-    }
-    @keyframes spin {
-      from { transform: scale(1) rotate(0deg); }
-      to { transform: scale(1) rotate(360deg); }
-    }
-    @-webkit-keyframes spin2 {
-      from { -webkit-transform: rotate(0deg); }
-      to { -webkit-transform: rotate(360deg); }
-    }
   </style>
 
   <div class="container-fluid">
@@ -53,7 +38,7 @@
             <input type="password" id="jira-password" name="password" class="form-control">
           </div>
         </div>
-        <button type="submit" class="btn btn-default col-md-2 col-sm-4 col-xs-6 pull-right">
+        <button type="submit" class="btn btn-default btn-spinning col-md-2 col-sm-4 col-xs-6 pull-right">
           <span class="glyphicon glyphicon-refresh spinning"></span>
           <span>{% trans "Get worklogs" %}</span>
         </button>

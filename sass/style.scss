@@ -232,3 +232,14 @@ ul {
 .fc-event-container:hover {
   cursor: pointer;
 }
+
+.btn-spinning:not(:disabled) .spinning {
+  display: none;
+}
+.btn-spinning .glyphicon.spinning {
+  animation: spin 1s infinite linear;
+}
+@keyframes spin {
+  from { transform: scale(1) rotate(0deg); }
+  to { transform: scale(1) rotate(360deg); }
+}

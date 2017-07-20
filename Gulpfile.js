@@ -96,7 +96,8 @@ gulp.task('sass', function () {
           new RegExp('.glyphicon$'),
           new RegExp('.glyphicon-*'),
           new RegExp('.fc-event-container$'),
-          new RegExp('.editable-buttons$')
+          new RegExp('.editable-buttons$'),
+          new RegExp('@keyframes spin$')
         ]
     }))
     .pipe(autoprefixer({
