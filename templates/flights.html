@@ -42,7 +42,18 @@
                     </div>
                 </form>
                 <h2 class="pull-left">{% trans "Flights" %}</h2>
-                <textarea name="flights" id="flights" disabled="disabled" class="col-xs-12 mt-2" rows="10" cols="60"></textarea>
+                <table class="table flights">
+                    <thead>
+                        <tr>
+                            <th>Price (USD)</th>
+                            <th>Stops</th>
+                            <th>Duration</th>
+                            <th>Slice</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
@@ -56,11 +67,13 @@
         init_app();
       }
       function init_app() {
-        var $flights = $('#content #flights').first(),
+        var $tbody = $('#content table.flights tbody').first(),
             $form = $('#content #check-flights').first(),
             $submit_btn = $form.find('[type="submit"]').first(),
             $date_back = $form.find('#id_date_back').parents().eq(1),
-            result,
+            odd_even,
+            tbl_body,
+            tbl_row,
             fly;
 
         $('#id_round_trip').change(function () {
@@ -69,7 +82,9 @@
 
         $form.submit(function(e) {
           $submit_btn.prop('disabled', true);
-          $flights.val('');
+          $tbody.html('');
+          tbl_body = '';
+          odd_even = false;
 
           $.ajax({
             type: 'POST',
@@ -77,14 +92,26 @@
             dataType: 'json',
             data: $form.serialize(),
             success: function(data) {
-              result = '';
-              for (fly in data) {
-                result += JSON.stringify(data[fly]) + '\n';
+              if ('status' in data) {
+                tbl_body = data['status'] + ' ' + data['statusText'];
               }
-              $flights.val(result);
+              else {
+                for (fly in data) {
+                  tbl_row = '';
+
+                  tbl_row += '<td><p>' + data[fly].price + '</p></td>';
+                  tbl_row += '<td><p>' + data[fly].slice[0].stops + ( 1 in data[fly].slice ? '<p>' + data[fly].slice[1].stops + '</p>' : '') + '</p></td>';
+                  tbl_row += '<td><p>' + data[fly].slice[0].duration + ( 1 in data[fly].slice ? '<p>' + data[fly].slice[1].duration + '</p>' : '') + '</p></td>';
+                  tbl_row += '<td><p>' + data[fly].slice[0].slice + ( 1 in data[fly].slice ? '<p>' + data[fly].slice[1].slice + '</p>' : '') + '</p></td>';
+
+                  tbl_body += '<tr class="' + ( odd_even ? 'odd' : 'even') + '">' + tbl_row + '</tr>';
+                  odd_even = !odd_even;
+                }
+              }
+              $tbody.html(tbl_body);
             },
             error: function(data) {
-              $flights.val(data['status'] + ' ' + data['statusText']);
+              $tbody.html(data['status'] + ' ' + data['statusText']);
             },
             complete: function() {
               $submit_btn.prop('disabled', false);

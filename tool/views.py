@@ -350,7 +350,7 @@ def flights_view(request):
                             })
 
                             result.append({
-                                'price (USD)': float(re.sub(r'[^0-9.]', '', fly['saleTotal'])),
+                                'price': float(re.sub(r'[^0-9.]', '', fly['saleTotal'])),
                                 'slice': slice_data
                             })
             else:
