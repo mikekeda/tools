@@ -116,6 +116,7 @@ ul {
     border-radius: $border-radius-base;
     cursor: pointer;
     display: flex;
+    display: -webkit-box;
     height: 100px;
     justify-content: center;
     margin-bottom: 20px;
@@ -210,6 +211,9 @@ ul {
   .dataTables_filter {
     label {
       float: right;
+    }
+    input {
+      -webkit-appearance: textfield;
     }
   }
 
