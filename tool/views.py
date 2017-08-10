@@ -349,10 +349,10 @@ def flights_view(request):
                                 'duration': str(timedelta(minutes=slice['duration']))[:-3]
                             })
 
-                            result.append({
-                                'price': float(re.sub(r'[^0-9.]', '', fly['saleTotal'])),
-                                'slice': slice_data
-                            })
+                        result.append({
+                            'price': float(re.sub(r'[^0-9.]', '', fly['saleTotal'])),
+                            'slice': slice_data
+                        })
             else:
                 result = {
                     'status': response.status_code,
