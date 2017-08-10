@@ -105,59 +105,6 @@ ul {
   }
 }
 
-.flip {
-  perspective: 800px;
-  position: relative;
-  text-align: center;
-
-  .card {
-    align-items: center;
-    border: 1px solid $gray-light;
-    border-radius: $border-radius-base;
-    cursor: pointer;
-    display: flex;
-    display: -webkit-box;
-    height: 100px;
-    justify-content: center;
-    margin-bottom: 20px;
-    transform-style: preserve-3d;
-    transition: .5s;
-
-    .face {
-      backface-visibility: hidden;
-      z-index: 2;
-    }
-
-    .front {
-      align-items: center;
-      display: flex;
-      height: 100%;
-      justify-content: center;
-      position: absolute;
-      width: 100%;
-      z-index: 1;
-    }
-
-    .back {
-      transform: rotatey(-180deg);
-    }
-  }
-
-  .front {
-    .edit {
-      cursor: pointer;
-      position: absolute;
-      right: 5px;
-      top: 5px;
-      z-index: 3;
-    }
-  }
-
-  .inner {
-    margin: 10px;
-  }
-}
-
 .card,
 .difficulty-filter,
 .pagination > li > .difficulty-filter:hover {
@@ -180,6 +127,73 @@ ul {
   .face {
     backface-visibility: hidden;
     z-index: 2;
+  }
+}
+
+.flip {
+  perspective: 800px;
+  position: relative;
+  text-align: center;
+
+  .card {
+    align-items: center;
+    background-color: $table-bg;
+    border: 1px solid $gray-light;
+    border-radius: $border-radius-base;
+    cursor: pointer;
+    display: flex;
+    display: -webkit-box;
+    height: 100px;
+    justify-content: center;
+    margin-bottom: 20px;
+    transform-style: preserve-3d;
+    transition: .5s;
+
+    .face {
+      backface-visibility: hidden;
+      width: 100%;
+      z-index: 2;
+    }
+
+    .front {
+      align-items: center;
+      display: flex;
+      height: 100%;
+      justify-content: center;
+      position: absolute;
+      width: 100%;
+      z-index: 1;
+    }
+
+    .back {
+      transform: rotatey(-180deg);
+    }
+
+    &.easy .face {
+      background-color: $brand-success;
+    }
+
+    &.middle .face {
+      background-color: $brand-warning;
+    }
+
+    &.difficult .face {
+      background-color: $brand-danger;
+    }
+  }
+
+  .front {
+    .edit {
+      cursor: pointer;
+      position: absolute;
+      right: 5px;
+      top: 5px;
+      z-index: 3;
+    }
+  }
+
+  .inner {
+    margin: 10px;
   }
 }
 
