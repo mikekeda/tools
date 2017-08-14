@@ -90,7 +90,10 @@ $(document).ready(function() {
     // For a full list of language codes, see the documentation:
     // https://github.com/TalAter/annyang/blob/master/docs/FAQ.md#what-languages-are-supported
     annyang.setLanguage('en');
-    // Start listening. You can call this here, or attach this call to an event, button, etc.
-    annyang.start();
+    // Tell KITT to use annyang
+    SpeechKITT.annyang();
+
+    // Render KITT's interface
+    SpeechKITT.vroom();
   }
 });

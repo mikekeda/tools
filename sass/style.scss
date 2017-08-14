@@ -3,6 +3,7 @@
 @import '../static/bower_components/fullcalendar/dist/fullcalendar.min.css';
 @import '../static/bower_components/eonasdan-bootstrap-datetimepicker/src/sass/bootstrap-datetimepicker-build';
 @import '../static/bower_components/x-editable/dist/bootstrap3-editable/css/bootstrap-editable.css';
+@import '../static/bower_components/SpeechKITT/dist/themes/flat-clouds.css';
 
 ul {
   list-style-type: none;
@@ -260,4 +261,12 @@ ul {
 @keyframes spin {
   from { transform: scale(1) rotate(0deg); }
   to { transform: scale(1) rotate(360deg); }
+}
+
+#skitt-ui {
+  overflow: hidden;
+  z-index: 1050;
+  a:hover {
+    text-decoration: none;
+  }
 }

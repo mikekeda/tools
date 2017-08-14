@@ -49,6 +49,7 @@ gulp.task('js-concat', function() {
       'static/bower_components/jscolor-picker/jscolor.min.js',
       'static/bower_components/x-editable/dist/bootstrap3-editable/js/bootstrap-editable.min.js',
       'static/bower_components/annyang/dist/annyang.min.js',
+      'static/bower_components/SpeechKITT/dist/speechkitt.min.js',
       'static/js/voice-commands.js',
       'static/js/main.js'
     ])
@@ -97,7 +98,8 @@ gulp.task('sass', function () {
           new RegExp('.glyphicon-*'),
           new RegExp('.fc-event-container$'),
           new RegExp('.editable-buttons$'),
-          new RegExp('@keyframes spin$')
+          new RegExp('@keyframes spin$'),
+          new RegExp('#skitt-ui')
         ]
     }))
     .pipe(autoprefixer({
