@@ -4,10 +4,31 @@ from django.conf import settings
 import datetime
 import pytz
 
+from .widgets import ColorWidget
+
 TIMEZONES = [(tz, tz + ' ' + datetime.datetime.now(pytz.timezone(tz)).strftime('%z')) for tz in pytz.common_timezones]
+
+default_palette_colors = (
+    'f5f5f5',
+    'dff0d8',
+    'd9edf7',
+    'fcf8e3',
+    'f2dede',
+)
+
+
+class ColorField(models.CharField):
+    """Color field"""
+    def __init__(self, *args, **kwargs):
+        super(ColorField, self).__init__(*args, **kwargs)
+
+    def formfield(self, **kwargs):
+        kwargs['widget'] = ColorWidget
+        return super(ColorField, self).formfield(**kwargs)
 
 
 class Profile(models.Model):
+    """Profile model"""
     user = models.OneToOneField(
         settings.AUTH_USER_MODEL, related_name='profile')
     timezone = models.CharField(max_length=64, choices=TIMEZONES, blank=True, null=True)
@@ -17,6 +38,9 @@ class Profile(models.Model):
         return u'%s' % (
             self.user.username,
         )
+
+for i, default_color in enumerate(default_palette_colors, 1):
+    Profile.add_to_class('palette_color_' + str(i), ColorField(max_length=6, default=default_color))
 
 
 class Card(models.Model):

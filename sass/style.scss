@@ -270,3 +270,19 @@ ul {
     text-decoration: none;
   }
 }
+
+.palette-wrapper {
+  .palette-item {
+    padding: 0 5px;
+  }
+  .editable-container {
+    position: relative;
+    z-index: 2;
+  }
+  .palette-color {
+    border-bottom: none;
+    display: block;
+    text-align: center;
+    width: 100%;
+  }
+}

@@ -17,7 +17,7 @@ from schedule.models import Calendar, Event
 import pytz
 import re
 
-from .models import TIMEZONES, Card, Word, Profile
+from .models import TIMEZONES, Card, Word, Profile, default_palette_colors
 from .forms import WordForm, EventForm, CardForm, AvatarForm, FlightsForm
 
 User = get_user_model()
@@ -160,6 +160,9 @@ def profile_view(request, username):
     return render(request, 'profile.html', dict(
         profile_user=user,
         profile=profile,
+        palette_colors=(
+            getattr(profile, 'palette_color_' + str(i), c) for i, c in enumerate(default_palette_colors, 1)
+        ),
         is_current_user=user == request.user,
         form=form,
         timezones=timezones
@@ -199,11 +202,12 @@ def update_profile(request):
                     return JsonResponse({'success': True})
                 else:
                     return JsonResponse(_("This value not allowed"), safe=False, status=403)
-            elif field in ['first_name', 'last_name', 'email']:
-                setattr(request.user, field, value)
+            elif field in ['first_name', 'last_name', 'email'] or field.startswith('palette_color_'):
+                current_obj = profile if field.startswith('palette_color_') else request.user
+                setattr(current_obj, field, value)
                 try:
-                    request.user.clean_fields()
-                    request.user.save()
+                    current_obj.clean_fields()
+                    current_obj.save()
                     return JsonResponse({'success': True})
                 except ValidationError as e:
                     return JsonResponse(', '.join(e.message_dict[field]), safe=False, status=422)

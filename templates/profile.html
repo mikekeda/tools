@@ -68,11 +68,23 @@
                                 <div class="col-md-4 float-left"><label>{% trans "Timezone" %}</label></div>
                                 <div class="col-md-8 float-right">
                                     {% if is_current_user %}
-                                        <a href="#" id="timezone" class="editable" data-type="select" data-value="{{ profile.timezone }}" data-source='{{ timezones }}' data-pk="timezone" data-url="{% url 'update_profile' %}" data-placeholder="{% trans 'Enter email' %}" data-params="{csrfmiddlewaretoken:'{{csrf_token}}'}">{{ profile.timezone }}</a>
+                                        <a href="#" id="timezone" class="editable" data-type="select" data-value="{{ profile.timezone }}" data-source="{{ timezones }}" data-pk="timezone" data-url="{% url 'update_profile' %}" data-placeholder="{% trans 'Enter email' %}" data-params="{csrfmiddlewaretoken:'{{csrf_token}}'}">{{ profile.timezone }}</a>
                                     {% else %}
                                         {{ profile_user.profile.timezone }}
                                     {% endif %}
                                 </div>
+                            </div>
+                            <div class="form-group row palette-wrapper">
+                                <div class="col-md-12 float-left"><label>{% trans "Palette" %}</label></div>
+                                {% for color in palette_colors %}
+                                    <div class="col-md-2 float-left palette-item">
+                                        {% if is_current_user %}
+                                            <a href="#" id="palette_color_{{ forloop.counter }}" class="editable palette-color" style="background-color: #{{ color }}; color: #{{ color }};" data-type="text" data-value="{{ color }}" data-source="{{ color }}" data-pk="color" data-inputclass="jscolor" data-url="{% url 'update_profile' %}" data-placeholder="{% trans 'Enter color' %}" data-params="{csrfmiddlewaretoken:'{{csrf_token}}'}"></a>
+                                        {% else %}
+                                            <div style="background-color: #{{ color }}; color: #{{ color }};">{{ color }}</div>
+                                        {% endif %}
+                                    </div>
+                                {% endfor %}
                             </div>
                         </div>
                     </div>
@@ -85,11 +97,11 @@
                     <h5 class="mt-2">{% trans "Upload a different photo" %}</h5>
                     <form action="{% url 'update_profile' %}" method="post" enctype="multipart/form-data" id="avatar-upload">
                         {% csrf_token %}
-                            {% for field in form %}
-                                <label class="custom-file text-left">
-                                    {{ field|add_class:"custom-file-input" }}
-                                    <span class="custom-file-control"></span>
-                                </label>
+                        {% for field in form %}
+                            <label class="custom-file text-left">
+                                {{ field|add_class:"custom-file-input" }}
+                                <span class="custom-file-control"></span>
+                            </label>
                             {% if field.errors %}
                                 <div class="alert alert-warning col-sm-9 offset-sm-3" role="alert">
                                   {{ field.errors }}
@@ -113,7 +125,13 @@
         init_app();
       }
       function init_app() {
-        $('.editable').editable();
+        $('.editable:not(".palette-color")').editable();
+        $('.editable.palette-color').editable({onblur: 'ignore'}).on('save', function(e, params) {
+            $(this).css('background-color', '#' + params.newValue).css('color', '#' + params.newValue);
+        }).on('shown', function(e, editable) {
+            // Initialize jscolor.
+            jscolor.installByClassName('jscolor');
+        });
 
         $('#avatar-upload').change(function() {
             $(this).submit();

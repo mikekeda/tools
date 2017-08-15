@@ -99,7 +99,8 @@ gulp.task('sass', function () {
           new RegExp('.fc-event-container$'),
           new RegExp('.editable-buttons$'),
           new RegExp('@keyframes spin$'),
-          new RegExp('#skitt-ui')
+          new RegExp('#skitt-ui'),
+          new RegExp('.editable-container$')
         ]
     }))
     .pipe(autoprefixer({
