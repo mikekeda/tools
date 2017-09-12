@@ -1,8 +1,11 @@
 from django import forms
 from schedule.models import Event
 import datetime
+from easy_select2 import apply_select2, select2_modelform
 
-from .models import Profile, Word, Card
+from .models import Profile, Word, Card, Task, default_palette_colors
+
+TaskForm = select2_modelform(Task)
 
 
 class AvatarForm(forms.ModelForm):
@@ -43,3 +46,13 @@ class FlightsForm(forms.Form):
         initial=datetime.datetime.today() + datetime.timedelta(days=7))
     date_back = forms.DateField(
         initial=datetime.datetime.today() + datetime.timedelta(days=14))
+
+
+class TaskForm(forms.ModelForm):
+    class Meta:
+        model = Task
+        form = TaskForm
+        exclude = ('user', 'weight', 'status')
+        widgets = {
+            'color': apply_select2(forms.Select)
+        }

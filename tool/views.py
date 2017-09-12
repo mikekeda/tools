@@ -17,8 +17,8 @@ from schedule.models import Calendar, Event
 import pytz
 import re
 
-from .models import TIMEZONES, Card, Word, Profile, default_palette_colors
-from .forms import WordForm, EventForm, CardForm, AvatarForm, FlightsForm
+from .models import TIMEZONES, Card, Word, Profile, Task, default_palette_colors
+from .forms import WordForm, EventForm, CardForm, AvatarForm, FlightsForm, TaskForm
 
 User = get_user_model()
 
@@ -38,7 +38,8 @@ def worklogs(request):
     current_date = datetime.today()
 
     response = requests.get(
-        "https://yawavedev.atlassian.net/rest/api/latest/search?jql=worklogDate='{}' AND worklogAuthor='{}'&fields=worklog".format(
+        "https://yawavedev.atlassian.net/rest/api/latest/search?jql=worklogDate='{}' " +
+        "AND worklogAuthor='{}'&fields=worklog".format(
             current_date.strftime("%Y-%m-%d"),
             username
         ),
@@ -57,7 +58,8 @@ def worklogs(request):
             if response.status_code == 200:
                 body = response.json()
                 for log in body['worklogs']:
-                    if log['author']['key'] == username and dateutil.parser.parse(log['created']).date() == current_date.date():
+                    if (log['author']['key'] == username and
+                            dateutil.parser.parse(log['created']).date() == current_date.date()):
                         result['time'] += log['timeSpentSeconds'] / 3600
                         text = '{}{{{}}} {}'.format(
                             issue['key'],
@@ -97,6 +99,50 @@ def flashcards(request, username=None):
 
     return render(request, "flashcards.html", dict(
         cards=cards,
+        user=user,
+        form=form,
+        form_action=form_action,
+        active_page=form_action.lstrip('/'))
+    )
+
+
+@login_required
+def tasks_view(request, username=None):
+    """Tasks."""
+    if not request.user.is_superuser and username and username != request.user.username:
+        raise PermissionDenied
+
+    user = get_object_or_404(User, username=username) if username else request.user
+    tasks = Task.objects.filter(user=user).order_by('weight')
+    if user == request.user:
+        form_action = reverse('tasks')
+    else:
+        form_action = reverse('user_tasks', args=[user.username])
+
+    if request.method == 'POST':
+        form = TaskForm(data=request.POST)
+        if form.is_valid():
+            task = form.save(commit=False)
+            task.user = user
+            task.save()
+
+            return redirect(form_action)
+    else:
+        form = TaskForm()
+
+    profile, created = Profile.objects.get_or_create(user=user)
+    palette = {
+        str(i): getattr(profile, 'palette_color_' + str(i), c) for i, c in enumerate(default_palette_colors, 1)
+    }
+    tasks_dict = {k[0]: [] for k in Task.STATUSES}
+    for task in tasks:
+        tasks_dict[task.status].append(task)
+
+    form.fields['color'].widget.choices = [(i, k) for i, k in palette.items()]
+
+    return render(request, "tasks.html", dict(
+        tasks_dict=tasks_dict,
+        palette=palette,
         user=user,
         form=form,
         form_action=form_action,
@@ -230,6 +276,29 @@ def card_order(request, username=None):
             if str(card.id) in order:
                 card.order = order[str(card.id)]
                 card.save()
+
+        return JsonResponse(_('The order was changed'), safe=False)
+    raise Http404
+
+
+@login_required
+def task_order(request, username=None):
+    """Change Task order and status callback."""
+    if request.is_ajax():
+        if not request.user.is_superuser and username and username != request.user.username:
+            raise JsonResponse(_("You can't change the order"), safe=False, status=403)
+
+        order = request.POST.get('order', '')
+        status = request.POST.get('status', '')
+        if status in (status[0] for status in Task.STATUSES):
+            user = get_object_or_404(User, username=username) if username else request.user
+            tasks = Task.objects.filter(user=user)
+            order = json.loads(order)
+            for task in tasks:
+                if str(task.id) in order:
+                    task.weight = order[str(task.id)]
+                    task.status = status
+                    task.save()
 
         return JsonResponse(_('The order was changed'), safe=False)
     raise Http404

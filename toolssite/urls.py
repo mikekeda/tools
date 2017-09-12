@@ -8,7 +8,7 @@ from django.contrib.sitemaps.views import sitemap
 
 from tool.views import (tool, worklogs, calendar, dictionary, flashcards,
                         users_list, profile_view, update_profile, user_events,
-                        card_order, flights_view, log_in, log_out)
+                        card_order, task_order, flights_view, tasks_view, log_in, log_out)
 from tool.sitemaps import StaticViewSitemap
 
 sitemaps = {
@@ -31,6 +31,8 @@ urlpatterns = [
     url(r'^ajax/user/(?P<username>[^/]+)/dictionary$', dictionary, name='ajax_user_dictionary'),
     url(r'^flashcards$', flashcards, name='flashcards'),
     url(r'^ajax/flashcards$', flashcards, name='ajax_flashcards'),
+    url(r'^tasks$', tasks_view, name='tasks'),
+    url(r'^ajax/tasks$', tasks_view, name='ajax_tasks'),
     url(r'^user/(?P<username>[^/]+)/flashcards$', flashcards, name='user_flashcards'),
     url(r'^ajax/user/(?P<username>[^/]+)/flashcards$', flashcards, name='ajax_user_flashcards'),
     url(r'^flights$', flights_view, name='flights'),
@@ -43,6 +45,7 @@ urlpatterns = [
     url(r'^update-profile$', update_profile, name='update_profile'),
     url(r'^events$', user_events, name='events'),
     url(r'^user/(?P<username>[^/]+)/card-order$', card_order, name='card_order'),
+    url(r'^user/(?P<username>[^/]+)/task-order$', task_order, name='task_order'),
     url(r'^login$', log_in, name='login'),
     url(r'^logout$', log_out, name='logout'),
 

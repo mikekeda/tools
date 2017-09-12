@@ -9,7 +9,7 @@
         <div class="modal-content">
           <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-            <h4 class="modal-title" id="add-card-label">{% trans "Add card" %}</h4>
+            <h4 class="modal-title" id="add-card-label">{% trans "Add task" %}</h4>
           </div>
           <div class="modal-body">
             <form action="{{ form_action }}" method="post" class="add-form clearfix form-horizontal">
@@ -40,15 +40,15 @@
     <div class="container-fluid no-padding row cards-filters">
       <div class="col-md-4">
         <!-- Button trigger modal -->
-        <button type="button" class="add-btn btn btn-default btn-md" data-toggle="modal" data-target="#add-card" data-annyang="add card">
-          <span class="glyphicon glyphicon-plus"></span> {% trans "Add card" %}
+        <button type="button" class="add-btn btn btn-default btn-md" data-toggle="modal" data-target="#add-card" data-annyang="add task">
+          <span class="glyphicon glyphicon-plus"></span> {% trans "Add task" %}
         </button>
       </div>
       <div class="col-md-4 col-sm-6">
         <ul class="difficulty-filters">
-          <li><a href="#" class="difficulty-filter difficult active" data-difficulty="difficult"></a></li>
-          <li><a href="#" class="difficulty-filter middle active" data-difficulty="middle"></a></li>
-          <li><a href="#" class="difficulty-filter easy active" data-difficulty="easy"></a></li>
+            {% for color in palette %}
+                <li><a href="#" class="difficulty-filter color-filter active" style="background-color: #{{ palette|get_item:color }};" data-difficulty="{{ color }}"></a></li>
+            {% endfor %}
         </ul>
       </div>
       <div class="col-md-4 col-sm-6">
@@ -57,29 +57,28 @@
         </div><!-- /input-group -->
       </div><!-- /.col-lg-6 -->
     </div>
-    <div id="cards" class="row sortable">
-        {% for card in cards %}
-        <div class="card-container col-md-6" data-difficulty="{{ card.difficulty }}" data-word="{{ card.word }}" data-id="{{ card.id }}">
-            <div class="flip card-container">
-                <div class="card {{ card.difficulty }}">
-                    <div class="face front">
-                        <h4 class="list-group-item-heading">{{ card.word }}</h4>
-                        <a href="admin/tool/card/{{ card.id }}/change/" class="edit">
-                            <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>
-                        </a>
-                    </div>
-                    <div class="face back">
-                        <div class="inner text-center">
-                            <p class="list-group-item-text">{{ card.description }}</p>
+    <div id="cards" class="row">
+        {% for key, tasks in tasks_dict.items %}
+            <div class="col-md-4">
+                <h4 class="text-center">{{ key }}</h4>
+                <div class="col-md-12 sortable no-padding" data-status="{{ key }}">
+                {% for task in tasks %}
+                <div class="card-container col-md-12 no-padding" data-difficulty="{{ task.color }}" data-title="{{ task.title }}" data-id="{{ task.id }}">
+                    <div>
+                        <div class="card" style="background-color: #{{ palette|get_item:task.color }};" >
+                            <div class="face front task">
+                                <h4 class="list-group-item-heading">{{ task.title }}</h4>
+                                <a href="admin/tool/task/{{ task.id }}/change/" class="edit">
+                                    <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>
+                                </a>
+                                <p class="list-group-item-text">{{ task.description }}</p>
+                            </div>
                         </div>
                     </div>
                 </div>
+                {% endfor %}
+                </div>
             </div>
-        </div>
-        {% empty %}
-        <div class="col-md-6">
-            {% trans "No cards" %}
-        </div>
         {% endfor %}
     </div>
 
@@ -94,23 +93,25 @@
       }
 
       function init_app() {
-        var $cards = $('#cards');
+        var $cards;
+        var $cards_container = $('#cards');
         var $this;
         var $difficulty_filters = $('.difficulty-filter');
         var $card_search = $('#card-search');
         var substring;
         var order;
 
-        $('.sortable').sortable({
-          placeholderClass: 'col-md-6'
-        }).on('sortupdate', function(e, ui) {
+        function change_tasks_order($cards) {
           if (!$cards.hasClass('disabled')) {
             order = {};
             $cards.find('.card-container').each(function(index) {
-              order[$(this).data('id')] = index;
+              if ($(this).data('id')) {
+                order[$(this).data('id')] = index;
+              }
             });
-            $.post("{% url 'card_order' user.username %}", {
+            $.post("{% url 'task_order' user.username %}", {
               order: JSON.stringify(order),
+              status: $cards.data('status'),
               'csrfmiddlewaretoken': '{{ csrf_token }}'
             }, function() {
               $cards.addClass('disabled');
@@ -119,22 +120,41 @@
               $cards.removeClass('disabled');
             });
           }
+        }
+
+        $('select#id_color').select2({
+          minimumResultsForSearch: -1,
+          escapeMarkup: function(markup) {
+            return '<div style="padding: 0 5px 0 10px; line-height: 26px; color: #' + markup + '; background-color: #' + markup + ';">' + markup + '</div>';
+          }
+        });
+
+        $('.sortable').sortable({
+          placeholderClass: 'col-md-6',
+          connectWith: '.sortable'
+        }).on('sortupdate', function(e, ui) {
+          change_tasks_order(ui.item.parent());
+        }).on('sortconnect', function(e, ui) {
+          $cards = ui.item.parent();
+          if (!$cards.hasClass('disabled') && ui.item.index() == 0) {
+            change_tasks_order($cards);
+          }
         });
 
         $difficulty_filters.click(function() {
           $this = $(this);
           $this.toggleClass('active');
-          $cards.find('.card-container[data-difficulty=' + $this.data('difficulty') + ']').toggle().toggleClass('difficulty-hidden');
+          $cards_container.find('.card-container[data-difficulty=' + $this.data('difficulty') + ']').toggle().toggleClass('difficulty-hidden');
 
           return false;
         });
 
-        $card_search.on('input',function(e) {
+        $card_search.on('input', function(e) {
           substring = this.value;
 
-          $cards.find('.card-container:not(.difficulty-hidden)').each(function(index) {
+          $cards_container.find('.card-container:not(.difficulty-hidden)').each(function(index) {
             $this = $(this);
-            if ($this.data('word').indexOf(substring) !== -1) {
+            if ($this.data('title') == substring || $this.data('title').indexOf(substring) !== -1) {
               $this.show();
             }
             else {

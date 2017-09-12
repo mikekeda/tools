@@ -1,6 +1,8 @@
+from typing import Any
+
 from django.template.defaulttags import register
 
 
 @register.filter
-def get_item(obj, key):
-    return getattr(obj, key)
+def get_item(obj, key: str) -> Any:
+    return obj.get(str(key)) if isinstance(obj, dict) else getattr(obj, str(key))

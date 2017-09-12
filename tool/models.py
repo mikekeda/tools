@@ -1,8 +1,10 @@
+import datetime
+import pytz
+
 from django.db import models
 from django.contrib.auth.models import User
 from django.conf import settings
-import datetime
-import pytz
+from django.core.validators import MaxValueValidator, MinValueValidator
 
 from .widgets import ColorWidget
 
@@ -78,3 +80,29 @@ class Word(models.Model):
 
 for lang in settings.LANGUAGES:
     Word.add_to_class(lang[0], models.CharField(max_length=60, null=True, blank=True))
+
+
+class Task(models.Model):
+    """Task model"""
+    STATUSES = (
+        ('todo', 'TODO'),
+        ('doing', 'Doing'),
+        ('done', 'Done'),
+    )
+
+    title = models.CharField(max_length=60, unique=True)
+    description = models.TextField(blank=True, null=True)
+    status = models.CharField(max_length=10, choices=STATUSES, default='todo')
+    color = models.PositiveSmallIntegerField(
+        default=1,
+        validators=[MinValueValidator(1), MaxValueValidator(len(default_palette_colors))]
+    )
+    user = models.ForeignKey(User, related_name='tasks')
+    weight = models.PositiveSmallIntegerField(default=0)
+    created_date = models.DateTimeField(auto_now_add=True)
+    changed_date = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return u'%s' % (
+            self.title,
+        )
