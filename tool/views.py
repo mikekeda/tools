@@ -141,7 +141,7 @@ def tasks_view(request, username=None):
     form.fields['color'].widget.choices = [(i, k) for i, k in palette.items()]
 
     return render(request, "tasks.html", dict(
-        tasks_dict=tasks_dict,
+        tasks_dict=tasks_dict.items(),
         palette=palette,
         user=user,
         form=form,
