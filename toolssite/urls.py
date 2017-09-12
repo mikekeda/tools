@@ -1,10 +1,12 @@
-"""toolssite URL Configuration
+"""
+Tools site URL Configuration
 """
 from django.conf.urls import include, url
 from django.contrib import admin
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib.sitemaps.views import sitemap
+from django.utils.translation import ugettext_lazy as _
 
 from tool.views import (tool, worklogs, calendar, dictionary, flashcards,
                         users_list, profile_view, update_profile, user_events,
@@ -55,6 +57,7 @@ urlpatterns = [
         name='django.contrib.sitemaps.views.sitemap'),
     url(r'^admin/', include(admin.site.urls)),
 ]
+admin.site.site_header = _('Tools administration')
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
