@@ -5,7 +5,8 @@ from django.conf import settings
 class ColorWidget(forms.TextInput):
     class Media:
         js = (
-            settings.STATIC_URL + 'bower_components/jscolor-picker/jscolor.min.js',
+            settings.STATIC_URL
+            + 'bower_components/jscolor-picker/jscolor.min.js',
         )
 
     def __init__(self, language=None, attrs=None):

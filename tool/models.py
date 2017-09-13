@@ -8,7 +8,10 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 
 from .widgets import ColorWidget
 
-TIMEZONES = [(tz, tz + ' ' + datetime.datetime.now(pytz.timezone(tz)).strftime('%z')) for tz in pytz.common_timezones]
+TIMEZONES = [
+    (tz, tz + ' ' + datetime.datetime.now(pytz.timezone(tz)).strftime('%z'))
+    for tz in pytz.common_timezones
+]
 
 default_palette_colors = (
     'f5f5f5',
@@ -32,17 +35,31 @@ class ColorField(models.CharField):
 class Profile(models.Model):
     """Profile model"""
     user = models.OneToOneField(
-        settings.AUTH_USER_MODEL, related_name='profile')
-    timezone = models.CharField(max_length=64, choices=TIMEZONES, blank=True, null=True)
-    avatar = models.ImageField(upload_to='avatars/', default='avatars/no-avatar.png')
+        settings.AUTH_USER_MODEL,
+        related_name='profile'
+    )
+    timezone = models.CharField(
+        max_length=64,
+        choices=TIMEZONES,
+        blank=True,
+        null=True
+    )
+    avatar = models.ImageField(
+        upload_to='avatars/',
+        default='avatars/no-avatar.png'
+    )
 
     def __str__(self):
         return u'%s' % (
             self.user.username,
         )
 
+
 for i, default_color in enumerate(default_palette_colors, 1):
-    Profile.add_to_class('palette_color_' + str(i), ColorField(max_length=6, default=default_color))
+    Profile.add_to_class(
+        'palette_color_' + str(i),
+        ColorField(max_length=6, default=default_color)
+    )
 
 
 class Card(models.Model):
@@ -55,7 +72,11 @@ class Card(models.Model):
 
     word = models.CharField(max_length=60, unique=True)
     description = models.TextField(blank=True, null=True)
-    difficulty = models.CharField(max_length=10, choices=DIFFICULTIES, default='difficult')
+    difficulty = models.CharField(
+        max_length=10,
+        choices=DIFFICULTIES,
+        default='difficult'
+    )
     user = models.ForeignKey(User, related_name='cards')
     order = models.PositiveSmallIntegerField(default=0)
     created_date = models.DateTimeField(auto_now_add=True)
@@ -78,8 +99,12 @@ class Word(models.Model):
             self.en,
         )
 
+
 for lang in settings.LANGUAGES:
-    Word.add_to_class(lang[0], models.CharField(max_length=60, null=True, blank=True))
+    Word.add_to_class(
+        lang[0],
+        models.CharField(max_length=60, null=True, blank=True)
+    )
 
 
 class Task(models.Model):
@@ -95,7 +120,10 @@ class Task(models.Model):
     status = models.CharField(max_length=10, choices=STATUSES, default='todo')
     color = models.PositiveSmallIntegerField(
         default=1,
-        validators=[MinValueValidator(1), MaxValueValidator(len(default_palette_colors))]
+        validators=[
+            MinValueValidator(1),
+            MaxValueValidator(len(default_palette_colors))
+        ]
     )
     user = models.ForeignKey(User, related_name='tasks')
     weight = models.PositiveSmallIntegerField(default=0)

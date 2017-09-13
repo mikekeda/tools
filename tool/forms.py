@@ -3,7 +3,7 @@ from schedule.models import Event
 import datetime
 from easy_select2 import apply_select2, select2_modelform
 
-from .models import Profile, Word, Card, Task, default_palette_colors
+from .models import Profile, Word, Card, Task
 
 TaskForm = select2_modelform(Task)
 

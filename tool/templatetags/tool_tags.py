@@ -2,5 +2,5 @@ from django.template.defaulttags import register
 
 
 @register.filter
-def get_item(obj, key: str):
-    return obj.get(str(key)) if isinstance(obj, dict) else getattr(obj, str(key))
+def get_item(obj, k: str):
+    return obj.get(str(k)) if isinstance(obj, dict) else getattr(obj, str(k))

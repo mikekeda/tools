@@ -31,7 +31,9 @@ class ToolEventAdmin(EventAdmin):
         if db_field.name == 'creator':
             kwargs['initial'] = request.user.id
         if db_field.name == 'calendar':
-            calendar = Calendar.objects.filter(slug=request.user.username).first()
+            calendar = Calendar.objects.filter(
+                slug=request.user.username
+            ).first()
             if calendar:
                 kwargs['initial'] = calendar.id
         return db_field.formfield(**kwargs)
@@ -43,7 +45,9 @@ class TaskAdmin(admin.ModelAdmin):
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == 'user':
             kwargs['initial'] = request.user.id
+
         return db_field.formfield(**kwargs)
+
 
 admin.site.register(Profile, ProfileAdmin)
 admin.site.register(Card, CardAdmin)

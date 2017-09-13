@@ -1,4 +1,3 @@
-#!/usr/bin/python
 import os
 
 # IMPORTANT: Put any additional includes below this line.  If placed above this

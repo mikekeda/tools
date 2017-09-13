@@ -19,8 +19,22 @@ from django.contrib.auth.decorators import login_required
 from django.utils.translation import ugettext as _
 from django.utils import timezone
 
-from .models import TIMEZONES, Card, Word, Profile, Task, default_palette_colors
-from .forms import WordForm, EventForm, CardForm, AvatarForm, FlightsForm, TaskForm
+from .models import (
+    TIMEZONES,
+    Card,
+    Word,
+    Profile,
+    Task,
+    default_palette_colors
+)
+from .forms import (
+    WordForm,
+    EventForm,
+    CardForm,
+    AvatarForm,
+    FlightsForm,
+    TaskForm
+)
 
 User = get_user_model()
 
@@ -40,7 +54,8 @@ def worklogs(request):
     current_date = datetime.today()
 
     response = requests.get(
-        "https://yawavedev.atlassian.net/rest/api/latest/search?jql=worklogDate='{}' " +
+        "https://yawavedev.atlassian.net/rest/api/latest/search"
+        "?jql=worklogDate='{}' "
         "AND worklogAuthor='{}'&fields=worklog".format(
             current_date.strftime("%Y-%m-%d"),
             username
@@ -49,6 +64,7 @@ def worklogs(request):
     )
 
     if response.status_code == 200:
+        date_today = current_date.date()
         body = response.json()
         result = {
             'logs': [],
@@ -56,16 +72,23 @@ def worklogs(request):
         }
 
         for issue in body['issues']:
-            response = requests.get(issue['self'] + '/worklog', auth=(username, password))
+            response = requests.get(
+                issue['self'] + '/worklog',
+                auth=(username, password)
+            )
             if response.status_code == 200:
                 body = response.json()
                 for log in body['worklogs']:
                     if (log['author']['key'] == username and
-                            dateutil.parser.parse(log['created']).date() == current_date.date()):
+                            dateutil.parser.parse(
+                                log['created']
+                            ).date() == date_today):
                         result['time'] += log['timeSpentSeconds'] / 3600
                         text = '{}{{{}}} {}'.format(
                             issue['key'],
-                            (str(log['timeSpentSeconds'] / 3600)).rstrip('.0') + 'h',
+                            (
+                                str(log['timeSpentSeconds'] / 3600)
+                            ).rstrip('.0') + 'h',
                             log['comment']
                         )
                         result['logs'].append(text)
@@ -78,10 +101,15 @@ def worklogs(request):
 @login_required
 def flashcards(request, username=None):
     """Flashcards."""
-    if not request.user.is_superuser and username and username != request.user.username:
+    if not request.user.is_superuser \
+            and username and username != request.user.username:
         raise PermissionDenied
 
-    user = get_object_or_404(User, username=username) if username else request.user
+    if username:
+        user = get_object_or_404(User, username=username)
+    else:
+        user = request.user
+
     cards = Card.objects.filter(user=user).order_by('order')
     if user == request.user:
         form_action = reverse('flashcards')
@@ -111,10 +139,15 @@ def flashcards(request, username=None):
 @login_required
 def tasks_view(request, username=None):
     """Tasks."""
-    if not request.user.is_superuser and username and username != request.user.username:
+    if not request.user.is_superuser and \
+            username and username != request.user.username:
         raise PermissionDenied
 
-    user = get_object_or_404(User, username=username) if username else request.user
+    if username:
+        user = get_object_or_404(User, username=username)
+    else:
+        user = request.user
+
     tasks = Task.objects.filter(user=user).order_by('weight')
     if user == request.user:
         form_action = reverse('tasks')
@@ -134,7 +167,8 @@ def tasks_view(request, username=None):
 
     profile, created = Profile.objects.get_or_create(user=user)
     palette = {
-        str(i): getattr(profile, 'palette_color_' + str(i), c) for i, c in enumerate(default_palette_colors, 1)
+        str(i): getattr(profile, 'palette_color_' + str(i), c)
+        for i, c in enumerate(default_palette_colors, 1)
     }
     tasks_dict = OrderedDict([(k[0], []) for k in Task.STATUSES])
     for task in tasks:
@@ -155,10 +189,15 @@ def tasks_view(request, username=None):
 @login_required
 def calendar(request, username=None):
     """Calendar."""
-    if not request.user.is_superuser and username and username != request.user.username:
+    if not request.user.is_superuser and \
+            username and username != request.user.username:
         raise PermissionDenied
 
-    user = get_object_or_404(User, username=username) if username else request.user
+    if username:
+        user = get_object_or_404(User, username=username)
+    else:
+        user = request.user
+
     calendar_obj, created = Calendar.objects.get_or_create(
         slug=user.username,
         defaults={'name': '{} Calendar'.format(user.username)},
@@ -176,7 +215,9 @@ def calendar(request, username=None):
             event = form.save(commit=False)
             event.creator = user
             event.calendar = calendar_obj
-            event.start = user_timezone.localize(event.start.replace(tzinfo=None))
+            event.start = user_timezone.localize(
+                event.start.replace(tzinfo=None)
+            )
             event.end = user_timezone.localize(event.end.replace(tzinfo=None))
             event.color_event = '#' + event.color_event
             event.save()
@@ -209,7 +250,8 @@ def profile_view(request, username):
         profile_user=user,
         profile=profile,
         palette_colors=(
-            getattr(profile, 'palette_color_' + str(i), c) for i, c in enumerate(default_palette_colors, 1)
+            getattr(profile, 'palette_color_' + str(i), c)
+            for i, c in enumerate(default_palette_colors, 1)
         ),
         is_current_user=user == request.user,
         form=form,
@@ -249,28 +291,54 @@ def update_profile(request):
                     profile.save()
                     return JsonResponse({'success': True})
                 else:
-                    return JsonResponse(_("This value not allowed"), safe=False, status=403)
-            elif field in ['first_name', 'last_name', 'email'] or field.startswith('palette_color_'):
-                current_obj = profile if field.startswith('palette_color_') else request.user
+                    return JsonResponse(
+                        _("This value not allowed"),
+                        safe=False,
+                        status=403
+                    )
+            elif field in ['first_name', 'last_name', 'email'] \
+                    or field.startswith('palette_color_'):
+                if field.startswith('palette_color_'):
+                    current_obj = profile
+                else:
+                    current_obj = request.user
+
                 setattr(current_obj, field, value)
                 try:
                     current_obj.clean_fields()
                     current_obj.save()
                     return JsonResponse({'success': True})
                 except ValidationError as e:
-                    return JsonResponse(', '.join(e.message_dict[field]), safe=False, status=422)
+                    return JsonResponse(
+                        ', '.join(e.message_dict[field]),
+                        safe=False,
+                        status=422
+                    )
 
-    return JsonResponse(_("You can't change this field"), safe=False, status=403)
+    return JsonResponse(
+        _("You can't change this field"),
+        safe=False,
+        status=403
+    )
 
 
 @login_required
 def card_order(request, username=None):
     """Change Flashcards order callback."""
     if request.is_ajax():
-        if not request.user.is_superuser and username and username != request.user.username:
-            raise JsonResponse(_("You can't change the order"), safe=False, status=403)
+        if not request.user.is_superuser \
+                and username and username != request.user.username:
+            raise JsonResponse(
+                _("You can't change the order"),
+                safe=False,
+                status=403
+            )
 
-        user = get_object_or_404(User, username=username) if username else request.user
+        if username:
+            user = get_object_or_404(User, username=username)
+        else:
+            user = request.user
+
         cards = Card.objects.filter(user=user)
         order = request.POST.get('order', '')
         order = json.loads(order)
@@ -287,13 +355,22 @@ def card_order(request, username=None):
 def task_order(request, username=None):
     """Change Task order and status callback."""
     if request.is_ajax():
-        if not request.user.is_superuser and username and username != request.user.username:
-            raise JsonResponse(_("You can't change the order"), safe=False, status=403)
+        if not request.user.is_superuser \
+                and username and username != request.user.username:
+            raise JsonResponse(
+                _("You can't change the order"),
+                safe=False,
+                status=403
+            )
 
         order = request.POST.get('order', '')
         status = request.POST.get('status', '')
         if status in (status[0] for status in Task.STATUSES):
-            user = get_object_or_404(User, username=username) if username else request.user
+            if username:
+                user = get_object_or_404(User, username=username)
+            else:
+                user = request.user
+
             tasks = Task.objects.filter(user=user)
             order = json.loads(order)
             for task in tasks:
@@ -312,7 +389,11 @@ def user_events(request):
     if request.is_ajax():
         start = timezone.now()
         end = start + timezone.timedelta(days=1)
-        events = Event.objects.filter(start__gt=start, start__lte=end, creator=request.user).select_related('creator')
+        events = Event.objects.filter(
+            start__gt=start,
+            start__lte=end,
+            creator=request.user
+        ).select_related('creator')
 
         user_events = []
         for event in events:
@@ -329,10 +410,16 @@ def user_events(request):
 @login_required
 def dictionary(request, username=None):
     """Dictionary."""
-    if not request.user.is_superuser and username and username != request.user.username:
+    if not request.user.is_superuser \
+            and username and username != request.user.username:
         raise PermissionDenied
 
-    user = get_object_or_404(User, username=username) if username else request.user
+    if username:
+        user = get_object_or_404(User, username=username)
+    else:
+        user = request.user
+
+    # it could be current user that open a page by his username
     if user == request.user:
         form_action = reverse('dictionary')
     else:
@@ -405,7 +492,11 @@ def flights_view(request):
                     'date': str(date_back)
                 })
 
-            response = requests.post(url, data=json.dumps(params), headers=headers)
+            response = requests.post(
+                url,
+                data=json.dumps(params),
+                headers=headers
+            )
             data = response.json()
             result = []
 
@@ -415,17 +506,23 @@ def flights_view(request):
                         slice_data = []
                         for slice in fly['slice']:
                             route = slice['segment'][0]['leg'][0]['origin']
-                            for segment in slice['segment']:
-                                route += '->' + segment['leg'][0]['destination']
+                            for seg in slice['segment']:
+                                route += '->' + seg['leg'][0]['destination']
 
                             slice_data.append({
                                 'stops': len(slice['segment']) - 1,
                                 'slice': route,
-                                'duration': str(timedelta(minutes=slice['duration']))[:-3]
+                                'duration': str(timedelta(
+                                    minutes=slice['duration']
+                                ))[:-3]
                             })
 
                         result.append({
-                            'price': float(re.sub(r'[^0-9.]', '', fly['saleTotal'])),
+                            'price': float(re.sub(
+                                r'[^0-9.]',
+                                '',
+                                fly['saleTotal']
+                            )),
                             'slice': slice_data
                         })
             else:
