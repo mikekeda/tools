@@ -1,21 +1,23 @@
-from django.shortcuts import render, redirect, get_object_or_404
-from django.http import Http404, JsonResponse, HttpResponseRedirect
-from django.core.exceptions import PermissionDenied, ValidationError
+import re
+import requests
+import json
+import pytz
 import dateutil.parser
 from datetime import datetime, timedelta
-import requests
+from collections import OrderedDict
+from schedule.models import Calendar, Event
+
+from django.core.exceptions import PermissionDenied, ValidationError
+from django.core.urlresolvers import reverse
 from django.conf import settings
-from django.contrib.auth.decorators import login_required
+from django.http import Http404, JsonResponse, HttpResponseRedirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth import get_user_model, login, logout
 from django.contrib.auth.forms import AuthenticationForm
-from django.core.urlresolvers import reverse
+from django.contrib.auth.decorators import login_required
 from django.utils.translation import ugettext as _
 from django.utils import timezone
-import json
-from schedule.models import Calendar, Event
-import pytz
-import re
 
 from .models import TIMEZONES, Card, Word, Profile, Task, default_palette_colors
 from .forms import WordForm, EventForm, CardForm, AvatarForm, FlightsForm, TaskForm
@@ -134,7 +136,7 @@ def tasks_view(request, username=None):
     palette = {
         str(i): getattr(profile, 'palette_color_' + str(i), c) for i, c in enumerate(default_palette_colors, 1)
     }
-    tasks_dict = {k[0]: [] for k in Task.STATUSES}
+    tasks_dict = OrderedDict([(k[0], []) for k in Task.STATUSES])
     for task in tasks:
         tasks_dict[task.status].append(task)
 
