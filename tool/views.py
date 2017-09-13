@@ -99,7 +99,7 @@ def flashcards(request, username=None):
 
     return render(request, "flashcards.html", dict(
         cards=cards,
-        user=user,
+        profile_user=user,
         form=form,
         form_action=form_action,
         active_page=form_action.lstrip('/'))
@@ -143,7 +143,7 @@ def tasks_view(request, username=None):
     return render(request, "tasks.html", dict(
         tasks_dict=tasks_dict.items(),
         palette=palette,
-        user=user,
+        profile_user=user,
         form=form,
         form_action=form_action,
         active_page=form_action.lstrip('/'))

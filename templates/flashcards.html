@@ -109,7 +109,7 @@
             $cards.find('.card-container').each(function(index) {
               order[$(this).data('id')] = index;
             });
-            $.post("{% url 'card_order' user.username %}", {
+            $.post("{% url 'card_order' profile_user.username %}", {
               order: JSON.stringify(order),
               'csrfmiddlewaretoken': '{{ csrf_token }}'
             }, function() {

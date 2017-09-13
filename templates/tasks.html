@@ -109,7 +109,7 @@
                 order[$(this).data('id')] = index;
               }
             });
-            $.post("{% url 'task_order' user.username %}", {
+            $.post("{% url 'task_order' profile_user.username %}", {
               order: JSON.stringify(order),
               status: $cards.data('status'),
               'csrfmiddlewaretoken': '{{ csrf_token }}'

@@ -29,6 +29,11 @@
                         {% trans "Flashcards" %}
                     </a>
                 </li>
+                <li role="presentation">
+                    <a class="ajax-link" data-annyang="user tasks" href="{% url 'user_tasks' profile_user.username %}">
+                        {% trans "Tasks" %}
+                    </a>
+                </li>
             </ul>
             <div class="col-lg-8 pull-right">
                 <div id="profile">
