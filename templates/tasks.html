@@ -59,13 +59,13 @@
     </div>
     <div id="cards" class="row">
         {% for key, tasks in tasks_dict %}
-            <div class="col-md-4">
+            <div class="col-sm-4">
                 <h4 class="text-center">{{ key }}</h4>
                 <div class="col-md-12 sortable no-padding" data-status="{{ key }}">
                 {% for task in tasks %}
                 <div class="card-container col-md-12 no-padding" data-difficulty="{{ task.color }}" data-title="{{ task.title }}" data-id="{{ task.id }}">
                     <div>
-                        <div class="card" style="background-color: #{{ palette|get_item:task.color }};" >
+                        <div class="card task" style="background-color: #{{ palette|get_item:task.color }};" >
                             <div class="face front task">
                                 <h4 class="list-group-item-heading">{{ task.title }}</h4>
                                 <a href="admin/tool/task/{{ task.id }}/change/" class="edit">

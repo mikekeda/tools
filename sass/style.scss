@@ -133,6 +133,7 @@ ul {
 
 .sortable {
   min-height: 300px;
+  padding-bottom: 100px;
 }
 
 .card-container {
@@ -154,6 +155,10 @@ ul {
     transform-style: preserve-3d;
     transition: .5s;
 
+    &.task {
+      height: 200px;
+    }
+
     .face {
       backface-visibility: hidden;
       width: 100%;
@@ -170,6 +175,9 @@ ul {
       z-index: 1;
       &.task {
         flex-direction: column;
+        justify-content: normal;
+        padding: 15px 5px;
+        overflow: hidden;
       }
     }
 
