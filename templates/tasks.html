@@ -71,7 +71,9 @@
                                 <a href="admin/tool/task/{{ task.id }}/change/" class="edit">
                                     <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>
                                 </a>
-                                <p class="list-group-item-text">{{ task.description }}</p>
+                                <div class="list-group-item-text text-left no-padding col-xs-12">
+                                    {{ task.description|safe }}
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -164,4 +166,5 @@
         });
       }
     </script>
+    <script type="text/javascript" src="{% static 'bower_components/ckeditor/ckeditor.js' %}"></script>
 {% endblock %}

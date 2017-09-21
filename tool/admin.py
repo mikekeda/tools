@@ -1,3 +1,5 @@
+from django import forms
+from django.db import models
 from django.contrib import admin
 
 from easy_select2 import select2_modelform
@@ -41,6 +43,16 @@ class ToolEventAdmin(EventAdmin):
 
 class TaskAdmin(admin.ModelAdmin):
     list_filter = ('user__username',)
+
+    formfield_overrides = {
+        models.TextField: {
+            'widget': forms.Textarea(attrs={'class': 'ckeditor'})
+        }
+    }
+
+    class Media:
+        js = ('bower_components/ckeditor/ckeditor.js',)
+        css = {'all': ('css/admin-fix.css',)}
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == 'user':

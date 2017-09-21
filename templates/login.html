@@ -27,7 +27,7 @@
     <button type="submit" class="btn btn-primary pull-right">{% trans "Log in" %}</button>
   </form>
 
-  <a href="{% url 'social:begin' 'facebook' %}">{% trans "Login with Facebook" %}</a>
-  <a href="{% url 'social:begin' 'github' %}">{% trans "Login with GitHub" %}</a>
+  <a class="col-sm-offset-3" href="{% url 'social:begin' 'facebook' %}">{% trans "Login with Facebook" %}</a>
+  <a class="col-xs-offset-1" href="{% url 'social:begin' 'github' %}">{% trans "Login with GitHub" %}</a>
   </div>
 {% endblock content %}

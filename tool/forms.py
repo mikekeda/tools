@@ -54,5 +54,6 @@ class TaskForm(forms.ModelForm):
         form = TaskForm
         exclude = ('user', 'weight', 'status')
         widgets = {
-            'color': apply_select2(forms.Select)
+            'color': apply_select2(forms.Select),
+            'description': forms.Textarea(attrs={'class': 'ckeditor'}),
         }
