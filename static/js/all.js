@@ -188,10 +188,7 @@ $(document).ready(function() {
     jscolor.installByClassName('jscolor');
 
     // Initialize CKEditor.
-    try {
-        $('textarea.ckeditor').ckeditor();
-    }
-    catch (err) {}
+    $('textarea.ckeditor').ckeditor();
   }
 
   // Process ajax links.
