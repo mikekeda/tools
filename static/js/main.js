@@ -24,6 +24,12 @@ $(document).ready(function() {
 
     // Initialize jscolor.
     jscolor.installByClassName('jscolor');
+
+    // Initialize CKEditor.
+    try {
+        $('textarea.ckeditor').ckeditor();
+    }
+    catch (err) {}
   }
 
   // Process ajax links.

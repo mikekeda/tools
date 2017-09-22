@@ -85,6 +85,8 @@
     </div>
 
     <script type="text/javascript" defer>
+      window.CKEDITOR_BASEPATH = "{% static 'bower_components/ckeditor/' %}";
+
       if("undefined" == typeof jQuery) {
         window.onload = function() {
           init_app();
@@ -167,4 +169,5 @@
       }
     </script>
     <script type="text/javascript" src="{% static 'bower_components/ckeditor/ckeditor.js' %}"></script>
+    <script type="text/javascript" src="{% static 'bower_components/ckeditor/adapters/jquery.js' %}"></script>
 {% endblock %}
