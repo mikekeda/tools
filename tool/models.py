@@ -126,7 +126,7 @@ class Task(models.Model):
         ]
     )
     user = models.ForeignKey(User, related_name='tasks')
-    weight = models.PositiveSmallIntegerField(default=0)
+    weight = models.SmallIntegerField(default=0)
     created_date = models.DateTimeField(auto_now_add=True)
     changed_date = models.DateTimeField(auto_now=True)
 

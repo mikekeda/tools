@@ -148,7 +148,6 @@ def tasks_view(request, username=None):
     else:
         user = request.user
 
-    tasks = Task.objects.filter(user=user).order_by('weight')
     if user == request.user:
         form_action = reverse('tasks')
     else:
@@ -157,12 +156,16 @@ def tasks_view(request, username=None):
     if request.method == 'POST':
         form = TaskForm(data=request.POST)
         if form.is_valid():
+            first_task = Task.objects.filter(
+                user=user, status='todo').order_by('weight').first()
             task = form.save(commit=False)
             task.user = user
+            task.weight = first_task.weight - 1 if first_task else 0
             task.save()
 
             return redirect(form_action)
     else:
+        tasks = Task.objects.filter(user=user).order_by('weight')
         form = TaskForm()
 
     profile, created = Profile.objects.get_or_create(user=user)
