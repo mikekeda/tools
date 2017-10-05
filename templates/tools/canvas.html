@@ -380,8 +380,10 @@
         }
 
         function play(a) {
-            if (a<num_canv+1) {
-                setTimeout(function() {change_canvas(a); play(a+1)}, 1000);
+            if (a < num_canv+1) {
+                setTimeout(function() {
+                    change_canvas(a); play(a+1)
+                }, 1000);
             }
         }
 

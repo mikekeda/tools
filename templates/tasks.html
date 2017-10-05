@@ -174,10 +174,12 @@
         });
 
         // Initialize CKEditor.
-        try {
-          $('textarea.ckeditor').ckeditor();
-        }
-        catch (err) {}
+        setTimeout(function() {
+          try {
+            $('textarea.ckeditor').ckeditor();
+          }
+          catch (e) {}
+        }, 300);
       }
     </script>
 {% endblock %}
