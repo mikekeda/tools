@@ -14,6 +14,12 @@
           <div class="modal-body">
             <form action="{{ form_action }}" method="post" class="add-form clearfix form-horizontal">
                 {% csrf_token %}
+                <div class="form-group hide">
+                    <label class="control-label col-sm-2">id</label>
+                    <div class="col-sm-10">
+                        <input type="number" name="id" id="id_id">
+                    </div>
+                </div>
                 {% for field in form %}
                     <div class="form-group">
                         <label class="control-label col-sm-2">{{ field.label_tag }}</label>
@@ -60,7 +66,7 @@
     <div id="cards" class="row sortable">
         {% for card in cards %}
         <div class="card-container col-md-6" data-difficulty="{{ card.difficulty }}" data-word="{{ card.word }}" data-id="{{ card.id }}">
-            <div class="flip card-container">
+            <div class="flip card-container" data-json="{{ card|serialize }}">
                 <div class="card {{ card.difficulty }}">
                     <div class="face front">
                         <h4 class="list-group-item-heading">{{ card.word }}</h4>

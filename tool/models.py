@@ -24,6 +24,7 @@ default_palette_colors = (
 
 class ColorField(models.CharField):
     """Color field"""
+
     def __init__(self, *args, **kwargs):
         super(ColorField, self).__init__(*args, **kwargs)
 

@@ -117,11 +117,18 @@ def flashcards(request, username=None):
         form_action = reverse('user_flashcards', args=[user.username])
 
     if request.method == 'POST':
-        form = CardForm(data=request.POST)
+        post_object = request.POST.copy()
+        id = post_object.pop('id', [None])[0]
+        if id:
+            card = Card.objects.filter(id=id, user=user).first()
+            if not card:
+                raise PermissionDenied
+        else:
+            card = Card(user=user)
+
+        form = CardForm(data=post_object, instance=card)
         if form.is_valid():
-            card = form.save(commit=False)
-            card.user = user
-            card.save()
+            form.save()
 
             return redirect(form_action)
     else:
@@ -139,6 +146,7 @@ def flashcards(request, username=None):
 @login_required
 def tasks_view(request, username=None):
     """Tasks."""
+    tasks = []
     if not request.user.is_superuser and \
             username and username != request.user.username:
         raise PermissionDenied
@@ -154,13 +162,21 @@ def tasks_view(request, username=None):
         form_action = reverse('user_tasks', args=[user.username])
 
     if request.method == 'POST':
-        form = TaskForm(data=request.POST)
+        post_object = request.POST.copy()
+        id = post_object.pop('id', [None])[0]
+        if id:
+            task = Task.objects.filter(id=id, user=user).first()
+            if not task:
+                raise PermissionDenied
+        else:
+            task = Task(user=user)
+        form = TaskForm(data=post_object, instance=task)
         if form.is_valid():
             first_task = Task.objects.filter(
                 user=user, status='todo').order_by('weight').first()
             task = form.save(commit=False)
-            task.user = user
-            task.weight = first_task.weight - 1 if first_task else 0
+            if not id:
+                task.weight = first_task.weight - 1 if first_task else 0
             task.save()
 
             return redirect(form_action)
