@@ -91,7 +91,7 @@
     </div>
 
     <script type="text/javascript" src="{% static 'bower_components/ckeditor/ckeditor.js' %}"></script>
-    <script type="text/javascript" src="{% static 'bower_components/ckeditor/adapters/jquery.js' %}"></script>
+    <script type="text/javascript" defer src="{% static 'bower_components/ckeditor/adapters/jquery.js' %}"></script>
     <script type="text/javascript" defer>
       if("undefined" == typeof jQuery) {
         window.onload = function() {
@@ -174,12 +174,10 @@
         });
 
         // Initialize CKEditor.
-        setTimeout(function() {
-          try {
-            $('textarea.ckeditor').ckeditor();
-          }
-          catch (e) {}
-        }, 2000);
+        try {
+          $('textarea.ckeditor').ckeditor();
+        }
+        catch (e) {}
       }
     </script>
 {% endblock %}
