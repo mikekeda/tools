@@ -3,7 +3,6 @@
 {% load widget_tweaks %}
 {% load static from staticfiles %}
 {% block content %}
-    <script type="text/javascript" async src="{% static 'bower_components/ckeditor/ckeditor.js' %}"></script>
     <!-- Modal -->
     <div class="modal{% if form.errors %} error{% endif %}" id="add-card" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
       <div class="modal-dialog" role="document">
@@ -91,7 +90,7 @@
         {% endfor %}
     </div>
 
-    <script type="text/javascript" defer src="{% static 'bower_components/ckeditor/adapters/jquery.js' %}"></script>
+    <script type="text/javascript" src="{% static 'bower_components/ckeditor/ckeditor.js' %}"></script>
     <script type="text/javascript" defer>
       if("undefined" == typeof jQuery) {
         window.onload = function() {
