@@ -57,11 +57,11 @@ class LoanedBookInstancesByUserListViewTest(TestCase):
     # Pages available only for registered users.
     def test_calendar_page(self):
         resp = self.client.get(reverse('calendar'))
-        self.assertRedirects(resp, '/admin/login/?next=/calendar')
+        self.assertRedirects(resp, '/login?next=/calendar')
         resp = self.client.get(reverse('user_calendar',
                                        kwargs={'username': 'testuser'}))
         self.assertRedirects(resp,
-                             '/admin/login/?next=/user/testuser/calendar')
+                             '/login?next=/user/testuser/calendar')
         self.client.login(username='testuser', password='12345')
         resp = self.client.get(reverse('calendar'))
         self.assertEqual(resp.status_code, 200)
@@ -73,7 +73,7 @@ class LoanedBookInstancesByUserListViewTest(TestCase):
 
     def test_flights_page(self):
         resp = self.client.get(reverse('flights'))
-        self.assertRedirects(resp, '/admin/login/?next=/flights')
+        self.assertRedirects(resp, '/login?next=/flights')
         self.client.login(username='testuser', password='12345')
         resp = self.client.get(reverse('flights'))
         self.assertEqual(resp.status_code, 200)
@@ -81,11 +81,11 @@ class LoanedBookInstancesByUserListViewTest(TestCase):
 
     def test_dictionary_page(self):
         resp = self.client.get(reverse('dictionary'))
-        self.assertRedirects(resp, '/admin/login/?next=/dictionary')
+        self.assertRedirects(resp, '/login?next=/dictionary')
         resp = self.client.get(reverse('user_dictionary',
                                        kwargs={'username': 'testuser'}))
         self.assertRedirects(resp,
-                             '/admin/login/?next=/user/testuser/dictionary')
+                             '/login?next=/user/testuser/dictionary')
         self.client.login(username='testuser', password='12345')
         resp = self.client.get(reverse('dictionary'))
         self.assertEqual(resp.status_code, 200)
@@ -97,11 +97,11 @@ class LoanedBookInstancesByUserListViewTest(TestCase):
 
     def test_flashcards_page(self):
         resp = self.client.get(reverse('flashcards'))
-        self.assertRedirects(resp, '/admin/login/?next=/flashcards')
+        self.assertRedirects(resp, '/login?next=/flashcards')
         resp = self.client.get(reverse('user_flashcards',
                                        kwargs={'username': 'testuser'}))
         self.assertRedirects(resp,
-                             '/admin/login/?next=/user/testuser/flashcards')
+                             '/login?next=/user/testuser/flashcards')
         self.client.login(username='testuser', password='12345')
         resp = self.client.get(reverse('flashcards'))
         self.assertEqual(resp.status_code, 200)
@@ -113,10 +113,10 @@ class LoanedBookInstancesByUserListViewTest(TestCase):
 
     def test_tasks_page(self):
         resp = self.client.get(reverse('tasks'))
-        self.assertRedirects(resp, '/admin/login/?next=/tasks')
+        self.assertRedirects(resp, '/login?next=/tasks')
         resp = self.client.get(reverse('user_tasks',
                                        kwargs={'username': 'testuser'}))
-        self.assertRedirects(resp, '/admin/login/?next=/user/testuser/tasks')
+        self.assertRedirects(resp, '/login?next=/user/testuser/tasks')
         self.client.login(username='testuser', password='12345')
         resp = self.client.get(reverse('tasks'))
         self.assertEqual(resp.status_code, 200)
@@ -129,7 +129,7 @@ class LoanedBookInstancesByUserListViewTest(TestCase):
     def test_profile_page(self):
         resp = self.client.get(reverse('user',
                                        kwargs={'username': 'testuser'}))
-        self.assertRedirects(resp, '/admin/login/?next=/user/testuser')
+        self.assertRedirects(resp, '/login?next=/user/testuser')
         self.client.login(username='testuser', password='12345')
         resp = self.client.get(reverse('user',
                                        kwargs={'username': 'testuser'}))
