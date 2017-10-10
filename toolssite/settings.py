@@ -120,7 +120,7 @@ WSGI_APPLICATION = 'toolssite.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'tools',
+        'NAME': get_env_var('DB_NAME', 'tools'),
         'USER': get_env_var('DB_USER', 'tools_admin'),
         'PASSWORD': get_env_var('DB_PASSWORD', 'tools_local_pass'),
         'HOST': get_env_var('DB_HOST', '127.0.0.1'),
