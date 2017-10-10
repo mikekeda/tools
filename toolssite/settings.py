@@ -42,7 +42,7 @@ INTERNAL_IPS = (
     '127.0.0.1',
 )
 
-DEBUG = get_env_var('ALLOWED_HOSTS', '*').split(',')
+ALLOWED_HOSTS = get_env_var('ALLOWED_HOSTS', '*').split(',')
 
 ADMINS = [
     ('Mike', 'mriynuk@gmail.com')
