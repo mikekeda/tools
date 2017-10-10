@@ -8,7 +8,6 @@ media/
 *.rdb
 *.pid
 
-toolssite/settings.py
 mydatabase
 celerybeat-schedule
 .DS_Store
