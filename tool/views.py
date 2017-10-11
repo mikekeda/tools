@@ -1,10 +1,10 @@
 import re
-import requests
 import json
+from collections import OrderedDict
+from datetime import datetime, timedelta
+import requests
 import pytz
 import dateutil.parser
-from datetime import datetime, timedelta
-from collections import OrderedDict
 from schedule.models import Calendar, Event
 
 from django.core.exceptions import PermissionDenied, ValidationError
@@ -16,7 +16,7 @@ from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth import get_user_model, login, logout
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.decorators import login_required
-from django.utils.translation import ugettext as _
+from django.utils.translation import ugettext
 from django.utils import timezone
 
 from .models import (
@@ -118,9 +118,9 @@ def flashcards(request, username=None):
 
     if request.method == 'POST':
         post_object = request.POST.copy()
-        id = post_object.pop('id', [None])[0]
-        if id:
-            card = Card.objects.filter(id=id, user=user).first()
+        post_id = post_object.pop('id', [None])[0]
+        if post_id:
+            card = Card.objects.filter(id=post_id, user=user).first()
             if not card:
                 raise PermissionDenied
         else:
@@ -134,12 +134,16 @@ def flashcards(request, username=None):
     else:
         form = CardForm()
 
-    return render(request, "flashcards.html", dict(
-        cards=cards,
-        profile_user=user,
-        form=form,
-        form_action=form_action,
-        active_page=form_action.lstrip('/'))
+    return render(
+        request,
+        "flashcards.html",
+        dict(
+            cards=cards,
+            profile_user=user,
+            form=form,
+            form_action=form_action,
+            active_page=form_action.lstrip('/')
+        )
     )
 
 
@@ -163,9 +167,9 @@ def tasks_view(request, username=None):
 
     if request.method == 'POST':
         post_object = request.POST.copy()
-        id = post_object.pop('id', [None])[0]
-        if id:
-            task = Task.objects.filter(id=id, user=user).first()
+        post_id = post_object.pop('id', [None])[0]
+        if post_id:
+            task = Task.objects.filter(id=post_id, user=user).first()
             if not task:
                 raise PermissionDenied
         else:
@@ -175,7 +179,7 @@ def tasks_view(request, username=None):
             first_task = Task.objects.filter(
                 user=user, status='todo').order_by('weight').first()
             task = form.save(commit=False)
-            if not id:
+            if not post_id:
                 task.weight = first_task.weight - 1 if first_task else 0
             task.save()
 
@@ -184,7 +188,7 @@ def tasks_view(request, username=None):
         tasks = Task.objects.filter(user=user).order_by('weight')
         form = TaskForm()
 
-    profile, created = Profile.objects.get_or_create(user=user)
+    profile, _ = Profile.objects.get_or_create(user=user)
     palette = {
         str(i): getattr(profile, 'palette_color_' + str(i), c)
         for i, c in enumerate(default_palette_colors, 1)
@@ -195,13 +199,17 @@ def tasks_view(request, username=None):
 
     form.fields['color'].widget.choices = [(i, k) for i, k in palette.items()]
 
-    return render(request, "tasks.html", dict(
-        tasks_dict=tasks_dict.items(),
-        palette=palette,
-        profile_user=user,
-        form=form,
-        form_action=form_action,
-        active_page=form_action.lstrip('/'))
+    return render(
+        request,
+        "tasks.html",
+        dict(
+            tasks_dict=tasks_dict.items(),
+            palette=palette,
+            profile_user=user,
+            form=form,
+            form_action=form_action,
+            active_page=form_action.lstrip('/')
+        )
     )
 
 
@@ -217,7 +225,7 @@ def calendar(request, username=None):
     else:
         user = request.user
 
-    calendar_obj, created = Calendar.objects.get_or_create(
+    calendar_obj, _ = Calendar.objects.get_or_create(
         slug=user.username,
         defaults={'name': '{} Calendar'.format(user.username)},
     )
@@ -257,7 +265,7 @@ def calendar(request, username=None):
 def profile_view(request, username):
     """User profile."""
     user = get_object_or_404(User, username=username)
-    profile, created = Profile.objects.get_or_create(user=user)
+    profile, _ = Profile.objects.get_or_create(user=user)
     form = AvatarForm(data=request.POST)
 
     timezones = '['
@@ -309,12 +317,12 @@ def update_profile(request):
                     profile.timezone = value
                     profile.save()
                     return JsonResponse({'success': True})
-                else:
-                    return JsonResponse(
-                        _("This value not allowed"),
-                        safe=False,
-                        status=403
-                    )
+
+                return JsonResponse(
+                    ugettext("This value not allowed"),
+                    safe=False,
+                    status=403
+                )
             elif field in ['first_name', 'last_name', 'email'] \
                     or field.startswith('palette_color_'):
                 if field.startswith('palette_color_'):
@@ -335,7 +343,7 @@ def update_profile(request):
                     )
 
     return JsonResponse(
-        _("You can't change this field"),
+        ugettext("You can't change this field"),
         safe=False,
         status=403
     )
@@ -348,7 +356,7 @@ def card_order(request, username=None):
         if not request.user.is_superuser \
                 and username and username != request.user.username:
             raise JsonResponse(
-                _("You can't change the order"),
+                ugettext("You can't change the order"),
                 safe=False,
                 status=403
             )
@@ -366,7 +374,7 @@ def card_order(request, username=None):
                 card.order = order[str(card.id)]
                 card.save()
 
-        return JsonResponse(_('The order was changed'), safe=False)
+        return JsonResponse(ugettext('The order was changed'), safe=False)
     raise Http404
 
 
@@ -377,7 +385,7 @@ def task_order(request, username=None):
         if not request.user.is_superuser \
                 and username and username != request.user.username:
             raise JsonResponse(
-                _("You can't change the order"),
+                ugettext("You can't change the order"),
                 safe=False,
                 status=403
             )
@@ -398,7 +406,7 @@ def task_order(request, username=None):
                     task.status = status
                     task.save()
 
-        return JsonResponse(_('The order was changed'), safe=False)
+        return JsonResponse(ugettext('The order was changed'), safe=False)
     raise Http404
 
 
@@ -414,14 +422,14 @@ def user_events(request):
             creator=request.user
         ).select_related('creator')
 
-        user_events = []
+        user_events_list = []
         for event in events:
             local_time = timezone.localtime(
                 event.start,
                 pytz.timezone(event.creator.profile.timezone)
             ).strftime('%H:%M')
-            user_events.append(local_time + ' ' + event.title)
-        return JsonResponse(' and '.join(user_events), safe=False)
+            user_events_list.append(local_time + ' ' + event.title)
+        return JsonResponse(' and '.join(user_events_list), safe=False)
 
     raise Http404
 
@@ -523,16 +531,16 @@ def flights_view(request):
                 if 'tripOption' in data['trips']:
                     for fly in data['trips']['tripOption']:
                         slice_data = []
-                        for slice in fly['slice']:
-                            route = slice['segment'][0]['leg'][0]['origin']
-                            for seg in slice['segment']:
+                        for item in fly['slice']:
+                            route = item['segment'][0]['leg'][0]['origin']
+                            for seg in item['segment']:
                                 route += '->' + seg['leg'][0]['destination']
 
                             slice_data.append({
-                                'stops': len(slice['segment']) - 1,
+                                'stops': len(item['segment']) - 1,
                                 'slice': route,
                                 'duration': str(timedelta(
-                                    minutes=slice['duration']
+                                    minutes=item['duration']
                                 ))[:-3]
                             })
 

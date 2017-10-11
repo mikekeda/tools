@@ -3,10 +3,10 @@ from django.db import models
 from django.contrib import admin
 
 from easy_select2 import select2_modelform
-
-from .models import Profile, Card, Word, Task
 from schedule.models import Event, Calendar
 from schedule.admin import EventAdmin
+
+from .models import Profile, Card, Word, Task
 
 ProfileForm = select2_modelform(Profile)
 

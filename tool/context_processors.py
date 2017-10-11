@@ -1,6 +1,7 @@
-from django.conf import settings
-from datetime import date
 import os
+from datetime import date
+
+from django.conf import settings
 
 from .models import Profile
 
@@ -15,9 +16,9 @@ def categories(request=None):
                 [
                     f
                     for f in os.listdir(folder + '/tools')
-                    if (os.path.isfile(os.path.join(folder + '/tools', f))
-                        and f.endswith(".html"))
-                 ]
+                    if (os.path.isfile(os.path.join(folder + '/tools', f)) and
+                        f.endswith(".html"))
+                ]
             )
 
     tools = [
@@ -44,6 +45,6 @@ def user_profile(request):
     """User profile."""
     profile = None
     if request.user.is_authenticated:
-        profile, created = Profile.objects.get_or_create(user=request.user)
+        profile, _ = Profile.objects.get_or_create(user=request.user)
 
     return {'profile': profile}

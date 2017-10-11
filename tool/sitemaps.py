@@ -11,5 +11,5 @@ class StaticViewSitemap(sitemaps.Sitemap):
     def items(self):
         return [tool['slug'] for tool in categories()['tools']]
 
-    def location(self, item):
-        return reverse('tool', kwargs={'slug': item})
+    def location(self, obj):
+        return reverse('tool', kwargs={'slug': obj})

@@ -1,11 +1,12 @@
+import datetime
+
 from django import forms
 from schedule.models import Event
-import datetime
 from easy_select2 import apply_select2, select2_modelform
 
 from .models import Profile, Word, Card, Task
 
-TaskForm = select2_modelform(Task)
+task_form = select2_modelform(Task)
 
 
 class AvatarForm(forms.ModelForm):
@@ -51,7 +52,7 @@ class FlightsForm(forms.Form):
 class TaskForm(forms.ModelForm):
     class Meta:
         model = Task
-        form = TaskForm
+        form = task_form
         exclude = ('user', 'weight', 'status')
         widgets = {
             'color': apply_select2(forms.Select),
