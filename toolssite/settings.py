@@ -208,7 +208,7 @@ LOGIN_URL = '/login'
 
 STATIC_ROOT = '/home/voron/sites/cdn/tools'
 
-STATIC_URL = 'https://cdn.mkeda.me/tools/'
+STATIC_URL = '/static/' if DEBUG else 'https://cdn.mkeda.me/tools/'
 
 STATICFILES_DIRS = (
     ('', os.path.join(BASE_DIR, 'static')),
