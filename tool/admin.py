@@ -1,6 +1,8 @@
 from django import forms
 from django.db import models
 from django.contrib import admin
+from django.contrib.auth import get_user_model
+from django.contrib.auth.admin import UserAdmin
 
 from easy_select2 import select2_modelform
 from schedule.models import Event, Calendar
@@ -8,11 +10,18 @@ from schedule.admin import EventAdmin
 
 from .models import Profile, Card, Word, Task
 
+User = get_user_model()
 ProfileForm = select2_modelform(Profile)
 
 
-class ProfileAdmin(admin.ModelAdmin):
+class ProfileInline(admin.StackedInline):
+    model = Profile
     form = ProfileForm
+    max_num = 1
+
+
+class AuthUserAdmin(UserAdmin):
+    inlines = [ProfileInline]
 
 
 class CardAdmin(admin.ModelAdmin):
@@ -61,9 +70,10 @@ class TaskAdmin(admin.ModelAdmin):
         return db_field.formfield(**kwargs)
 
 
-admin.site.register(Profile, ProfileAdmin)
 admin.site.register(Card, CardAdmin)
 admin.site.register(Word, WordAdmin)
 admin.site.unregister(Event)
 admin.site.register(Event, ToolEventAdmin)
 admin.site.register(Task, TaskAdmin)
+admin.site.unregister(User)
+admin.site.register(User, AuthUserAdmin)
