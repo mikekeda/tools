@@ -38,7 +38,7 @@ def select_parent_template(request):
 
 def arrival_date(request):
     """Arrival date."""
-    return {'today': date.today(), 'arrival_date': date(2017, 11, 22)}
+    return {'today': date.today(), 'arrival_date': date(2018, 2, 12)}
 
 
 def user_profile(request):
