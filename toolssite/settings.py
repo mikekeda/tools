@@ -2,7 +2,6 @@
 Django settings for tools site project.
 """
 
-# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
 import requests
 from django.utils.translation import ugettext_lazy as _
@@ -31,11 +30,11 @@ def get_env_var(name, default=''):
     return default
 
 
+# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
 # Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/1.8/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = get_env_var(
@@ -119,7 +118,6 @@ WSGI_APPLICATION = 'toolssite.wsgi.application'
 
 
 # Database
-# https://docs.djangoproject.com/en/1.8/ref/settings/#databases
 
 DATABASES = {
     'default': {
@@ -176,7 +174,6 @@ EMAIL_SUBJECT_PREFIX = '[Tools]'
 SERVER_EMAIL = 'admin@info.mkeda.me'
 
 # Internationalization
-# https://docs.djangoproject.com/en/1.8/topics/i18n/
 
 LANGUAGE_CODE = 'en-us'
 
@@ -204,7 +201,6 @@ MEDIA_URL = '/media/'
 LOGIN_URL = '/login'
 
 # Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/1.8/howto/static-files/
 
 STATIC_ROOT = '/home/voron/sites/cdn/tools'
 
@@ -222,3 +218,5 @@ JENKINS_TASKS = ('django_jenkins.tasks.run_pylint',
                  'django_jenkins.tasks.run_pyflakes',)
 
 PROJECT_APPS = ['tool', 'toolssite']
+
+PYLINT_LOAD_PLUGIN = ['pylint_django']
