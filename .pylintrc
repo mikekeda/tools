@@ -1,6 +1,7 @@
 [MASTER]
 persistent=yes
 ignore=south_migrations,migrations
+extension-pkg-whitelist=celery
 cache-size=500
 
 [MESSAGES CONTROL]
