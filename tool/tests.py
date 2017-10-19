@@ -152,3 +152,7 @@ class LoanedBookInstancesByUserListViewTest(TestCase):
         resp = self.client.get(reverse('users'))
         self.assertEqual(resp.status_code, 200)
         self.assertTemplateUsed(resp, 'user_list.html')
+
+    def test_sitemap_page(self):
+        resp = self.client.get('/sitemap.xml')
+        self.assertEqual(resp.status_code, 200)
