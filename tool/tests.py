@@ -98,8 +98,8 @@ class LoanedBookInstancesByUserListViewTest(TestCase):
                                        kwargs={'username': 'testuser'}))
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(len(resp.json()), 2)
-        self.assertEqual(list(resp.json().values())[0], sample_1)
-        self.assertEqual(list(resp.json().values())[1], sample_2)
+        self.assertEqual(sorted(list(resp.json().values()))[0], sample_2)
+        self.assertEqual(sorted(list(resp.json().values()))[1], sample_1)
 
     def test_convert_image_tool_page(self):
         resp = self.client.get('/tool/convert-image-to-base64')
