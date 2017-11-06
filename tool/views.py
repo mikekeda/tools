@@ -44,8 +44,8 @@ User = get_user_model()
 class GetUserMixin(object):
     def get_user(self, request, username: str):
         if not request.user.is_authenticated or (
-                not request.user.is_superuser
-                and username and username != request.user.username):
+                not request.user.is_superuser and
+                username and username != request.user.username):
             raise PermissionDenied
 
         if username:
@@ -614,10 +614,8 @@ class CanvasesView(View, GetUserMixin):
     def get(self, request, username=None):
         """Get list of user canvases."""
         user = get_object_or_404(User, username=username)
-        canvases = Canvas.objects.filter(user=user).order_by('-pk').values_list(
-            'slug',
-            'canvas'
-        )
+        canvases = Canvas.objects.filter(user=user).order_by('-pk')\
+            .values_list('slug', 'canvas')
 
         return JsonResponse(dict(canvases), safe=False)
 
