@@ -10,10 +10,10 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 
 from .widgets import ColorWidget
 
-TIMEZONES = [
+TIMEZONES = sorted([
     (tz, tz + ' ' + datetime.datetime.now(pytz.timezone(tz)).strftime('%z'))
     for tz in pytz.common_timezones
-]
+])
 
 default_palette_colors = (
     'f5f5f5',

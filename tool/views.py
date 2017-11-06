@@ -16,6 +16,7 @@ from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth import get_user_model, login, logout
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.utils.translation import ugettext
 from django.utils import timezone
 from django.views import View
@@ -445,28 +446,27 @@ def dictionary(request, username=None):
     ))
 
 
-@login_required
-def flights_view(request):
-    """Check tickets."""
-    if request.method == 'POST':
+class FlightsView(View, LoginRequiredMixin):
+    def get(self, request):
+        """Get form."""
+        form = FlightsForm()
+
+        return render(request, 'flights.html', dict(
+            form=form,
+        ))
+
+    def post(self, request):
+        """Form submit."""
         form = FlightsForm(data=request.POST)
 
         if form.is_valid():
-            url = settings.QPXEXPRESS_URL + settings.QPXEXPRESS_API_KEY
-            headers = {'content-type': 'application/json'}
-
-            origin = form.cleaned_data['origin']
-            destination = form.cleaned_data['destination']
-            round_trip = form.cleaned_data['round_trip']
-            date_start = form.cleaned_data['date_start']
-
             params = {
                 'request': {
                     'slice': [
                         {
-                            'origin': origin,
-                            'destination': destination,
-                            'date': str(date_start)
+                            'origin': form.cleaned_data['origin'],
+                            'destination': form.cleaned_data['destination'],
+                            'date': str(form.cleaned_data['date_start'])
                         }
                     ],
                     'passengers': {
@@ -481,61 +481,59 @@ def flights_view(request):
                 }
             }
 
-            if round_trip:
+            if form.cleaned_data['round_trip']:
                 date_back = form.cleaned_data['date_back']
 
                 params['request']['slice'].append({
-                    'origin': destination,
-                    'destination': origin,
+                    'origin': form.cleaned_data['destination'],
+                    'destination': form.cleaned_data['origin'],
                     'date': str(date_back)
                 })
 
             response = requests.post(
-                url,
+                settings.QPXEXPRESS_URL + settings.QPXEXPRESS_API_KEY,
                 data=json.dumps(params),
-                headers=headers
+                headers={'content-type': 'application/json'}
             )
             data = response.json()
-            result = []
 
-            if response.status_code == 200:
-                if 'tripOption' in data['trips']:
-                    for fly in data['trips']['tripOption']:
-                        slice_data = []
-                        for item in fly['slice']:
-                            route = item['segment'][0]['leg'][0]['origin']
-                            for seg in item['segment']:
-                                route += '->' + seg['leg'][0]['destination']
-
-                            slice_data.append({
-                                'stops': len(item['segment']) - 1,
-                                'slice': route,
-                                'duration': str(timedelta(
-                                    minutes=item['duration']
-                                ))[:-3]
-                            })
-
-                        result.append({
-                            'price': float(re.sub(
-                                r'[^0-9.]',
-                                '',
-                                fly['saleTotal']
-                            )),
-                            'slice': slice_data
-                        })
-            else:
-                result = {
+            # Handle an error.
+            if response.status_code != 200:
+                return JsonResponse({
                     'status': response.status_code,
                     'statusText': data['error']['message']
-                }
+                }, safe=False)
+
+            result = []
+            for fly in data['trips'].get('tripOption', []):
+                slice_data = []
+                for item in fly['slice']:
+                    route = item['segment'][0]['leg'][0]['origin']
+                    for seg in item['segment']:
+                        route += '->' + seg['leg'][0]['destination']
+
+                    slice_data.append({
+                        'stops': len(item['segment']) - 1,
+                        'slice': route,
+                        'duration': str(timedelta(
+                            minutes=item['duration']
+                        ))[:-3]
+                    })
+
+                result.append({
+                    'price': float(re.sub(
+                        r'[^0-9.]',
+                        '',
+                        fly['saleTotal']
+                    )),
+                    'slice': slice_data
+                })
 
             return JsonResponse(result, safe=False)
-    else:
-        form = FlightsForm()
 
-    return render(request, 'flights.html', dict(
-        form=form,
-    ))
+        return render(request, 'flights.html', dict(
+            form=form,
+        ))
 
 
 def log_in(request):
