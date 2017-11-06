@@ -446,7 +446,7 @@ def dictionary(request, username=None):
     ))
 
 
-class FlightsView(View, LoginRequiredMixin):
+class FlightsView(LoginRequiredMixin, View):
     def get(self, request):
         """Get form."""
         form = FlightsForm()
