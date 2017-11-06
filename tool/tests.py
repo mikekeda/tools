@@ -29,6 +29,78 @@ class LoanedBookInstancesByUserListViewTest(TestCase):
         self.assertEqual(resp.status_code, 200)
         self.assertTemplateUsed(resp, 'canvas.html')
 
+    def test_canvas_tool_page_list(self):
+        sample_1 = 'data:image/gif;base64,' +\
+                   'R0lGODlhAQABAIAAAAUEBAAAACwAAAAAAQABAAACAkQBADs='
+        sample_2 = 'data:image/gif;base64,' +\
+                   'R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7'
+
+        resp = self.client.get(reverse('canvases',
+                                       kwargs={'username': 'testuser'}))
+        self.assertEqual(resp.status_code, 200)
+        self.assertJSONEqual(
+            str(resp.content, encoding='utf8'),
+            {}
+        )
+
+        # Try to save something as anonymous user.
+        resp = self.client.post(
+            reverse('canvases', kwargs={'username': 'testuser'}),
+            {'imgBase64': sample_1}
+        )
+        self.assertEqual(resp.status_code, 403)
+
+        # Log in and try to save something.
+        self.client.login(username='testuser', password='12345')
+        resp = self.client.post(
+            reverse('canvases', kwargs={'username': 'testuser'}),
+            {'imgBase64': sample_1}
+        )
+        self.assertEqual(resp.status_code, 200)
+
+        resp = self.client.get(reverse('canvases',
+                                       kwargs={'username': 'testuser'}))
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(len(resp.json()), 1)
+        self.assertEqual(list(resp.json().values())[0], sample_1)
+
+        # Try to change something.
+        slug = list(resp.json().keys())[0]
+        resp = self.client.post(
+            reverse('canvases', kwargs={'username': 'testuser'}),
+            {'imgBase64': sample_2,
+             'slug': slug}
+        )
+        self.assertEqual(resp.status_code, 200)
+
+        resp = self.client.get(reverse('canvases',
+                                       kwargs={'username': 'testuser'}))
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(len(resp.json()), 1)
+        self.assertEqual(list(resp.json().values())[0], sample_2)
+
+        # Regular user can't create canvas for another user.
+        resp = self.client.post(
+            reverse('canvases', kwargs={'username': 'testadmin'}),
+            {'imgBase64': sample_2}
+        )
+        self.assertEqual(resp.status_code, 403)
+
+        # Admin can change canvas for another user.
+        self.client.login(username='testadmin', password='12345')
+        resp = self.client.post(
+            reverse('canvases', kwargs={'username': 'testuser'}),
+            {'imgBase64': sample_1}
+        )
+        self.assertEqual(resp.status_code, 200)
+
+        resp = self.client.get(reverse('canvases',
+                                       kwargs={'username': 'testuser'}))
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(len(resp.json()), 2)
+        self.assertEqual(list(resp.json().values())[0], sample_1)
+        self.assertEqual(list(resp.json().values())[1], sample_2)
+
     def test_convert_image_tool_page(self):
         resp = self.client.get('/tool/convert-image-to-base64')
         self.assertEqual(resp.status_code, 200)
