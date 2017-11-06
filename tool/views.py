@@ -18,6 +18,7 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.decorators import login_required
 from django.utils.translation import ugettext
 from django.utils import timezone
+from django.views import View
 
 from .models import (
     TIMEZONES,
@@ -25,6 +26,7 @@ from .models import (
     Word,
     Profile,
     Task,
+    Canvas,
     default_palette_colors
 )
 from .forms import (
@@ -39,10 +41,30 @@ from .forms import (
 User = get_user_model()
 
 
-def tool(request, slug):
+class GetUserMixin(object):
+    def get_user(self, request, username: str):
+        if not request.user.is_authenticated or (
+                not request.user.is_superuser
+                and username and username != request.user.username):
+            raise PermissionDenied
+
+        if username:
+            return get_object_or_404(User, username=username)
+
+        return request.user
+
+
+def tool(request, slug, username=None):
     """Show needed tool."""
     try:
-        return render(request, slug + ".html", dict(active_page=slug))
+        user = request.user
+        if username:
+            user = get_object_or_404(User, username=username)
+
+        return render(request, slug + ".html", dict(
+            active_page=slug,
+            user=user
+        ))
     except Exception:
         raise Http404
 
@@ -577,6 +599,51 @@ def log_in(request):
             return redirect(reverse('main'))
 
     return render(request, 'login.html', {'form': form})
+
+
+class CanvasView(View, GetUserMixin):
+    def get(self, request, slug):
+        """Get canvas by slug."""
+        canvas = get_object_or_404(Canvas.objects.values_list('canvas'),
+                                   slug=slug)
+
+        return JsonResponse(canvas[0], safe=False)
+
+
+class CanvasesView(View, GetUserMixin):
+    def get(self, request, username=None):
+        """Get list of user canvases."""
+        user = get_object_or_404(User, username=username)
+        canvases = Canvas.objects.filter(user=user).order_by('-pk').values_list(
+            'slug',
+            'canvas'
+        )
+
+        return JsonResponse(dict(canvases), safe=False)
+
+    def post(self, request, username=None):
+        """Save or create canvas."""
+        user = self.get_user(request, username)
+        data = request.POST.get('imgBase64', '')
+        slug = request.POST.get('slug', '')
+
+        if slug:
+            # Change existing canvas.
+            canv = Canvas.objects.filter(slug=slug).first()
+            if canv:
+                canv.canvas = data
+                canv.save()
+                message = ugettext("The Canvas wasn't changed")
+            else:
+                message = ugettext('The Canvas was changed')
+
+            return JsonResponse(message, safe=False)
+
+        # Create a new canvas.
+        obj = Canvas(user=user, canvas=data)
+        obj.save()
+
+        return JsonResponse(ugettext('The Canvas was created'), safe=False)
 
 
 @login_required

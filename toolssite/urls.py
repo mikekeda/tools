@@ -10,7 +10,8 @@ from django.utils.translation import ugettext_lazy as _
 
 from tool.views import (tool, worklogs, calendar, dictionary, flashcards,
                         users_list, profile_view, update_profile, user_events,
-                        card_order, task_order, flights_view, tasks_view, log_in, log_out)
+                        card_order, task_order, flights_view, tasks_view,
+                        CanvasView, CanvasesView, log_in, log_out)
 from tool.sitemaps import StaticViewSitemap
 
 sitemaps = {
@@ -23,6 +24,8 @@ urlpatterns = [
     url(r'^ajax$', tool, name='ajax_main', kwargs={'slug': 'jira-logs'}),
     url(r'^tool/(?P<slug>[^/]+)$', tool, name='tool'),
     url(r'^ajax/tool/(?P<slug>[^/]+)$', tool, name='ajax_tool'),
+    url(r'^user/(?P<username>[^/]+)/tool/(?P<slug>[^/]+)$', tool, name='user_tool'),
+    url(r'^ajax/user/(?P<username>[^/]+)/tool/(?P<slug>[^/]+)$', tool, name='ajax_user_tool'),
     url(r'^calendar$', calendar, name='calendar'),
     url(r'^ajax/calendar$', calendar, name='ajax_calendar'),
     url(r'^user/(?P<username>[^/]+)/calendar$', calendar, name='user_calendar'),
@@ -39,6 +42,8 @@ urlpatterns = [
     url(r'^ajax/tasks$', tasks_view, name='ajax_tasks'),
     url(r'^user/(?P<username>[^/]+)/tasks$', tasks_view, name='user_tasks'),
     url(r'^ajax/user/(?P<username>[^/]+)/tasks$', tasks_view, name='ajax_user_tasks'),
+    url(r'^user/(?P<username>[^/]+)/canvases$', CanvasesView.as_view(), name='canvases'),
+    url(r'^canvas/(?P<slug>[^/]+)$', CanvasView.as_view(), name='canvas'),
     url(r'^flights$', flights_view, name='flights'),
     url(r'^ajax/flights$', flights_view, name='ajax_flights'),
     url(r'^get-worklogs$', worklogs, name='worklogs'),

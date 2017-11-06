@@ -8,7 +8,7 @@ from easy_select2 import select2_modelform
 from schedule.models import Event, Calendar
 from schedule.admin import EventAdmin
 
-from .models import Profile, Card, Word, Task
+from .models import Profile, Card, Word, Task, Canvas
 
 User = get_user_model()
 ProfileForm = select2_modelform(Profile)
@@ -70,10 +70,16 @@ class TaskAdmin(admin.ModelAdmin):
         return db_field.formfield(**kwargs)
 
 
+class CanvasAdmin(admin.ModelAdmin):
+    fields = ('user', 'preview', 'canvas')
+    readonly_fields = ('preview',)
+
+
 admin.site.register(Card, CardAdmin)
 admin.site.register(Word, WordAdmin)
 admin.site.unregister(Event)
 admin.site.register(Event, ToolEventAdmin)
 admin.site.register(Task, TaskAdmin)
+admin.site.register(Canvas, CanvasAdmin)
 admin.site.unregister(User)
 admin.site.register(User, AuthUserAdmin)

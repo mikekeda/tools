@@ -10,7 +10,7 @@
         <div>
             <ul class="nav nav-tabs">
                 <li role="presentation" class="active">
-                    <a class="ajax-link"  data-annyang="user profile" href="{% url 'user' profile_user.username %}">
+                    <a class="ajax-link" data-annyang="user profile" href="{% url 'user' profile_user.username %}">
                         {% trans "Profile" %}
                     </a>
                 </li>
@@ -32,6 +32,11 @@
                 <li role="presentation">
                     <a class="ajax-link" data-annyang="user tasks" href="{% url 'user_tasks' profile_user.username %}">
                         {% trans "Tasks" %}
+                    </a>
+                </li>
+                <li role="presentation">
+                    <a class="ajax-link" data-annyang="user canvases" href="{% url 'user_tool' profile_user.username 'canvas' %}">
+                        {% trans "Canvases" %}
                     </a>
                 </li>
             </ul>

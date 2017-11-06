@@ -1,5 +1,7 @@
 import datetime
 import pytz
+import string
+import random
 
 from django.db import models
 from django.contrib.auth.models import User
@@ -20,6 +22,19 @@ default_palette_colors = (
     'fcf8e3',
     'f2dede',
 )
+
+_char_map = string.ascii_letters + string.digits
+
+
+def number_to_chars(num: int):
+    base = len(_char_map)
+    if num == 0:
+        return _char_map[0]
+    digits = []
+    while num:
+        digits.append(_char_map[int(num % base)])
+        num //= base
+    return ''.join(map(str, digits[::-1]))
 
 
 class ColorField(models.CharField):
@@ -131,4 +146,34 @@ class Task(models.Model):
     def __str__(self):
         return u'%s' % (
             self.title,
+        )
+
+
+class Canvas(models.Model):
+    """Canvas model"""
+    user = models.ForeignKey(User, related_name='canvases')
+    canvas = models.TextField(blank=True, null=True)
+    slug = models.CharField(max_length=10, unique=True)
+    created = models.DateTimeField(auto_now_add=True)
+    changed = models.DateTimeField(auto_now=True)
+
+    def save(self, force_insert=False, force_update=False, using=None,
+             update_fields=None):
+        need_slug = not self.pk
+        super(Canvas, self).save(force_insert, force_update,
+                                 using, update_fields)
+        if need_slug:
+            self.slug = ''.join(random.sample(_char_map, 3)) +\
+                        number_to_chars(self.pk)
+            self.save()
+
+    def preview(self):
+        return u'<img src="{}" />'.format(self.canvas)
+
+    preview.short_description = 'Image'
+    preview.allow_tags = True
+
+    def __str__(self):
+        return u'%s' % (
+            '{}: {}'.format(self.user.username, self.pk)
         )
