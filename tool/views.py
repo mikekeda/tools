@@ -123,14 +123,7 @@ def worklogs(request):
 @login_required
 def flashcards(request, username=None):
     """Flashcards."""
-    if not request.user.is_superuser \
-            and username and username != request.user.username:
-        raise PermissionDenied
-
-    if username:
-        user = get_object_or_404(User, username=username)
-    else:
-        user = request.user
+    user = GetUserMixin().get_user(request, username)
 
     cards = Card.objects.filter(user=user).order_by('order')
     if user == request.user:
@@ -173,14 +166,7 @@ def flashcards(request, username=None):
 def tasks_view(request, username=None):
     """Tasks."""
     tasks = []
-    if not request.user.is_superuser and \
-            username and username != request.user.username:
-        raise PermissionDenied
-
-    if username:
-        user = get_object_or_404(User, username=username)
-    else:
-        user = request.user
+    user = GetUserMixin().get_user(request, username)
 
     if user == request.user:
         form_action = reverse('tasks')
@@ -238,14 +224,7 @@ def tasks_view(request, username=None):
 @login_required
 def calendar(request, username=None):
     """Calendar."""
-    if not request.user.is_superuser and \
-            username and username != request.user.username:
-        raise PermissionDenied
-
-    if username:
-        user = get_object_or_404(User, username=username)
-    else:
-        user = request.user
+    user = GetUserMixin().get_user(request, username)
 
     calendar_obj, _ = Calendar.objects.get_or_create(
         slug=user.username,
@@ -375,18 +354,7 @@ def update_profile(request):
 def card_order(request, username=None):
     """Change Flashcards order callback."""
     if request.is_ajax():
-        if not request.user.is_superuser \
-                and username and username != request.user.username:
-            raise JsonResponse(
-                ugettext("You can't change the order"),
-                safe=False,
-                status=403
-            )
-
-        if username:
-            user = get_object_or_404(User, username=username)
-        else:
-            user = request.user
+        user = GetUserMixin().get_user(request, username)
 
         cards = Card.objects.filter(user=user)
         order = request.POST.get('order', '')
@@ -404,22 +372,10 @@ def card_order(request, username=None):
 def task_order(request, username=None):
     """Change Task order and status callback."""
     if request.is_ajax():
-        if not request.user.is_superuser \
-                and username and username != request.user.username:
-            raise JsonResponse(
-                ugettext("You can't change the order"),
-                safe=False,
-                status=403
-            )
-
+        user = GetUserMixin().get_user(request, username)
         order = request.POST.get('order', '')
         status = request.POST.get('status', '')
         if status in (status[0] for status in Task.STATUSES):
-            if username:
-                user = get_object_or_404(User, username=username)
-            else:
-                user = request.user
-
             tasks = Task.objects.filter(user=user)
             order = json.loads(order)
             for task in tasks:
@@ -459,14 +415,7 @@ def user_events(request):
 @login_required
 def dictionary(request, username=None):
     """Dictionary."""
-    if not request.user.is_superuser \
-            and username and username != request.user.username:
-        raise PermissionDenied
-
-    if username:
-        user = get_object_or_404(User, username=username)
-    else:
-        user = request.user
+    user = GetUserMixin().get_user(request, username)
 
     # it could be current user that open a page by his username
     if user == request.user:
