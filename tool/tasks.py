@@ -1,7 +1,7 @@
 from django.conf import settings
 from django.core.mail import send_mail
 from django.utils import timezone
-from celery.task.schedules import crontab
+from celery.schedules import crontab
 from celery.decorators import periodic_task
 from schedule.models import Event
 import pytz
