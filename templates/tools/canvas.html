@@ -109,12 +109,14 @@
     clear: both;
   }
 
-  button {
+  button,
+  .button {
     background: -moz-linear-gradient(top, #fff, #ddd);
     background: -webkit-linear-gradient(#fff, #ddd);
     background: -o-linear-gradient(top, #fff, #ddd);
-    border: px solid #bbb;
+    border: 1px solid #bbb;
     border-radius: 5px;
+    display: inline-block;
     text-align: center;
     box-shadow: 0 0 .05em rgba(0,0,0,0.2);
     text-decoration: none;
@@ -125,7 +127,8 @@
     font-size: 14px;
   }
 
-  button:hover {
+  button:hover,
+  .button:hover {
     background: -moz-linear-gradient(top, #ddd, #ddd);
     background: -webkit-linear-gradient(#ddd, #ddd);
     background: -o-linear-gradient(top, #ddd, #ddd);
@@ -162,11 +165,13 @@
     margin-left: -26px;
   }
 
-  button > .glyphicon {
+  button > .glyphicon,
+  .button > .glyphicon {
     padding: 2px 0 8px;
   }
 
-  button > .glyphicon:before {
+  button > .glyphicon:before,
+  .button > .glyphicon:before {
     color: #555;
     position: relative;
     top: 2px;
@@ -230,6 +235,7 @@
     <button type="button" id="load" onclick="canv_save();"><span class="glyphicon glyphicon-save" aria-hidden="true"></span></button>
     <button type="button" id="save" onclick="canv_save_to_server();"><span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span></button>
     <button type="button" id="file"><span class="glyphicon glyphicon-folder-open" aria-hidden="true"></span></button><input type="file" id="files" name="files">
+    <a href="{% url 'user_tool' user.username 'canvas' %}" class="button"><span class="glyphicon glyphicon-asterisk" aria-hidden="true"></span></a>
     <br>
     <div id="canv_div">
       <canvas id="canvas" width="540" height="550" class="show">{% trans "Canvas is not supported" %}</canvas>
