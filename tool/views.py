@@ -64,7 +64,7 @@ def tool(request, slug, username=None):
 
         return render(request, slug + ".html", dict(
             active_page=slug,
-            user=user
+            profile_user=user
         ))
     except Exception:
         raise Http404

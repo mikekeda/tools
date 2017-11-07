@@ -233,9 +233,11 @@
     <button type="button" id="forward" onclick="canv_forward();"><span class="glyphicon glyphicon-step-forward" aria-hidden="true"></span></button>
     <button type="button" id="clear" onclick="canv_clear();"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAAAXNSR0IArs4c6QAAAAZiS0dEAP8A/wD/oL2nkwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB9wCBBYYCMjhfWoAAAP0SURBVEjHrZVNTGtFFMfPzP3qhX7Q0pCWBjRpI+ErgDEh6ALD1oWujDGunyQYVm/hW+uKEFQCIaABF76oGzbqW4CJLHDDghgLBCIB+gjQFi5Q2ts7cz/muAHCw8dXn5NMMpP5n/8v55zJDMArjoGBAfXRo0eRm86lSo0HBwdpMpn8tKam5vva2trHjY2Nsd7e3t+Xlpbwqo5WCjg+Ph7o7u4esywrp2mankwmPxJChK/rKgL09/e3tLa2fnFycsKLxeJ3tm3L+Xx+DwBK/wvANM3P4vF4MBAI+Orr6ycDgYB+eHj44/j4OL+ulSuofa2qqu+fnp6C67o0EolUra6uZqLR6Lcv0z8YYFnWu5FIJGYYBnieh6VSybZte3B6etqsGDA0NEQZYxFEdDY3Nz8ol8uEMQaICNls9oeGhoZfb4q9F8BxHF1RlD+i0aiPEBIzDIN4noeGYazFYrEnIyMj4pUAR0dHHyYSiUafzxdobm4GAMD9/X3Y2Nj4W1VV77bYO2/R6OhoiBAyoet6cHd3l6yursL29jZBREgmk++5rvvObfG3ZjA+Pt5s2/bTnp4edWdnB8vlMjDGgDGGkiRBoVD4Zmxs7JeKAJOTk00A8KylpeW1UqlEUqkUnJycQD6fx2w2SwghiIj/3FWBl5ZoamqqhjH2UyqVep0xBkIIsG0bOOdQXV0N8XgcwuEw6Lq+9mDAzMyMYhjGWFtbW4eiKOA4Dti2DYwxsCzrch8IBIBz/vaDABMTE2Rvb+9JV1fXx4qiAOccTdMEx3HQcRxERLzogRAChBDxuwCXPRgeHia5XK6/o6Pjc0opGIZByuUyyLKMlFJCKQUhBDDG0HEcIkkSuq5L751BNpv9pL29/WtVVX3pdBo8zwNEBEQEWZahUCgA5xyEEODz+UCWZWCMFe6dQaFQ+C2dTv/puu5bnZ2d/mKxiLqugxACstkscs6Bcw7hcBg454iIkE6nnycSCY1S6uXzecE5Fzf+aMvLyxYiPvP7/W82NDQkVVWlsiyTra0toJQSy7IIAJBgMAimaRJCCM7Pz3+5v79vnZ2dSUIICgDk3A7/A+jr66MLCwvSysrKwsHBwVl9fX1HLpfzhUIhME2TMMYgFApBqVQCTdNILpdbm5ubmzoPJ1fMLwD4AkCSJHBdl5qmKTKZzMri4uLPx8fHzwGgqq6ursrv9+u7u7tmKBRSgsEgzs7OfnVwcPAXAHjn072yvnyfyPWaJRIJybIspVgsagAgI6KqaVokGo1GNU2Tqqur36CUhtfX158yxgqI6AKAJ4S4MH6hD+S2G9DU1ESEEETTNKLrOiiKQmzbBsuy0LIs9DwPM5kM3ubxLyrnFRKUWdVyAAAAAElFTkSuQmCC" alt="clear"></button>
     <button type="button" id="load" onclick="canv_save();"><span class="glyphicon glyphicon-save" aria-hidden="true"></span></button>
-    <button type="button" id="save" onclick="canv_save_to_server();"><span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span></button>
     <button type="button" id="file"><span class="glyphicon glyphicon-folder-open" aria-hidden="true"></span></button><input type="file" id="files" name="files">
-    <a href="{% url 'user_tool' user.username 'canvas' %}" class="button"><span class="glyphicon glyphicon-asterisk" aria-hidden="true"></span></a>
+    {% if user.is_authenticated %}
+    <button type="button" id="save" onclick="canv_save_to_server();"><span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span></button>
+    <a href="{% url 'user_tool' profile_user.username 'canvas' %}" class="button"><span class="glyphicon glyphicon-asterisk" aria-hidden="true"></span></a>
+    {% endif %}
     <br>
     <div id="canv_div">
       <canvas id="canvas" width="540" height="550" class="show">{% trans "Canvas is not supported" %}</canvas>
@@ -355,7 +357,7 @@
 
             jQuery.ajax({
                 type: "POST",
-                url: "{% url 'canvases' user.username %}",
+                url: "{% url 'canvases' profile_user.username %}",
                 data: {
                     'csrfmiddlewaretoken': '{{ csrf_token }}',
                     'imgBase64': canvas.toDataURL(),
@@ -884,7 +886,7 @@
             }
 
             {% if user.is_authenticated %}
-            $.getJSON("{% url 'canvases' user.username %}", function(data) {
+            $.getJSON("{% url 'canvases' profile_user.username %}", function(data) {
                 var items = [];
                 $.each(data, function(key, val) {
                     items.push(
