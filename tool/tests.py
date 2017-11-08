@@ -2,6 +2,8 @@ from django.test import TestCase
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
 
+from .models import Profile
+
 
 class LoanedBookInstancesByUserListViewTest(TestCase):
     def setUp(self):
@@ -224,6 +226,105 @@ class LoanedBookInstancesByUserListViewTest(TestCase):
         resp = self.client.get(reverse('users'))
         self.assertEqual(resp.status_code, 200)
         self.assertTemplateUsed(resp, 'user_list.html')
+
+    def test_update_profile(self):
+        resp = self.client.post(
+            reverse('update_profile'),
+            {'first_name': 'test1'}
+        )
+        self.assertRedirects(resp, '/login?next=/update-profile')
+        self.client.login(username='testuser', password='12345')
+        # Need to create profile for the users.
+        resp = self.client.get(reverse('user',
+                                       kwargs={'username': 'testuser'}))
+        self.assertEqual(resp.status_code, 200)
+
+        # Change first name.
+        resp = self.client.post(
+            reverse('update_profile'),
+            {'name': 'first_name', 'value': 'test name'}
+        )
+        self.assertEqual(resp.status_code, 200)
+        self.assertJSONEqual(
+            str(resp.content, encoding='utf8'),
+            {'success': True}
+        )
+        user = User.objects.get(username='testuser')
+        self.assertEqual(user.first_name, 'test name')
+
+        # Change last name.
+        resp = self.client.post(
+            reverse('update_profile'),
+            {'name': 'last_name', 'value': 'test last name'}
+        )
+        self.assertEqual(resp.status_code, 200)
+        self.assertJSONEqual(
+            str(resp.content, encoding='utf8'),
+            {'success': True}
+        )
+        user = User.objects.get(username='testuser')
+        self.assertEqual(user.last_name, 'test last name')
+
+        # Change email.
+        resp = self.client.post(
+            reverse('update_profile'),
+            {'name': 'email', 'value': 'myemail2@test.com'}
+        )
+        self.assertEqual(resp.status_code, 200)
+        self.assertJSONEqual(
+            str(resp.content, encoding='utf8'),
+            {'success': True}
+        )
+        user = User.objects.get(username='testuser')
+        self.assertEqual(user.email, 'myemail2@test.com')
+
+        # Change palette_color_2.
+        resp = self.client.post(
+            reverse('update_profile'),
+            {'name': 'palette_color_2', 'value': '4AF560'}
+        )
+        self.assertEqual(resp.status_code, 200)
+        self.assertJSONEqual(
+            str(resp.content, encoding='utf8'),
+            {'success': True}
+        )
+        profile = Profile.objects.get(user=user)
+        self.assertEqual(profile.palette_color_2, '4AF560')
+
+        # Change timezone (fail).
+        resp = self.client.post(
+            reverse('update_profile'),
+            {'name': 'timezone', 'value': 'dummy_zone'}
+        )
+        self.assertEqual(resp.status_code, 403)
+        self.assertEqual(
+            str(resp.content, encoding='utf8'),
+            '"This value not allowed"'
+        )
+
+        # Change timezone (success).
+        resp = self.client.post(
+            reverse('update_profile'),
+            {'name': 'timezone', 'value': 'Europe/Kiev'}
+        )
+        self.assertEqual(resp.status_code, 200)
+        self.assertJSONEqual(
+            str(resp.content, encoding='utf8'),
+            {'success': True}
+        )
+        profile = Profile.objects.get(user=user)
+        self.assertEqual(profile.timezone, 'Europe/Kiev')
+
+        # Change not existing field (fail).
+        resp = self.client.post(
+            reverse('update_profile'),
+            {'name': 'dummy_field', 'value': 'dummy_value'}
+        )
+        self.assertEqual(resp.status_code, 403)
+        self.assertEqual(
+            str(resp.content, encoding='utf8'),
+            '"You can\'t change this field"'
+        )
 
     def test_sitemap_page(self):
         resp = self.client.get('/sitemap.xml')
