@@ -1,17 +1,16 @@
+import pytz
+
 from django.conf import settings
 from django.core.mail import send_mail
 from django.utils import timezone
-from celery.schedules import crontab
-from celery.decorators import periodic_task
 from schedule.models import Event
-import pytz
+
+from celery import Celery
+
+app = Celery('tool')
 
 
-@periodic_task(
-    run_every=(crontab(minute='*/15')),
-    name='send_notification',
-    ignore_result=True
-)
+@app.task
 def send_notification():
     """Send email notification about upcoming events."""
     interval = 15
@@ -55,11 +54,7 @@ def send_notification():
         )
 
 
-@periodic_task(
-    run_every=(crontab(minute=0, hour='*/1')),
-    name='daily_notification',
-    ignore_result=True
-)
+@app.task
 def daily_notification():
     """Send daily email notification about upcoming events."""
     sending_hour = 8
