@@ -245,10 +245,27 @@ class ToolViewTest(TestCase):
         self.assertTemplateUsed(resp, 'profile.html')
 
     # Special pages.
+    def test_views_sitemap(self):
+        resp = self.client.get('/sitemap.xml')
+        self.assertEqual(resp.status_code, 200)
+
     def test_views_login(self):
         resp = self.client.get(reverse('login'))
         self.assertEqual(resp.status_code, 200)
         self.assertTemplateUsed(resp, 'login.html')
+
+        # Try to login again (fail).
+        self.client.login(username='testuser', password='12345')
+        resp = self.client.get(reverse('login'))
+        self.assertRedirects(resp, settings.LOGIN_REDIRECT_URL)
+
+    def test_views_logout(self):
+        resp = self.client.get(reverse('logout'))
+        self.assertRedirects(resp, '/login?next=/logout')
+
+        self.client.login(username='testuser', password='12345')
+        resp = self.client.get(reverse('logout'))
+        self.assertRedirects(resp, reverse('login'))
 
     def test_views_users(self):
         resp = self.client.get(reverse('users'))
@@ -359,25 +376,3 @@ class ToolViewTest(TestCase):
             str(resp.content, encoding='utf8'),
             '"You can\'t change this field"'
         )
-
-    def test_views_sitemap(self):
-        resp = self.client.get('/sitemap.xml')
-        self.assertEqual(resp.status_code, 200)
-
-    def test_views_login(self):
-        resp = self.client.get(reverse('login'))
-        self.assertEqual(resp.status_code, 200)
-        self.assertTemplateUsed(resp, 'login.html')
-
-        # Try to login again (fail).
-        self.client.login(username='testuser', password='12345')
-        resp = self.client.get(reverse('login'))
-        self.assertRedirects(resp, settings.LOGIN_REDIRECT_URL)
-
-    def test_views_logout(self):
-        resp = self.client.get(reverse('logout'))
-        self.assertRedirects(resp, '/login?next=/logout')
-
-        self.client.login(username='testuser', password='12345')
-        resp = self.client.get(reverse('logout'))
-        self.assertRedirects(resp, reverse('login'))
