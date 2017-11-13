@@ -1,6 +1,7 @@
 from django.test import TestCase
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
+from django.conf import settings
 
 from .models import Profile
 
@@ -128,7 +129,40 @@ class ToolViewTest(TestCase):
         self.assertEqual(resp.status_code, 200)
         self.assertTemplateUsed(resp, 'units-converter.html')
 
+    def test_views_notexisting_tool(self):
+        resp = self.client.get(reverse('tool',
+                                       kwargs={'slug': 'notexisting'}))
+        self.assertEqual(resp.status_code, 404)
+        self.assertTemplateUsed(resp, '404.html')
+
     # Pages available only for registered users.
+    def test_views_tool_notexisting_user(self):
+        resp = self.client.get(reverse('user_tool', kwargs={
+            'username': 'notexisting',
+            'slug': 'text'
+        }))
+        self.assertEqual(resp.status_code, 404)
+        self.assertTemplateUsed(resp, '404.html')
+
+    def test_views_events(self):
+        resp = self.client.get(reverse('events'))
+        self.assertRedirects(resp, '/login?next=/events')
+
+        self.client.login(username='testuser', password='12345')
+        resp = self.client.get(reverse('events'))
+        self.assertEqual(resp.status_code, 404)
+        self.assertTemplateUsed(resp, '404.html')
+
+        resp = self.client.get(
+            reverse('events'),
+            HTTP_X_REQUESTED_WITH='XMLHttpRequest'
+        )
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(
+            str(resp.content, encoding='utf8'),
+            '""'
+        )
+
     def test_views_calendar(self):
         resp = self.client.get(reverse('calendar'))
         self.assertRedirects(resp, '/login?next=/calendar')
@@ -329,3 +363,21 @@ class ToolViewTest(TestCase):
     def test_views_sitemap(self):
         resp = self.client.get('/sitemap.xml')
         self.assertEqual(resp.status_code, 200)
+
+    def test_views_login(self):
+        resp = self.client.get(reverse('login'))
+        self.assertEqual(resp.status_code, 200)
+        self.assertTemplateUsed(resp, 'login.html')
+
+        # Try to login again (fail).
+        self.client.login(username='testuser', password='12345')
+        resp = self.client.get(reverse('login'))
+        self.assertRedirects(resp, settings.LOGIN_REDIRECT_URL)
+
+    def test_views_logout(self):
+        resp = self.client.get(reverse('logout'))
+        self.assertRedirects(resp, '/login?next=/logout')
+
+        self.client.login(username='testuser', password='12345')
+        resp = self.client.get(reverse('logout'))
+        self.assertRedirects(resp, reverse('login'))

@@ -538,6 +538,8 @@ class FlightsView(LoginRequiredMixin, View):
 
 def log_in(request):
     """User login page."""
+    if request.user.is_authenticated():
+        return redirect(settings.LOGIN_REDIRECT_URL)
     form = AuthenticationForm()
     if request.method == 'POST':
         form = AuthenticationForm(data=request.POST)
