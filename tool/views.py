@@ -1,10 +1,9 @@
 import re
 import json
 from collections import OrderedDict
-from datetime import datetime, timedelta
+from datetime import timedelta
 import requests
 import pytz
-import dateutil.parser
 from schedule.models import Calendar, Event
 
 from django.core.exceptions import PermissionDenied, ValidationError
@@ -21,23 +20,10 @@ from django.utils.translation import ugettext
 from django.utils import timezone
 from django.views import View
 
-from .models import (
-    TIMEZONES,
-    Card,
-    Word,
-    Profile,
-    Task,
-    Canvas,
-    default_palette_colors
-)
-from .forms import (
-    WordForm,
-    EventForm,
-    CardForm,
-    AvatarForm,
-    FlightsForm,
-    TaskForm
-)
+from .models import (TIMEZONES, Card, Word, Profile, Task, Canvas,
+                     default_palette_colors)
+from .forms import (WordForm, EventForm, CardForm, AvatarForm, FlightsForm,
+                    TaskForm)
 
 User = get_user_model()
 

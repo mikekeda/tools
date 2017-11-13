@@ -113,7 +113,7 @@ class ToolViewTest(TestCase):
         self.assertEqual(sorted(list(resp.json().values()))[0], sample_2)
         self.assertEqual(sorted(list(resp.json().values()))[1], sample_1)
 
-    def test_views_canvas_tool_list(self):
+    def test_views_canvas(self):
         sample_1 = 'data:image/gif;base64,' +\
                    'R0lGODlhAQABAIAAAAUEBAAAACwAAAAAAQABAAACAkQBADs='
 
