@@ -29,7 +29,6 @@ class ToolContextProcessorTest(TestCase):
                 'slug': 'convert-image-to-base64'
             },
             {'name': 'Get image exif info', 'slug': 'get-image-exif-info'},
-            {'name': 'Jira logs', 'slug': 'jira-logs'},
             {'name': 'Text', 'slug': 'text'},
             {'name': 'Units converter', 'slug': 'units-converter'}
         ]})

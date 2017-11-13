@@ -70,57 +70,6 @@ def tool(request, slug, username=None):
         raise Http404
 
 
-def worklogs(request):
-    """Jira Worklogs."""
-    username = request.POST.get('username', '')
-    password = request.POST.get('password', '')
-    current_date = datetime.today()
-
-    response = requests.get(
-        "https://yawavedev.atlassian.net/rest/api/latest/search"
-        "?jql=worklogDate='{}' "
-        "AND worklogAuthor='{}'&fields=worklog".format(
-            current_date.strftime("%Y-%m-%d"),
-            username
-        ),
-        auth=(username, password)
-    )
-
-    if response.status_code == 200:
-        date_today = current_date.date()
-        body = response.json()
-        result = {
-            'logs': [],
-            'time': 0,
-        }
-
-        for issue in body['issues']:
-            response = requests.get(
-                issue['self'] + '/worklog',
-                auth=(username, password)
-            )
-            if response.status_code == 200:
-                body = response.json()
-                for log in body['worklogs']:
-                    if (log['author']['key'] == username and
-                            dateutil.parser.parse(
-                                log['created']
-                            ).date() == date_today):
-                        result['time'] += log['timeSpentSeconds'] / 3600
-                        text = '{}{{{}}} {}'.format(
-                            issue['key'],
-                            (
-                                str(log['timeSpentSeconds'] / 3600)
-                            ).rstrip('.0') + 'h',
-                            log['comment']
-                        )
-                        result['logs'].append(text)
-
-        return JsonResponse(result)
-
-    raise PermissionDenied
-
-
 @login_required
 def flashcards(request, username=None):
     """Flashcards."""
@@ -553,10 +502,10 @@ def log_in(request):
 class CanvasView(View, GetUserMixin):
     def get(self, request, slug):
         """Get canvas by slug."""
-        canvas = get_object_or_404(Canvas.objects.values_list('canvas'),
-                                   slug=slug)
+        canvas = get_object_or_404(Canvas.objects.values_list(
+            'canvas', flat=True), slug=slug)
 
-        return JsonResponse(canvas[0], safe=False)
+        return JsonResponse(canvas, safe=False)
 
 
 class CanvasesView(View, GetUserMixin):
@@ -587,8 +536,7 @@ class CanvasesView(View, GetUserMixin):
             return JsonResponse(message, safe=False)
 
         # Create a new canvas.
-        obj = Canvas(user=user, canvas=data)
-        obj.save()
+        Canvas(user=user, canvas=data).save()
 
         return JsonResponse(ugettext('The Canvas was created'), safe=False)
 

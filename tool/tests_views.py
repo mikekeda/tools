@@ -3,7 +3,7 @@ from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
 from django.conf import settings
 
-from .models import Profile
+from .models import Profile, Canvas
 
 
 class ToolViewTest(TestCase):
@@ -23,12 +23,12 @@ class ToolViewTest(TestCase):
 
     # Pages available for anonymous.
     def test_views_home(self):
-        resp = self.client.get('/')
+        resp = self.client.get(reverse('main'))
         self.assertEqual(resp.status_code, 200)
-        self.assertTemplateUsed(resp, 'jira-logs.html')
+        self.assertTemplateUsed(resp, 'text.html')
 
     def test_views_canvas_tool(self):
-        resp = self.client.get('/tool/canvas')
+        resp = self.client.get(reverse('tool', kwargs={'slug': 'canvas'}))
         self.assertEqual(resp.status_code, 200)
         self.assertTemplateUsed(resp, 'canvas.html')
 
@@ -76,6 +76,15 @@ class ToolViewTest(TestCase):
         )
         self.assertEqual(resp.status_code, 200)
 
+        # Try to change not existing canvas.
+        resp = self.client.post(
+            reverse('canvases', kwargs={'username': 'testuser'}),
+            {'imgBase64': sample_2,
+             'slug': 'not-exists'}
+        )
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp.json(), "The Canvas was changed")
+
         resp = self.client.get(reverse('canvases',
                                        kwargs={'username': 'testuser'}))
         self.assertEqual(resp.status_code, 200)
@@ -104,28 +113,48 @@ class ToolViewTest(TestCase):
         self.assertEqual(sorted(list(resp.json().values()))[0], sample_2)
         self.assertEqual(sorted(list(resp.json().values()))[1], sample_1)
 
+    def test_views_canvas_tool_list(self):
+        sample_1 = 'data:image/gif;base64,' +\
+                   'R0lGODlhAQABAIAAAAUEBAAAACwAAAAAAQABAAACAkQBADs='
+
+        # Log in and try to save something.
+        self.client.login(username='testuser', password='12345')
+        resp = self.client.post(
+            reverse('canvases', kwargs={'username': 'testuser'}),
+            {'imgBase64': sample_1}
+        )
+        self.assertEqual(resp.status_code, 200)
+
+        user = User.objects.get(username='testuser')
+        test_canvas = Canvas.objects.get(user=user)
+
+        resp = self.client.get(reverse('canvas',
+                                       kwargs={'slug': test_canvas.slug}))
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp.json(), sample_1)
+
     def test_views_convert_image_tool(self):
-        resp = self.client.get('/tool/convert-image-to-base64')
+        resp = self.client.get(reverse(
+            'tool',
+            kwargs={'slug': 'convert-image-to-base64'}
+        ))
         self.assertEqual(resp.status_code, 200)
         self.assertTemplateUsed(resp, 'convert-image-to-base64.html')
 
     def test_views_image_info_tool(self):
-        resp = self.client.get('/tool/get-image-exif-info')
+        resp = self.client.get(reverse('tool',
+                                       kwargs={'slug': 'get-image-exif-info'}))
         self.assertEqual(resp.status_code, 200)
         self.assertTemplateUsed(resp, 'get-image-exif-info.html')
 
-    def test_views_jira_logs_tool(self):
-        resp = self.client.get('/tool/jira-logs')
-        self.assertEqual(resp.status_code, 200)
-        self.assertTemplateUsed(resp, 'jira-logs.html')
-
     def test_views_text_tool(self):
-        resp = self.client.get('/tool/text')
+        resp = self.client.get(reverse('tool', kwargs={'slug': 'text'}))
         self.assertEqual(resp.status_code, 200)
         self.assertTemplateUsed(resp, 'text.html')
 
     def test_views_units_converter_tool(self):
-        resp = self.client.get('/tool/units-converter')
+        resp = self.client.get(reverse('tool',
+                                       kwargs={'slug': 'units-converter'}))
         self.assertEqual(resp.status_code, 200)
         self.assertTemplateUsed(resp, 'units-converter.html')
 

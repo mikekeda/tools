@@ -8,10 +8,10 @@ from django.conf.urls.static import static
 from django.contrib.sitemaps.views import sitemap
 from django.utils.translation import ugettext_lazy as _
 
-from tool.views import (tool, worklogs, calendar, dictionary, flashcards,
-                        users_list, profile_view, update_profile, user_events,
-                        card_order, task_order, FlightsView, tasks_view,
-                        CanvasView, CanvasesView, log_in, log_out)
+from tool.views import (tool, calendar, dictionary, flashcards, users_list,
+                        profile_view, update_profile, user_events, card_order,
+                        task_order, FlightsView, tasks_view, CanvasView,
+                        CanvasesView, log_in, log_out)
 from tool.sitemaps import StaticViewSitemap
 
 sitemaps = {
@@ -20,8 +20,8 @@ sitemaps = {
 
 
 urlpatterns = [
-    url(r'^$', tool, name='main', kwargs={'slug': 'jira-logs'}),
-    url(r'^ajax$', tool, name='ajax_main', kwargs={'slug': 'jira-logs'}),
+    url(r'^$', tool, name='main', kwargs={'slug': 'text'}),
+    url(r'^ajax$', tool, name='ajax_main', kwargs={'slug': 'text'}),
     url(r'^tool/(?P<slug>[^/]+)$', tool, name='tool'),
     url(r'^ajax/tool/(?P<slug>[^/]+)$', tool, name='ajax_tool'),
     url(r'^user/(?P<username>[^/]+)/tool/(?P<slug>[^/]+)$', tool, name='user_tool'),
@@ -46,7 +46,6 @@ urlpatterns = [
     url(r'^canvas/(?P<slug>[^/]+)$', CanvasView.as_view(), name='canvas'),
     url(r'^flights$', FlightsView.as_view(), name='flights'),
     url(r'^ajax/flights$', FlightsView.as_view(), name='ajax_flights'),
-    url(r'^get-worklogs$', worklogs, name='worklogs'),
     url(r'^users$', users_list, name='users'),
     url(r'^ajax/users$', users_list, name='ajax_users'),
     url(r'^user/(?P<username>[^/]+)$', profile_view, name='user'),
