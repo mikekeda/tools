@@ -515,16 +515,14 @@ class CanvasesView(View, GetUserMixin):
             if canv:
                 canv.canvas = data
                 canv.save()
-                message = ugettext("The Canvas wasn't changed")
-            else:
-                message = ugettext('The Canvas was changed')
+        else:
+            # Create a new canvas.
+            Canvas(user=user, canvas=data).save()
 
-            return JsonResponse(message, safe=False)
+        canvases = Canvas.objects.filter(user=user).order_by('-pk')\
+            .values_list('slug', 'canvas')
 
-        # Create a new canvas.
-        Canvas(user=user, canvas=data).save()
-
-        return JsonResponse(ugettext('The Canvas was created'), safe=False)
+        return JsonResponse(dict(canvases), safe=False)
 
 
 @login_required

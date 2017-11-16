@@ -345,6 +345,22 @@
             }
         }
 
+        function update_list_of_canvases(data) {
+            var items = [];
+            $.each(data, function(key, val) {
+                items.push(
+                    '<a class="ajax-link" href="{% url 'tool' 'canvas' %}?canv=' + key + '">' +
+                        '<div class="col-sm-4" style="">' +
+                            '<img src="' + val + '" style="max-width: 100%; border: 2px solid black; border-radius: 5px;" />' +
+                            '<h5>' + key + '</h5>' +
+                        '</div>' +
+                    '</a>'
+                );
+            });
+
+            $("#user-images").html($(items.join('')));
+        }
+
         // Save to file.
         function canv_save() {
             document.location.href = canv.toDataURL("image/png").replace("image/png", "image/octet-stream");
@@ -363,8 +379,8 @@
                     'imgBase64': canvas.toDataURL(),
                     'slug': canv
                 }
-            }).done(function(o) {
-                console.log('saved');
+            }).done(function(data) {
+                update_list_of_canvases(data);
             });
             {% endif %}
         }
@@ -887,17 +903,7 @@
 
             {% if user.is_authenticated %}
             $.getJSON("{% url 'canvases' profile_user.username %}", function(data) {
-                var items = [];
-                $.each(data, function(key, val) {
-                    items.push(
-                        '<div class="col-sm-4" style="">' +
-                            '<img src="' + val + '" style="max-width: 100%; border: 2px solid black; border-radius: 5px;" />' +
-                            '<a class="ajax-link" href="{% url 'tool' 'canvas' %}?canv=' + key + '">' + key + '</a>' +
-                        '</div>'
-                    );
-                });
-
-                $(items.join('')).appendTo("#user-images");
+                update_list_of_canvases(data);
             });
             {% endif %}
         }

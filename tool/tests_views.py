@@ -83,7 +83,8 @@ class ToolViewTest(TestCase):
              'slug': 'not-exists'}
         )
         self.assertEqual(resp.status_code, 200)
-        self.assertEqual(resp.json(), "The Canvas was changed")
+        self.assertEqual(len(resp.json()), 1)
+        self.assertEqual(list(resp.json().values())[0], sample_2)
 
         resp = self.client.get(reverse('canvases',
                                        kwargs={'username': 'testuser'}))
