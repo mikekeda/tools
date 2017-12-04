@@ -153,7 +153,7 @@
         $difficulty_filters.click(function() {
           $this = $(this);
           $this.toggleClass('active');
-          $cards_container.find('.card-container[data-difficulty=' + $this.data('difficulty') + ']').toggle().toggleClass('difficulty-hidden');
+          $cards_container.find('.card-container[data-difficulty=' + $this.data('difficulty') + ']').toggle($this.hasClass('active')).toggleClass('difficulty-hidden');
 
           return false;
         });
@@ -163,7 +163,7 @@
 
           $cards_container.find('.card-container:not(.difficulty-hidden)').each(function(index) {
             $this = $(this);
-            if ($this.data('title') == substring || $this.data('title').indexOf(substring) !== -1) {
+            if ($this.data('title') == substring || $this.data('title').toString().indexOf(substring) !== -1) {
               $this.show();
             }
             else {

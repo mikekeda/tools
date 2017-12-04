@@ -7,15 +7,15 @@ import pytz
 from schedule.models import Calendar, Event
 
 from django.core.exceptions import PermissionDenied, ValidationError
-from django.core.urlresolvers import reverse
 from django.conf import settings
 from django.http import Http404, JsonResponse, HttpResponseRedirect
-from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth import get_user_model, login, logout
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.shortcuts import render, redirect, get_object_or_404
+from django.urls import reverse
 from django.utils.translation import ugettext
 from django.utils import timezone
 from django.views import View
@@ -473,7 +473,7 @@ class FlightsView(LoginRequiredMixin, View):
 
 def log_in(request):
     """User login page."""
-    if request.user.is_authenticated():
+    if request.user.is_authenticated:
         return redirect(settings.LOGIN_REDIRECT_URL)
     form = AuthenticationForm()
     if request.method == 'POST':

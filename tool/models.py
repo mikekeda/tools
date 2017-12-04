@@ -49,7 +49,8 @@ class Profile(models.Model):
     """Profile model"""
     user = models.OneToOneField(
         settings.AUTH_USER_MODEL,
-        related_name='profile'
+        related_name='profile',
+        on_delete=models.CASCADE
     )
     timezone = models.CharField(
         max_length=64,
@@ -90,7 +91,11 @@ class Card(models.Model):
         choices=DIFFICULTIES,
         default='difficult'
     )
-    user = models.ForeignKey(User, related_name='cards')
+    user = models.ForeignKey(
+        User,
+        related_name='cards',
+        on_delete=models.CASCADE
+    )
     order = models.PositiveSmallIntegerField(default=0)
     created_date = models.DateTimeField(auto_now_add=True)
     changed_date = models.DateTimeField(auto_now=True)
@@ -103,7 +108,11 @@ class Card(models.Model):
 
 class Word(models.Model):
     """Word model"""
-    user = models.ForeignKey(User, related_name='words')
+    user = models.ForeignKey(
+        User,
+        related_name='words',
+        on_delete=models.CASCADE
+    )
     created = models.DateTimeField(auto_now_add=True)
     changed = models.DateTimeField(auto_now=True)
 
@@ -138,7 +147,11 @@ class Task(models.Model):
             MaxValueValidator(len(default_palette_colors))
         ]
     )
-    user = models.ForeignKey(User, related_name='tasks')
+    user = models.ForeignKey(
+        User,
+        related_name='tasks',
+        on_delete=models.CASCADE
+    )
     weight = models.SmallIntegerField(default=0)
     created_date = models.DateTimeField(auto_now_add=True)
     changed_date = models.DateTimeField(auto_now=True)
@@ -151,7 +164,11 @@ class Task(models.Model):
 
 class Canvas(models.Model):
     """Canvas model"""
-    user = models.ForeignKey(User, related_name='canvases')
+    user = models.ForeignKey(
+        User,
+        related_name='canvases',
+        on_delete=models.CASCADE
+    )
     canvas = models.TextField(blank=True, null=True)
     slug = models.CharField(max_length=10, unique=True)
     created = models.DateTimeField(auto_now_add=True)
