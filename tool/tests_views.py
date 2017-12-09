@@ -212,10 +212,30 @@ class ToolViewTest(TestCase):
     def test_views_flights(self):
         resp = self.client.get(reverse('flights'))
         self.assertRedirects(resp, '/login?next=/flights')
+
         self.client.login(username='testuser', password='12345')
         resp = self.client.get(reverse('flights'))
         self.assertEqual(resp.status_code, 200)
         self.assertTemplateUsed(resp, 'flights.html')
+
+        resp = self.client.post(reverse('flights'), {
+            'destination': 'LWO',
+            'round_trip': 'on',
+            'date_start': '2017-12-16',
+            'date_back': '2017-12-23',
+        })
+        self.assertEqual(resp.status_code, 200)
+        self.assertFormError(resp, 'form', 'origin',
+                             'This field is required.')
+
+        resp = self.client.post(reverse('flights'), {
+            'origin': 'AUS',
+            'destination': 'LWO',
+            'round_trip': 'on',
+            'date_start': '2017-12-16',
+            'date_back': '2017-12-23',
+        })
+        self.assertEqual(resp.status_code, 200)
 
     def test_views_dictionary(self):
         resp = self.client.get(reverse('dictionary'))
@@ -249,6 +269,30 @@ class ToolViewTest(TestCase):
         self.assertEqual(resp.status_code, 200)
         self.assertTemplateUsed(resp, 'flashcards.html')
 
+    def test_views_flashcards_order(self):
+        resp = self.client.post(reverse('card_order',
+                                        kwargs={'username': 'testuser'}),
+                                {'order': '{}'})
+        self.assertRedirects(resp, '/login?next=/user/testuser/card-order')
+
+        self.client.login(username='testuser', password='12345')
+        resp = self.client.post(reverse('card_order',
+                                        kwargs={'username': 'testuser'}),
+                                {'order': '{}'})
+        self.assertEqual(resp.status_code, 404)
+        self.assertTemplateUsed(resp, '404.html')
+
+        resp = self.client.post(
+            reverse('card_order', kwargs={'username': 'testuser'}),
+            {'order': '{}'},
+            HTTP_X_REQUESTED_WITH='XMLHttpRequest'
+        )
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(
+            str(resp.content, encoding='utf8'),
+            '"The order was changed"'
+        )
+
     def test_views_tasks(self):
         resp = self.client.get(reverse('tasks'))
         self.assertRedirects(resp, '/login?next=/tasks')
@@ -263,6 +307,30 @@ class ToolViewTest(TestCase):
                                        kwargs={'username': 'testuser'}))
         self.assertEqual(resp.status_code, 200)
         self.assertTemplateUsed(resp, 'tasks.html')
+
+    def test_views_tasks_order(self):
+        resp = self.client.post(reverse('task_order',
+                                        kwargs={'username': 'testuser'}),
+                                {'order': '{}', 'status': '{}'})
+        self.assertRedirects(resp, '/login?next=/user/testuser/task-order')
+
+        self.client.login(username='testuser', password='12345')
+        resp = self.client.post(reverse('task_order',
+                                        kwargs={'username': 'testuser'}),
+                                {'order': '{}', 'status': '{}'})
+        self.assertEqual(resp.status_code, 404)
+        self.assertTemplateUsed(resp, '404.html')
+
+        resp = self.client.post(
+            reverse('task_order', kwargs={'username': 'testuser'}),
+            {'order': '{}', 'status': '{}'},
+            HTTP_X_REQUESTED_WITH='XMLHttpRequest'
+        )
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(
+            str(resp.content, encoding='utf8'),
+            '"The order was changed"'
+        )
 
     def test_views_profile(self):
         resp = self.client.get(reverse('user',
