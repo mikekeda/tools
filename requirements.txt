@@ -15,9 +15,8 @@ django-jenkins==0.110.0
 django-redis==4.8.0
 django-scheduler==0.8.6.1
 django-widget-tweaks==1.4.1
-icalendar==4.0.0
 et-xmlfile==1.0.1
-icalendar==3.11.7
+icalendar==4.0.0
 idna==2.6
 isort==4.2.15
 jdcal==1.3
