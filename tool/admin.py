@@ -1,12 +1,13 @@
 from django import forms
-from django.db import models
 from django.contrib import admin
 from django.contrib.auth import get_user_model
 from django.contrib.auth.admin import UserAdmin
+from django.db import models
 
 from easy_select2 import select2_modelform
 from schedule.models import Event, Calendar
 from schedule.admin import EventAdmin
+from import_export.admin import ImportExportModelAdmin
 
 from .models import Profile, Card, Word, Task, Canvas
 
@@ -24,7 +25,7 @@ class AuthUserAdmin(UserAdmin):
     inlines = [ProfileInline]
 
 
-class CardAdmin(admin.ModelAdmin):
+class CardAdmin(ImportExportModelAdmin):
     list_filter = ('user__username',)
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
@@ -50,7 +51,7 @@ class ToolEventAdmin(EventAdmin):
         return db_field.formfield(**kwargs)
 
 
-class TaskAdmin(admin.ModelAdmin):
+class TaskAdmin(ImportExportModelAdmin):
     list_filter = ('user__username',)
 
     formfield_overrides = {
@@ -70,7 +71,7 @@ class TaskAdmin(admin.ModelAdmin):
         return db_field.formfield(**kwargs)
 
 
-class CanvasAdmin(admin.ModelAdmin):
+class CanvasAdmin(ImportExportModelAdmin):
     fields = ('user', 'preview', 'canvas')
     readonly_fields = ('preview',)
 

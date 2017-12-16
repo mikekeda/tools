@@ -71,6 +71,7 @@ INSTALLED_APPS = (
     'schedule',
     'easy_select2',
     'django_jenkins',
+    'import_export',
 
     'tool',
 )
