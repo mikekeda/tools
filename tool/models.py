@@ -216,4 +216,4 @@ class Canvas(models.Model):
     preview.allow_tags = True
 
     def __str__(self):
-        return self.user.username, self.pk
+        return '{}: {}'.format(self.user.username, self.pk)
