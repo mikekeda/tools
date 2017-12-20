@@ -52,7 +52,7 @@ class ToolContextProcessorTest(TestCase):
         result = arrival_date()
         self.assertEqual(
             result,
-            {'today': date.today(), 'arrival_date': date(2018, 2, 12)}
+            {'today': date.today(), 'arrival_date': date(2018, 4, 1)}
         )
 
     def test_context_processor_user_profile(self):
