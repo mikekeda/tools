@@ -54,7 +54,12 @@
             {% for word in words %}
                 <tr>
                     {% for lang in languages %}
-                        <th lang="{{ lang.0 }}">{{ word|get_item:lang.0 }}</th>
+                        <th lang="{{ lang.0 }}">
+                            {{ word|get_item:lang.0 }}
+                            <a href="#" class="editable pull-right" style="border-bottom: none;" data-type="text" data-pk="{{ lang.0 }}" data-value="{{ word|get_item:lang.0 }}" data-url="{% url 'update_profile' %}" data-placeholder="{% trans 'Edit the text' %}" data-params="{csrfmiddlewaretoken:'{{csrf_token}}'}">
+                                <span class="glyphicon glyphicon-pencil"></span>
+                            </a>
+                        </th>
                     {% endfor %}
                 </tr>
             {% endfor %}
@@ -82,8 +87,18 @@
           });
         });
 
+        $('.editable').editable({mode: 'popup', display: false}).on('save', function(e, params) {
+            console.log(this);
+            console.log(e);
+            console.log(params);
+        }).on('shown', function(e, editable) {
+            console.log(this);
+            console.log(e);
+            console.log(editable);
+        });
+
         $dictionary.find('th').click(function() {
-          msg = this.innerHTML;
+          msg = this.innerHTML.replace(/<[^>]*>/g, "");
           msg = new SpeechSynthesisUtterance(msg);
           msg.lang = this.getAttribute('lang');
           window.speechSynthesis.cancel();
