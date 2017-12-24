@@ -412,6 +412,20 @@ class ToolViewTest(TestCase):
         self.assertTrue(test_code_snippet)
         self.assertEqual(test_code_snippet.text,
                          '<pre><code>print(2)<code><pre>')
+        # Text should not be empty.
+        resp = self.client.post(
+            reverse('code_slug', kwargs={'slug': test_code_snippet.slug}),
+            {
+                'title': 'Test code snippet 2',
+                'text': '',
+            }
+        )
+        self.assertRedirects(resp, '/code')
+        test_code_snippet = Code.objects.get(title='Test code snippet 2',
+                                             user=test_user)
+        self.assertTrue(test_code_snippet)
+        self.assertEqual(test_code_snippet.text,
+                         '<pre><code>print(2)<code><pre>')
         self.client.logout()
 
         # Delete code snippet.
