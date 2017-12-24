@@ -253,7 +253,7 @@ class ToolViewTest(TestCase):
         self.assertEqual(resp.status_code, 200)
         self.assertTemplateUsed(resp, 'dictionary.html')
 
-    def test_views_flashcards(self):
+    def test_views_flashcards_get(self):
         resp = self.client.get(reverse('flashcards'))
         self.assertRedirects(resp, '/login?next=/flashcards')
         resp = self.client.get(reverse('user_flashcards',
@@ -268,8 +268,30 @@ class ToolViewTest(TestCase):
                                        kwargs={'username': 'testuser'}))
         self.assertEqual(resp.status_code, 200)
         self.assertTemplateUsed(resp, 'flashcards.html')
+        self.client.logout()
+        # Admin can see user's flashcards.
+        self.client.login(username='testadmin', password='12345')
+        resp = self.client.get(reverse('user_flashcards',
+                                       kwargs={'username': 'testuser'}))
+        self.assertEqual(resp.status_code, 200)
+        self.assertTemplateUsed(resp, 'flashcards.html')
 
+    def test_views_flashcards_post(self):
         # Create a flashcard.
+        resp = self.client.post(reverse('flashcards'), {
+            'word': 'Test flashcard',
+            'description': 'Dummy text',
+            'difficulty': 'middle',
+        })
+        self.assertRedirects(resp, '/login?next=/flashcards')
+        self.client.login(username='testuser', password='12345')
+        # Title can't be empty.
+        resp = self.client.post(reverse('flashcards'), {
+            'word': '',
+            'description': 'Dummy text',
+            'difficulty': 'middle',
+        })
+        self.assertEqual(resp.status_code, 200)
         resp = self.client.post(reverse('flashcards'), {
             'word': 'Test flashcard',
             'description': 'Dummy text',
@@ -281,7 +303,7 @@ class ToolViewTest(TestCase):
                                           user=test_user)
         self.assertEqual(test_flashcard.description, 'Dummy text')
         # Word should be unique.
-        resp = self.client.post(reverse('code'), {
+        resp = self.client.post(reverse('flashcards'), {
             'word': 'Test flashcard',
             'description': 'Dummy text 2',
             'difficulty': 'easy',
@@ -291,7 +313,78 @@ class ToolViewTest(TestCase):
                                           user=test_user)
         self.assertEqual(test_flashcard.description, 'Dummy text')
         self.client.logout()
+        # Admin can create a flashcard for any user.
+        self.client.login(username='testadmin', password='12345')
+        resp = self.client.post(
+            reverse('user_flashcards', kwargs={'username': 'testuser'}),
+            {
+                'word': 'Test flashcard admin',
+                'description': 'Dummy text admin',
+                'difficulty': 'easy',
+            }
+        )
+        self.assertRedirects(resp, reverse('user_flashcards',
+                                           kwargs={'username': 'testuser'}))
+        test_flashcard_admin = Card.objects.get(word='Test flashcard admin',
+                                                user=test_user)
+        self.assertEqual(test_flashcard_admin.description, 'Dummy text admin')
+        self.client.logout()
 
+        # Edit the flashcard.
+        resp = self.client.post(reverse('flashcards'), {
+            'id': test_flashcard_admin.pk,
+            'word': 'Test flashcard user',
+            'description': 'Dummy text user',
+            'difficulty': 'difficult',
+        })
+        self.assertRedirects(resp, '/login?next=/flashcards')
+        self.client.login(username='testuser', password='12345')
+        resp = self.client.post(reverse('flashcards'), {
+            'id': test_flashcard_admin.pk,
+            'word': 'Test flashcard user',
+            'description': 'Dummy text user',
+            'difficulty': 'difficult',
+        })
+        self.assertRedirects(resp, reverse('flashcards'))
+        test_flashcard_admin = Card.objects.get(pk=test_flashcard_admin.pk)
+        self.assertEqual(test_flashcard_admin.word, 'Test flashcard user')
+        self.assertEqual(test_flashcard_admin.description, 'Dummy text user')
+        self.assertEqual(test_flashcard_admin.difficulty, 'difficult')
+        self.client.logout()
+        # Admin can edit a flashcard for any user.
+        self.client.login(username='testadmin', password='12345')
+        resp = self.client.post(
+            reverse('user_flashcards', kwargs={'username': 'testuser'}),
+            {
+                'id': test_flashcard.pk,
+                'word': 'Test flashcard admin 2',
+                'description': 'Dummy text admin 2',
+                'difficulty': 'middle',
+            }
+        )
+        self.assertRedirects(resp, reverse('user_flashcards',
+                                           kwargs={'username': 'testuser'}))
+        test_flashcard = Card.objects.get(pk=test_flashcard.pk)
+        self.assertEqual(test_flashcard.word, 'Test flashcard admin 2')
+        self.assertEqual(test_flashcard.description, 'Dummy text admin 2')
+        self.assertEqual(test_flashcard.difficulty, 'middle')
+
+    def test_views_flashcards_delete(self):
+        test_user = User.objects.get(username='testuser')
+        test_flashcard = Card(
+            word='Test flashcard 3',
+            user=test_user,
+            description='Dummy text 3',
+            difficulty='middle',
+        )
+        test_flashcard.save()
+        test_flashcard_admin = Card(
+            word='Test flashcard admin',
+            user=test_user,
+            description='Dummy text admin',
+            difficulty='middle',
+        )
+        test_flashcard_admin.save()
         # Delete flashcard.
         resp = self.client.delete(
             reverse('flashcards_pk', kwargs={'pk': test_flashcard.pk})
@@ -317,6 +410,21 @@ class ToolViewTest(TestCase):
             pk=test_flashcard.pk
         ).exists()
         self.assertFalse(test_flashcard_exists)
+        self.client.logout()
+        # Admin can delete a flashcard for any user.
+        self.client.login(username='testadmin', password='12345')
+        resp = self.client.delete(
+            reverse('flashcards_pk', kwargs={'pk': test_flashcard_admin.pk})
+        )
+        self.assertEqual(resp.status_code, 200)
+        self.assertJSONEqual(
+            str(resp.content, encoding='utf8'),
+            {'redirect': '/flashcards', 'success': True}
+        )
+        test_flashcard_admin_exists = Code.objects.filter(
+            pk=test_flashcard_admin.pk
+        ).exists()
+        self.assertFalse(test_flashcard_admin_exists)
 
     def test_views_flashcards_order(self):
         resp = self.client.post(reverse('card_order',
@@ -342,7 +450,7 @@ class ToolViewTest(TestCase):
             '"The order was changed"'
         )
 
-    def test_views_tasks(self):
+    def test_views_tasks_get(self):
         resp = self.client.get(reverse('tasks'))
         self.assertRedirects(resp, '/login?next=/tasks')
         resp = self.client.get(reverse('user_tasks',
@@ -357,7 +465,14 @@ class ToolViewTest(TestCase):
         self.assertEqual(resp.status_code, 200)
         self.assertTemplateUsed(resp, 'tasks.html')
         self.client.logout()
+        # Admin can see user's tasks.
+        self.client.login(username='testadmin', password='12345')
+        resp = self.client.get(reverse('user_tasks',
+                                       kwargs={'username': 'testuser'}))
+        self.assertEqual(resp.status_code, 200)
+        self.assertTemplateUsed(resp, 'tasks.html')
 
+    def test_views_tasks_post(self):
         # Create a task.
         resp = self.client.post(reverse('tasks'), {
             'title': 'Test task',
@@ -384,8 +499,34 @@ class ToolViewTest(TestCase):
         self.assertEqual(resp.status_code, 200)
         test_task = Task.objects.get(title='Test task', user=test_user)
         self.assertEqual(test_task.description, 'Dummy text')
+        self.client.logout()
+        # Admin can create a task for any user.
+        self.client.login(username='testadmin', password='12345')
+        resp = self.client.post(
+            reverse('user_tasks', kwargs={'username': 'testuser'}),
+            {
+                'title': 'Test task admin',
+                'description': 'Dummy text admin',
+                'color': 5,
+            }
+        )
+        self.assertRedirects(resp, reverse('user_tasks',
+                                           kwargs={'username': 'testuser'}))
+        test_task_admin = Task.objects.get(title='Test task admin',
+                                           user=test_user)
+        self.assertEqual(test_task_admin.description, 'Dummy text admin')
+        self.assertEqual(test_task_admin.color, 5)
+        self.client.logout()
 
-        # Create the task.
+        # Edit the task.
+        resp = self.client.post(reverse('tasks'), {
+            'id': test_task.pk,
+            'title': 'Test task 3',
+            'description': 'Dummy text 3',
+            'color': 3,
+        })
+        self.assertRedirects(resp, '/login?next=/tasks')
+        self.client.login(username='testuser', password='12345')
         resp = self.client.post(reverse('tasks'), {
             'id': test_task.pk,
             'title': 'Test task 3',
@@ -397,7 +538,40 @@ class ToolViewTest(TestCase):
         self.assertEqual(test_task.description, 'Dummy text 3')
         self.assertEqual(test_task.color, 3)
         self.client.logout()
+        # Admin can edit a task for any user.
+        self.client.login(username='testadmin', password='12345')
+        resp = self.client.post(
+            reverse('user_tasks', kwargs={'username': 'testuser'}),
+            {
+                'id': test_task.pk,
+                'title': 'Test title admin 2',
+                'description': 'Dummy text admin 2',
+                'color': 2,
+            }
+        )
+        self.assertRedirects(resp, reverse('user_tasks',
+                                           kwargs={'username': 'testuser'}))
+        test_flashcard = Task.objects.get(pk=test_task.pk)
+        self.assertEqual(test_flashcard.title, 'Test title admin 2')
+        self.assertEqual(test_flashcard.description, 'Dummy text admin 2')
+        self.assertEqual(test_flashcard.color, 2)
 
+    def test_views_tasks_delete(self):
+        test_user = User.objects.get(username='testuser')
+        test_task = Task(
+            title='Test task 3',
+            user=test_user,
+            description='Dummy text 3',
+            color=3,
+        )
+        test_task.save()
+        test_task_admin = Task(
+            title='Test task admin',
+            user=test_user,
+            description='Dummy text admin',
+            color=5,
+        )
+        test_task_admin.save()
         # Delete the task.
         resp = self.client.delete(
             reverse('tasks_pk', kwargs={'pk': test_task.pk})
@@ -421,6 +595,21 @@ class ToolViewTest(TestCase):
         )
         test_task_exists = Code.objects.filter(pk=test_task.pk).exists()
         self.assertFalse(test_task_exists)
+        self.client.logout()
+        # Admin can delete a task for any user.
+        self.client.login(username='testadmin', password='12345')
+        resp = self.client.delete(
+            reverse('tasks_pk', kwargs={'pk': test_task_admin.pk})
+        )
+        self.assertEqual(resp.status_code, 200)
+        self.assertJSONEqual(
+            str(resp.content, encoding='utf8'),
+            {'redirect': '/tasks', 'success': True}
+        )
+        test_task_admin_exists = Code.objects.filter(
+            pk=test_task_admin.pk
+        ).exists()
+        self.assertFalse(test_task_admin_exists)
 
     def test_views_tasks_order(self):
         resp = self.client.post(reverse('task_order',
