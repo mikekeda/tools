@@ -94,7 +94,7 @@ class FlashcardsView(LoginRequiredMixin, View, GetUserMixin):
         if post_id:
             card = Card.objects.filter(id=post_id, user=user).first()
             if not card:
-                raise PermissionDenied
+                raise Http404
         else:
             card = Card(user=user)
 
@@ -186,7 +186,7 @@ class TasksView(LoginRequiredMixin, View, GetUserMixin):
         if post_id:
             task = Task.objects.filter(id=post_id, user=user).first()
             if not task:
-                raise PermissionDenied
+                raise Http404
         else:
             task = Task(user=user)
         form = TaskForm(data=post_object, instance=task)

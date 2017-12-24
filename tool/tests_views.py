@@ -350,6 +350,14 @@ class ToolViewTest(TestCase):
         self.assertEqual(test_flashcard_admin.word, 'Test flashcard user')
         self.assertEqual(test_flashcard_admin.description, 'Dummy text user')
         self.assertEqual(test_flashcard_admin.difficulty, 'difficult')
+        # Try to edit not existing flashcard.
+        resp = self.client.post(reverse('flashcards'), {
+            'id': 77777,
+            'word': 'Test flashcard user',
+            'description': 'Dummy text user',
+            'difficulty': 'difficult',
+        })
+        self.assertEqual(resp.status_code, 404)
         self.client.logout()
         # Admin can edit a flashcard for any user.
         self.client.login(username='testadmin', password='12345')
@@ -537,6 +545,14 @@ class ToolViewTest(TestCase):
         test_task = Task.objects.get(title='Test task 3', user=test_user)
         self.assertEqual(test_task.description, 'Dummy text 3')
         self.assertEqual(test_task.color, 3)
+        # Try to edit not existing task.
+        resp = self.client.post(reverse('tasks'), {
+            'id': 77777,
+            'title': 'Test task 3',
+            'description': 'Dummy text 3',
+            'color': 3,
+        })
+        self.assertEqual(resp.status_code, 404)
         self.client.logout()
         # Admin can edit a task for any user.
         self.client.login(username='testadmin', password='12345')
