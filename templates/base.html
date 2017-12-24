@@ -109,6 +109,11 @@
                         <span class="glyphicon glyphicon-folder-open"></span> {% trans "Tasks" %}
                       </a>
                     </li>
+                    <li class="{% if active_page == 'code' %}active{% endif %}">
+                      <a href="{% url 'code' %}" data-annyang="code" class="ajax-link">
+                        <span class="glyphicon glyphicon-pencil"></span> {% trans "Code snippets" %}
+                      </a>
+                    </li>
                   {% endif %}
                   {% for tool in tools %}
                     <li class="{% if active_page == tool.slug %}active{% endif %}">

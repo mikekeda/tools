@@ -9,7 +9,7 @@ from schedule.models import Event, Calendar
 from schedule.admin import EventAdmin
 from import_export.admin import ImportExportModelAdmin
 
-from .models import Profile, Card, Word, Task, Canvas
+from .models import Profile, Card, Word, Task, Canvas, Code
 
 User = get_user_model()
 ProfileForm = select2_modelform(Profile)
@@ -76,11 +76,36 @@ class CanvasAdmin(ImportExportModelAdmin):
     readonly_fields = ('preview',)
 
 
+class CodeAdmin(ImportExportModelAdmin):
+    fields = ('title', 'user', 'link_to_code_snippet', 'text')
+    readonly_fields = ('link_to_code_snippet',)
+
+    formfield_overrides = {
+        models.TextField: {
+            'widget': forms.Textarea(attrs={'class': 'ckeditor'})
+        }
+    }
+
+    class Media:
+        js = (
+            'bower_components/ckeditor/ckeditor.js',
+            'bower_components/jquery/dist/jquery.min.js',
+            'js/code.js'
+        )
+        css = {'all': ('css/admin-fix.css',)}
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == 'user':
+            kwargs['initial'] = request.user.id
+        return db_field.formfield(**kwargs)
+
+
 admin.site.register(Card, CardAdmin)
 admin.site.register(Word, WordAdmin)
 admin.site.unregister(Event)
 admin.site.register(Event, ToolEventAdmin)
 admin.site.register(Task, TaskAdmin)
 admin.site.register(Canvas, CanvasAdmin)
+admin.site.register(Code, CodeAdmin)
 admin.site.unregister(User)
 admin.site.register(User, AuthUserAdmin)

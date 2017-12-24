@@ -1,0 +1,60 @@
+{% extends parent_template %}
+{% load static from staticfiles %}
+{% load i18n %}
+{% load widget_tweaks %}
+
+{% block content %}
+    <style scoped>
+        .cke_bottom {
+            display: none !important;
+        }
+        form .btn-danger {
+          margin-right: 15px;
+        }
+    </style>
+
+    <h2>{% trans "Code snippets" %}</h2>
+
+    <form method="post" class="add-form clearfix form-horizontal">
+        {% csrf_token %}
+        {% for field in form %}
+            <div class="form-group">
+                <label class="control-label col-sm-2">{{ field.label_tag }}</label>
+                <div class="col-sm-10">
+                    {% if field.name == 'text' %}
+                        {{ field|add_class:"ckeditor" }}
+                    {% else %}
+                        {{ field }}
+                    {% endif %}
+                </div>
+                {% if field.errors %}
+                    <div class="col-sm-10 pull-right" role="alert">
+                        <div class="alert alert-warning" >
+                            {{ field.errors }}
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        {% endfor %}
+        {% if save_btn %}
+            <button type="submit" class="btn btn-primary btn-md pull-right">{% trans "Save" %}</button>
+        {% endif %}
+        {% if delete_btn %}
+            <button type="submit" class="btn btn-danger btn-md pull-right">{% trans "Delete" %}</button>
+        {% endif %}
+    </form>
+
+    <div class="container-fluid no-padding row cards-filters">
+        <ul>
+            {% for code in codes %}
+                <li>
+                    <a href="{% url 'code_slug' code.1 %}">{{ code.0 }}</a>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <script type="text/javascript" src="{% static 'bower_components/ckeditor/ckeditor.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/code.js' %}" defer></script>
+
+{% endblock %}

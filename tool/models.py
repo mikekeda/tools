@@ -10,6 +10,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.conf import settings
 from django.core.validators import MaxValueValidator, MinValueValidator
+from django.urls import reverse
 from django.utils.html import format_html
 
 from .widgets import ColorWidget
@@ -39,6 +40,17 @@ def number_to_chars(num: int):
         digits.append(_char_map[int(num % base)])
         num //= base
     return ''.join(map(str, digits[::-1]))
+
+
+def save_and_add_slug(obj, force_insert=False, force_update=False, using=None,
+                      update_fields=None):
+    need_slug = not obj.pk
+    super(type(obj), obj).save(force_insert, force_update,
+                               using, update_fields)
+    if need_slug:
+        obj.slug = ''.join(random.sample(_char_map, 3)) +\
+                    number_to_chars(obj.pk)
+        obj.save()
 
 
 class ColorField(models.CharField):
@@ -201,13 +213,8 @@ class Canvas(models.Model):
 
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):
-        need_slug = not self.pk
-        super(Canvas, self).save(force_insert, force_update,
-                                 using, update_fields)
-        if need_slug:
-            self.slug = ''.join(random.sample(_char_map, 3)) +\
-                        number_to_chars(self.pk)
-            self.save()
+        save_and_add_slug(self, force_insert, force_update, using,
+                          update_fields)
 
     def preview(self):
         return format_html('<img src="{}" />', self.canvas)
@@ -217,3 +224,35 @@ class Canvas(models.Model):
 
     def __str__(self):
         return '{}: {}'.format(self.user.username, self.pk)
+
+
+class Code(models.Model):
+    """Code model"""
+    title = models.CharField(max_length=60)
+    text = models.TextField()
+    user = models.ForeignKey(
+        User,
+        related_name='code_fragments',
+        on_delete=models.CASCADE
+    )
+    slug = models.CharField(max_length=10, unique=True)
+    created = models.DateTimeField(auto_now_add=True)
+    changed = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        unique_together = (('title', 'user'),)
+
+    def link_to_code_snippet(self):
+        return format_html(
+            '<a href="{}">{}</a>',
+            reverse('code_slug', kwargs={'slug': self.slug}),
+            self.title
+        ) if self.slug else ''
+
+    def save(self, force_insert=False, force_update=False, using=None,
+             update_fields=None):
+        save_and_add_slug(self, force_insert, force_update, using,
+                          update_fields)
+
+    def __str__(self):
+        return '{}: {}'.format(self.user.username, self.title)

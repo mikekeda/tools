@@ -6,7 +6,7 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.test import TestCase
 
-from .models import number_to_chars, Profile
+from .models import number_to_chars, Profile, Code
 
 
 class ToolModelTest(TestCase):
@@ -34,3 +34,15 @@ class ToolModelTest(TestCase):
             user_profile.email_password.encode('utf-8')
         ).decode('utf-8')
         self.assertEqual(email_password, 'testpass')
+
+    def test_models_code(self):
+        test_user = User.objects.get(username='testuser')
+        Code(
+            title='test1',
+            text='code block 1',
+            user=test_user
+        ).save()
+
+        test_code = Code.objects.get(title='test1', user=test_user)
+        self.assertEqual(test_code.text, 'code block 1')
+        self.assertEqual(test_code.slug[3:], number_to_chars(test_code.pk))

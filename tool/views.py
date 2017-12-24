@@ -8,6 +8,7 @@ from schedule.models import Calendar, Event
 
 from django.core.exceptions import PermissionDenied, ValidationError
 from django.conf import settings
+from django.db.utils import IntegrityError
 from django.http import Http404, JsonResponse, HttpResponseRedirect
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth import get_user_model, login, logout
@@ -20,10 +21,10 @@ from django.utils.translation import ugettext
 from django.utils import timezone
 from django.views import View
 
-from .models import (TIMEZONES, Card, Word, Profile, Task, Canvas,
+from .models import (TIMEZONES, Card, Word, Profile, Task, Canvas, Code,
                      default_palette_colors)
 from .forms import (WordForm, EventForm, CardForm, AvatarForm, FlightsForm,
-                    TaskForm)
+                    TaskForm, CodeForm)
 
 User = get_user_model()
 
@@ -523,6 +524,83 @@ class CanvasesView(View, GetUserMixin):
             .values_list('slug', 'canvas')
 
         return JsonResponse(dict(canvases), safe=False)
+
+
+class CodeView(View, GetUserMixin):
+    def get(self, request, slug=None, username=None):
+        """Get list of user code snippets or user snippet."""
+        save_btn = True
+        code_snippet = None
+        code_snippets = ()
+        if slug:
+            # Show single code snippet and edit form.
+            code_snippet = get_object_or_404(Code, slug=slug)
+            try:
+                self.get_user(request, username)
+            except PermissionDenied:
+                save_btn = False  # the user can't edit this snippet
+        else:
+            # Show all code snippets and create form.
+            try:
+                user = self.get_user(request, username)
+            except PermissionDenied:
+                return redirect(reverse('login') + '?next=' + request.path)
+            code_snippets = Code.objects.filter(user=user).order_by('-pk') \
+                .values_list('title', 'slug')
+
+        form = CodeForm(instance=code_snippet)
+
+        return render(request, 'code.html', {
+            'form': form,
+            'codes': code_snippets,
+            'save_btn': save_btn,
+            'delete_btn': save_btn and slug,
+            'active_page': 'code'
+        })
+
+    def post(self, request, slug=None, username=None):
+        """Save or create code snippet."""
+        user = self.get_user(request, username)
+        code_snippet = None
+        code_snippets = []
+        if slug:
+            code_snippet = get_object_or_404(Code, slug=slug)
+
+        form = CodeForm(data=request.POST, instance=code_snippet)
+
+        if form.is_valid():
+            code = form.save(commit=False)
+            code.user = user
+            try:
+                code.save()
+            except IntegrityError:
+                form.add_error(
+                    'title',
+                    'Code snippet with title "{}" already exists.'.format(
+                        code.title
+                    )
+                )
+            else:
+                return redirect(reverse('code'))
+        elif slug:
+            code_snippets = Code.objects.filter(user=user).order_by('-pk') \
+                .values_list('title', 'slug')
+
+        return render(request, 'code.html', {
+            'form': form,
+            'codes': code_snippets,
+            'save_btn': True,  # only privileged user will have access to post
+            'delete_btn': bool(slug),
+            'active_page': 'code'
+        })
+
+    def delete(self, request, slug, username=None):
+        """Delete code snippet."""
+        self.get_user(request, username)
+        code_snippet = get_object_or_404(Code, slug=slug)
+        code_snippet.delete()
+
+        return JsonResponse({'redirect': reverse('code'), 'success': True})
 
 
 @login_required

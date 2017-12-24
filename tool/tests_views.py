@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from django.test import TestCase
 from django.urls import reverse
 
-from .models import Profile, Canvas
+from .models import Profile, Canvas, Code
 
 
 class ToolViewTest(TestCase):
@@ -331,6 +331,89 @@ class ToolViewTest(TestCase):
             str(resp.content, encoding='utf8'),
             '"The order was changed"'
         )
+
+    def test_views_code_snippets(self):
+        # Get user's code snippets.
+        resp = self.client.get(reverse('code'))
+        self.assertRedirects(resp, '/login?next=/code')
+
+        self.client.login(username='testuser', password='12345')
+        resp = self.client.get(reverse('code'))
+        self.assertEqual(resp.status_code, 200)
+        self.assertTemplateUsed(resp, 'code.html')
+
+        # Create code snippet.
+        resp = self.client.post(reverse('code'), {
+            'title': 'Test code snippet',
+            'text': '<pre><code>print(1)<code><pre>',
+        })
+        self.assertRedirects(resp, '/code')
+        test_user = User.objects.get(username='testuser')
+        test_code_snippet = Code.objects.get(title='Test code snippet',
+                                             user=test_user)
+        self.assertTrue(test_code_snippet)
+        self.assertEqual(test_code_snippet.text,
+                         '<pre><code>print(1)<code><pre>')
+        self.client.logout()
+
+        # Get user code snippet.
+        resp = self.client.get(
+            reverse('code_slug', kwargs={'slug': test_code_snippet.slug})
+        )
+        self.assertTemplateUsed(resp, 'code.html')
+        self.assertEqual(resp.status_code, 200)
+        resp = self.client.get(
+            reverse('code_slug', kwargs={'slug': 'not-exists'})
+        )
+        self.assertEqual(resp.status_code, 404)
+
+        # Change code snippet.
+        resp = self.client.post(
+            reverse('code_slug', kwargs={'slug': test_code_snippet.slug}),
+            {
+                'title': 'Test code snippet 2',
+                'text': '<pre><code>print(2)<code><pre>',
+            }
+        )
+        self.assertEqual(resp.status_code, 403)
+        self.client.login(username='testuser', password='12345')
+        resp = self.client.post(
+            reverse('code_slug', kwargs={'slug': test_code_snippet.slug}),
+            {
+                'title': 'Test code snippet 2',
+                'text': '<pre><code>print(2)<code><pre>',
+            }
+        )
+        self.assertRedirects(resp, '/code')
+        test_code_snippet = Code.objects.get(title='Test code snippet 2',
+                                             user=test_user)
+        self.assertTrue(test_code_snippet)
+        self.assertEqual(test_code_snippet.text,
+                         '<pre><code>print(2)<code><pre>')
+        self.client.logout()
+
+        # Delete code snippet.
+        resp = self.client.delete(
+            reverse('code_slug', kwargs={'slug': test_code_snippet.slug})
+        )
+        self.assertEqual(resp.status_code, 403)
+        self.client.login(username='testuser', password='12345')
+        resp = self.client.delete(
+            reverse('code_slug', kwargs={'slug': 'not-exists'})
+        )
+        self.assertEqual(resp.status_code, 404)
+        resp = self.client.delete(
+            reverse('code_slug', kwargs={'slug': test_code_snippet.slug})
+        )
+        self.assertEqual(resp.status_code, 200)
+        self.assertJSONEqual(
+            str(resp.content, encoding='utf8'),
+            {'redirect': '/code', 'success': True}
+        )
+        test_code_snippet_exists = Code.objects.filter(
+            slug=test_code_snippet.slug
+        ).exists()
+        self.assertFalse(test_code_snippet_exists)
 
     def test_views_profile(self):
         resp = self.client.get(reverse('user',

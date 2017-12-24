@@ -4,7 +4,7 @@ from django import forms
 from schedule.models import Event
 from easy_select2 import apply_select2, select2_modelform
 
-from .models import Profile, Word, Card, Task
+from .models import Profile, Word, Card, Task, Code
 
 task_form = select2_modelform(Task)
 
@@ -58,3 +58,9 @@ class TaskForm(forms.ModelForm):
             'color': apply_select2(forms.Select),
             'description': forms.Textarea(attrs={'class': 'ckeditor'}),
         }
+
+
+class CodeForm(forms.ModelForm):
+    class Meta:
+        model = Code
+        exclude = ('user', 'slug')
