@@ -13,8 +13,8 @@ $(document).ready(function() {
   function init_app() {
     var result;
 
-    $('form .btn-danger').click(function(){
-      result = confirm('{% trans "Are you sure you want to delete this code snippet?" %}');
+    $('form .btn-danger').click(function() {
+      result = confirm("Are you sure you want to delete this code snippet?");
       if (result) {
         $.ajax({
           url: window.location.href ,

@@ -354,9 +354,21 @@ class ToolViewTest(TestCase):
         self.assertTrue(test_code_snippet)
         self.assertEqual(test_code_snippet.text,
                          '<pre><code>print(1)<code><pre>')
+        # Title should be unique.
         resp = self.client.post(reverse('code'), {
             'title': 'Test code snippet',
             'text': '<pre><code>print(2)<code><pre>',
+        })
+        self.assertEqual(resp.status_code, 200)
+        test_code_snippet = Code.objects.get(title='Test code snippet',
+                                             user=test_user)
+        self.assertTrue(test_code_snippet)
+        self.assertEqual(test_code_snippet.text,
+                         '<pre><code>print(1)<code><pre>')
+        # Text should not be empty.
+        resp = self.client.post(reverse('code'), {
+            'title': 'Test code snippet',
+            'text': '',
         })
         self.assertEqual(resp.status_code, 200)
         test_code_snippet = Code.objects.get(title='Test code snippet',
