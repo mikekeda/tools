@@ -351,7 +351,6 @@ class ToolViewTest(TestCase):
         test_user = User.objects.get(username='testuser')
         test_code_snippet = Code.objects.get(title='Test code snippet',
                                              user=test_user)
-        self.assertTrue(test_code_snippet)
         self.assertEqual(test_code_snippet.text,
                          '<pre><code>print(1)<code><pre>')
         # Title should be unique.
@@ -362,7 +361,6 @@ class ToolViewTest(TestCase):
         self.assertEqual(resp.status_code, 200)
         test_code_snippet = Code.objects.get(title='Test code snippet',
                                              user=test_user)
-        self.assertTrue(test_code_snippet)
         self.assertEqual(test_code_snippet.text,
                          '<pre><code>print(1)<code><pre>')
         # Text should not be empty.
@@ -373,7 +371,6 @@ class ToolViewTest(TestCase):
         self.assertEqual(resp.status_code, 200)
         test_code_snippet = Code.objects.get(title='Test code snippet',
                                              user=test_user)
-        self.assertTrue(test_code_snippet)
         self.assertEqual(test_code_snippet.text,
                          '<pre><code>print(1)<code><pre>')
         self.client.logout()
@@ -423,7 +420,6 @@ class ToolViewTest(TestCase):
         self.assertEqual(resp.status_code, 200)
         test_code_snippet = Code.objects.get(title='Test code snippet 2',
                                              user=test_user)
-        self.assertTrue(test_code_snippet)
         self.assertEqual(test_code_snippet.text,
                          '<pre><code>print(2)<code><pre>')
         self.client.logout()
