@@ -68,6 +68,7 @@ $(document).ready(function() {
     // Clean selects and select2.
     $modal.find('select').prop('selectedIndex', 0).trigger('change.select2');
     $modal.find('.btn.delete').hide();
+    $modal.find('form [role="alert"]').remove();
 
     // Clean ckeditors.
     if (typeof CKEDITOR !== 'undefined') {

@@ -498,15 +498,6 @@ class ToolViewTest(TestCase):
         test_user = User.objects.get(username='testuser')
         test_task = Task.objects.get(title='Test task', user=test_user)
         self.assertEqual(test_task.description, 'Dummy text')
-        # Title should be unique.
-        resp = self.client.post(reverse('tasks'), {
-            'title': 'Test task',
-            'description': 'Dummy text 2',
-            'color': 2,
-        })
-        self.assertEqual(resp.status_code, 200)
-        test_task = Task.objects.get(title='Test task', user=test_user)
-        self.assertEqual(test_task.description, 'Dummy text')
         self.client.logout()
         # Admin can create a task for any user.
         self.client.login(username='testadmin', password='12345')

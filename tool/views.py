@@ -100,9 +100,18 @@ class FlashcardsView(LoginRequiredMixin, View, GetUserMixin):
 
         form = CardForm(data=post_object, instance=card)
         if form.is_valid():
-            form.save()
-
-            return redirect(form_action)
+            flashcard = form.save(commit=False)
+            try:
+                with transaction.atomic():
+                    flashcard.save()
+                return redirect(form_action)
+            except IntegrityError:
+                form.add_error(
+                    'word',
+                    'Card with word "{}" already exists.'.format(
+                        flashcard.word
+                    )
+                )
 
         return render(
             request,

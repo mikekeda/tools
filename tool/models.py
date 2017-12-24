@@ -127,7 +127,7 @@ class Card(models.Model):
         ('difficult', 'Difficult'),
     )
 
-    word = models.CharField(max_length=60, unique=True)
+    word = models.CharField(max_length=60)
     description = models.TextField(blank=True, null=True)
     difficulty = models.CharField(
         max_length=10,
@@ -142,6 +142,9 @@ class Card(models.Model):
     order = models.PositiveSmallIntegerField(default=0)
     created_date = models.DateTimeField(auto_now_add=True)
     changed_date = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        unique_together = (('word', 'user'),)
 
     def __str__(self):
         return self.word
@@ -176,7 +179,7 @@ class Task(models.Model):
         ('done', 'Done'),
     )
 
-    title = models.CharField(max_length=60, unique=True)
+    title = models.CharField(max_length=60)
     description = models.TextField(blank=True, null=True)
     status = models.CharField(max_length=10, choices=STATUSES, default='todo')
     color = models.PositiveSmallIntegerField(
