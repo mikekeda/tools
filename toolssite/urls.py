@@ -11,7 +11,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from tool.views import (tool, calendar, dictionary, FlashcardsView, users_list,
                         profile_view, update_profile, user_events, card_order,
-                        task_order, FlightsView, tasks_view, CanvasView,
+                        task_order, FlightsView, TasksView, CanvasView,
                         CanvasesView, CodeView, log_in, log_out)
 from tool.sitemaps import StaticViewSitemap
 
@@ -41,10 +41,12 @@ urlpatterns = [
     path('ajax/user/<str:username>/flashcards', FlashcardsView.as_view(), name='ajax_user_flashcards'),
     path('flashcards/<int:pk>', FlashcardsView.as_view(), name='flashcards_pk'),
     path('ajax/flashcards/<int:pk>', FlashcardsView.as_view(), name='ajax_flashcards_pk'),
-    path('tasks', tasks_view, name='tasks'),
-    path('ajax/tasks', tasks_view, name='ajax_tasks'),
-    path('user/<str:username>/tasks', tasks_view, name='user_tasks'),
-    path('ajax/user/<str:username>/tasks', tasks_view, name='ajax_user_tasks'),
+    path('tasks', TasksView.as_view(), name='tasks'),
+    path('ajax/tasks', TasksView.as_view(), name='ajax_tasks'),
+    path('user/<str:username>/tasks', TasksView.as_view(), name='user_tasks'),
+    path('ajax/user/<str:username>/tasks', TasksView.as_view(), name='ajax_user_tasks'),
+    path('tasks/<int:pk>', TasksView.as_view(), name='tasks_pk'),
+    path('ajax/tasks/<int:pk>', TasksView.as_view(), name='ajax_tasks_pk'),
     path('user/<str:username>/canvases', CanvasesView.as_view(), name='canvases'),
     path('canvas/<str:slug>', CanvasView.as_view(), name='canvas'),
     path('flights', FlightsView.as_view(), name='flights'),

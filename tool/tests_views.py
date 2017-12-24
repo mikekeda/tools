@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from django.test import TestCase
 from django.urls import reverse
 
-from .models import Profile, Card, Canvas, Code
+from .models import Profile, Card, Task, Canvas, Code
 
 
 class ToolViewTest(TestCase):
@@ -356,6 +356,71 @@ class ToolViewTest(TestCase):
                                        kwargs={'username': 'testuser'}))
         self.assertEqual(resp.status_code, 200)
         self.assertTemplateUsed(resp, 'tasks.html')
+        self.client.logout()
+
+        # Create a task.
+        resp = self.client.post(reverse('tasks'), {
+            'title': 'Test task',
+            'description': 'Dummy text',
+            'color': 1,
+        })
+        self.assertRedirects(resp, '/login?next=/tasks')
+        self.client.login(username='testuser', password='12345')
+        resp = self.client.post(reverse('tasks'), {
+            'title': 'Test task',
+            'description': 'Dummy text',
+            'color': 1,
+        })
+        self.assertRedirects(resp, reverse('tasks'))
+        test_user = User.objects.get(username='testuser')
+        test_task = Task.objects.get(title='Test task', user=test_user)
+        self.assertEqual(test_task.description, 'Dummy text')
+        # Title should be unique.
+        resp = self.client.post(reverse('tasks'), {
+            'title': 'Test task',
+            'description': 'Dummy text 2',
+            'color': 2,
+        })
+        self.assertEqual(resp.status_code, 200)
+        test_task = Task.objects.get(title='Test task', user=test_user)
+        self.assertEqual(test_task.description, 'Dummy text')
+
+        # Create the task.
+        resp = self.client.post(reverse('tasks'), {
+            'id': test_task.pk,
+            'title': 'Test task 3',
+            'description': 'Dummy text 3',
+            'color': 3,
+        })
+        self.assertRedirects(resp, reverse('tasks'))
+        test_task = Task.objects.get(title='Test task 3', user=test_user)
+        self.assertEqual(test_task.description, 'Dummy text 3')
+        self.assertEqual(test_task.color, 3)
+        self.client.logout()
+
+        # Delete the task.
+        resp = self.client.delete(
+            reverse('tasks_pk', kwargs={'pk': test_task.pk})
+        )
+        self.assertRedirects(
+            resp,
+            '/login?next=/tasks/' + str(test_task.pk)
+        )
+        self.client.login(username='testuser', password='12345')
+        resp = self.client.delete(
+            reverse('tasks_pk', kwargs={'pk': 77777})
+        )
+        self.assertEqual(resp.status_code, 404)
+        resp = self.client.delete(
+            reverse('tasks_pk', kwargs={'pk': test_task.pk})
+        )
+        self.assertEqual(resp.status_code, 200)
+        self.assertJSONEqual(
+            str(resp.content, encoding='utf8'),
+            {'redirect': '/tasks', 'success': True}
+        )
+        test_task_exists = Code.objects.filter(pk=test_task.pk).exists()
+        self.assertFalse(test_task_exists)
 
     def test_views_tasks_order(self):
         resp = self.client.post(reverse('task_order',

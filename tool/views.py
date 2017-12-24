@@ -117,13 +117,110 @@ class FlashcardsView(LoginRequiredMixin, View, GetUserMixin):
         )
 
     def delete(self, request, pk, username=None):
-        """Delete code snippet."""
+        """Delete the flashcard."""
         self.get_user(request, username)
         flashcard = get_object_or_404(Card, pk=pk)
         flashcard.delete()
 
         return JsonResponse(
             {'redirect': reverse('flashcards'), 'success': True}
+        )
+
+
+class TasksView(LoginRequiredMixin, View, GetUserMixin):
+    def get(self, request, username=None):
+        """Get form."""
+        user = self.get_user(request, username)
+
+        if user == request.user:
+            form_action = reverse('tasks')
+        else:
+            form_action = reverse('user_tasks', args=[user.username])
+
+        tasks = Task.objects.filter(user=user).order_by('weight')
+        form = TaskForm()
+
+        profile, _ = Profile.objects.get_or_create(user=user)
+        palette = {
+            str(i): getattr(profile, 'palette_color_' + str(i), c)
+            for i, c in enumerate(default_palette_colors, 1)
+        }
+        tasks_dict = OrderedDict([(k[0], []) for k in Task.STATUSES])
+        for task in tasks:
+            tasks_dict[task.status].append(task)
+
+        form.fields['color'].widget.choices = [(i, k) for i, k in
+                                               palette.items()]
+
+        return render(
+            request,
+            "tasks.html",
+            dict(
+                tasks_dict=tasks_dict.items(),
+                palette=palette,
+                profile_user=user,
+                form=form,
+                form_action=form_action,
+                active_page=form_action.lstrip('/')
+            )
+        )
+
+    def post(self, request, username=None):
+        """Form submit."""
+        user = self.get_user(request, username)
+
+        if user == request.user:
+            form_action = reverse('tasks')
+        else:
+            form_action = reverse('user_tasks', args=[user.username])
+
+        profile, _ = Profile.objects.get_or_create(user=user)
+        palette = {
+            str(i): getattr(profile, 'palette_color_' + str(i), c)
+            for i, c in enumerate(default_palette_colors, 1)
+        }
+        tasks_dict = OrderedDict([(k[0], []) for k in Task.STATUSES])
+
+        post_object = request.POST.copy()
+        post_id = post_object.pop('id', [None])[0]
+        if post_id:
+            task = Task.objects.filter(id=post_id, user=user).first()
+            if not task:
+                raise PermissionDenied
+        else:
+            task = Task(user=user)
+        form = TaskForm(data=post_object, instance=task)
+        if form.is_valid():
+            first_task = Task.objects.filter(
+                user=user, status='todo').order_by('weight').first()
+            task = form.save(commit=False)
+            if not post_id:
+                task.weight = first_task.weight - 1 if first_task else 0
+            task.save()
+
+            return redirect(form_action)
+
+        return render(
+            request,
+            "tasks.html",
+            dict(
+                tasks_dict=tasks_dict.items(),
+                palette=palette,
+                profile_user=user,
+                form=form,
+                form_action=form_action,
+                active_page=form_action.lstrip('/')
+            )
+        )
+
+    def delete(self, request, pk, username=None):
+        """Delete the task."""
+        self.get_user(request, username)
+        task = get_object_or_404(Task, pk=pk)
+        task.delete()
+
+        return JsonResponse(
+            {'redirect': reverse('tasks'), 'success': True}
         )
 
 
