@@ -67,6 +67,7 @@ $(document).ready(function() {
     $modal.find("input:not([name='csrfmiddlewaretoken']), textarea").val('');
     // Clean selects and select2.
     $modal.find('select').prop('selectedIndex', 0).trigger('change.select2');
+    $modal.find('.btn.delete').hide();
 
     // Clean ckeditors.
     if (typeof CKEDITOR !== 'undefined') {
@@ -91,6 +92,7 @@ $(document).ready(function() {
     $modal.modal();
     $modal.find('.alert').remove();
     $modal.find('#id_id').val(card.pk);
+    $modal.find('.btn.delete').show();
 
     // Update all fields.
     for (key in card.fields) {

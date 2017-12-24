@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from django.test import TestCase
 from django.urls import reverse
 
-from .models import Profile, Canvas, Code
+from .models import Profile, Card, Canvas, Code
 
 
 class ToolViewTest(TestCase):
@@ -268,6 +268,55 @@ class ToolViewTest(TestCase):
                                        kwargs={'username': 'testuser'}))
         self.assertEqual(resp.status_code, 200)
         self.assertTemplateUsed(resp, 'flashcards.html')
+
+        # Create a flashcard.
+        resp = self.client.post(reverse('flashcards'), {
+            'word': 'Test flashcard',
+            'description': 'Dummy text',
+            'difficulty': 'middle',
+        })
+        self.assertRedirects(resp, reverse('flashcards'))
+        test_user = User.objects.get(username='testuser')
+        test_flashcard = Card.objects.get(word='Test flashcard',
+                                          user=test_user)
+        self.assertEqual(test_flashcard.description, 'Dummy text')
+        # Word should be unique.
+        resp = self.client.post(reverse('code'), {
+            'word': 'Test flashcard',
+            'description': 'Dummy text 2',
+            'difficulty': 'easy',
+        })
+        self.assertEqual(resp.status_code, 200)
+        test_flashcard = Card.objects.get(word='Test flashcard',
+                                          user=test_user)
+        self.assertEqual(test_flashcard.description, 'Dummy text')
+        self.client.logout()
+
+        # Delete flashcard.
+        resp = self.client.delete(
+            reverse('flashcards_pk', kwargs={'pk': test_flashcard.pk})
+        )
+        self.assertRedirects(
+            resp,
+            '/login?next=/flashcards/' + str(test_flashcard.pk)
+        )
+        self.client.login(username='testuser', password='12345')
+        resp = self.client.delete(
+            reverse('flashcards_pk', kwargs={'pk': 77777})
+        )
+        self.assertEqual(resp.status_code, 404)
+        resp = self.client.delete(
+            reverse('flashcards_pk', kwargs={'pk': test_flashcard.pk})
+        )
+        self.assertEqual(resp.status_code, 200)
+        self.assertJSONEqual(
+            str(resp.content, encoding='utf8'),
+            {'redirect': '/flashcards', 'success': True}
+        )
+        test_flashcard_exists = Code.objects.filter(
+            pk=test_flashcard.pk
+        ).exists()
+        self.assertFalse(test_flashcard_exists)
 
     def test_views_flashcards_order(self):
         resp = self.client.post(reverse('card_order',

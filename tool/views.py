@@ -58,18 +58,37 @@ def tool(request, slug, username=None):
         raise Http404
 
 
-@login_required
-def flashcards(request, username=None):
-    """Flashcards."""
-    user = GetUserMixin().get_user(request, username)
+class FlashcardsView(LoginRequiredMixin, View, GetUserMixin):
+    def get(self, request, username=None):
+        """Get form."""
+        user = self.get_user(request, username)
+        cards = Card.objects.filter(user=user).order_by('order')
+        if user == request.user:
+            form_action = reverse('flashcards')
+        else:
+            form_action = reverse('user_flashcards', args=[user.username])
+        form = CardForm()
 
-    cards = Card.objects.filter(user=user).order_by('order')
-    if user == request.user:
-        form_action = reverse('flashcards')
-    else:
-        form_action = reverse('user_flashcards', args=[user.username])
+        return render(
+            request,
+            "flashcards.html",
+            dict(
+                cards=cards,
+                profile_user=user,
+                form=form,
+                form_action=form_action,
+                active_page=form_action.lstrip('/')
+            )
+        )
 
-    if request.method == 'POST':
+    def post(self, request, username=None):
+        """Form submit."""
+        user = self.get_user(request, username)
+        cards = Card.objects.filter(user=user).order_by('order')
+        if user == request.user:
+            form_action = reverse('flashcards')
+        else:
+            form_action = reverse('user_flashcards', args=[user.username])
         post_object = request.POST.copy()
         post_id = post_object.pop('id', [None])[0]
         if post_id:
@@ -84,20 +103,28 @@ def flashcards(request, username=None):
             form.save()
 
             return redirect(form_action)
-    else:
-        form = CardForm()
 
-    return render(
-        request,
-        "flashcards.html",
-        dict(
-            cards=cards,
-            profile_user=user,
-            form=form,
-            form_action=form_action,
-            active_page=form_action.lstrip('/')
+        return render(
+            request,
+            "flashcards.html",
+            dict(
+                cards=cards,
+                profile_user=user,
+                form=form,
+                form_action=form_action,
+                active_page=form_action.lstrip('/')
+            )
         )
-    )
+
+    def delete(self, request, pk, username=None):
+        """Delete code snippet."""
+        self.get_user(request, username)
+        flashcard = get_object_or_404(Card, pk=pk)
+        flashcard.delete()
+
+        return JsonResponse(
+            {'redirect': reverse('flashcards'), 'success': True}
+        )
 
 
 @login_required

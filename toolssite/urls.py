@@ -9,7 +9,7 @@ from django.contrib.sitemaps.views import sitemap
 from django.urls import path
 from django.utils.translation import ugettext_lazy as _
 
-from tool.views import (tool, calendar, dictionary, flashcards, users_list,
+from tool.views import (tool, calendar, dictionary, FlashcardsView, users_list,
                         profile_view, update_profile, user_events, card_order,
                         task_order, FlightsView, tasks_view, CanvasView,
                         CanvasesView, CodeView, log_in, log_out)
@@ -35,10 +35,12 @@ urlpatterns = [
     path('ajax/dictionary', dictionary, name='ajax_dictionary'),
     path('user/<str:username>/dictionary', dictionary, name='user_dictionary'),
     path('ajax/user/<str:username>/dictionary', dictionary, name='ajax_user_dictionary'),
-    path('flashcards', flashcards, name='flashcards'),
-    path('ajax/flashcards', flashcards, name='ajax_flashcards'),
-    path('user/<str:username>/flashcards', flashcards, name='user_flashcards'),
-    path('ajax/user/<str:username>/flashcards', flashcards, name='ajax_user_flashcards'),
+    path('flashcards', FlashcardsView.as_view(), name='flashcards'),
+    path('ajax/flashcards', FlashcardsView.as_view(), name='ajax_flashcards'),
+    path('user/<str:username>/flashcards', FlashcardsView.as_view(), name='user_flashcards'),
+    path('ajax/user/<str:username>/flashcards', FlashcardsView.as_view(), name='ajax_user_flashcards'),
+    path('flashcards/<int:pk>', FlashcardsView.as_view(), name='flashcards_pk'),
+    path('ajax/flashcards/<int:pk>', FlashcardsView.as_view(), name='ajax_flashcards_pk'),
     path('tasks', tasks_view, name='tasks'),
     path('ajax/tasks', tasks_view, name='ajax_tasks'),
     path('user/<str:username>/tasks', tasks_view, name='user_tasks'),
