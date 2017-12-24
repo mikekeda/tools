@@ -8,6 +8,7 @@ from schedule.models import Calendar, Event
 
 from django.core.exceptions import PermissionDenied, ValidationError
 from django.conf import settings
+from django.db import transaction
 from django.db.utils import IntegrityError
 from django.http import Http404, JsonResponse, HttpResponseRedirect
 from django.contrib.admin.views.decorators import staff_member_required
@@ -572,7 +573,8 @@ class CodeView(View, GetUserMixin):
             code = form.save(commit=False)
             code.user = user
             try:
-                code.save()
+                with transaction.atomic():
+                    code.save()
             except IntegrityError:
                 form.add_error(
                     'title',

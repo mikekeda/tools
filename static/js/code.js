@@ -20,7 +20,7 @@ $(document).ready(function() {
           url: window.location.href ,
           type: 'DELETE',
           beforeSend: function(xhr) {
-            xhr.setRequestHeader('X-CSRFTOKEN', '{{ csrf_token }}');
+            xhr.setRequestHeader('X-CSRFTOKEN', $('form [name="csrfmiddlewaretoken"]').val());
           },
           success: function(result) {
             window.location.replace(result.redirect);
