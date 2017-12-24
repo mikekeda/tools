@@ -420,7 +420,7 @@ class ToolViewTest(TestCase):
                 'text': '',
             }
         )
-        self.assertRedirects(resp, '/code')
+        self.assertEqual(resp.status_code, 200)
         test_code_snippet = Code.objects.get(title='Test code snippet 2',
                                              user=test_user)
         self.assertTrue(test_code_snippet)
