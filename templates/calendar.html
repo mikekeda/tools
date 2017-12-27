@@ -28,6 +28,8 @@
                             {{ field|add_class:"datetimepicker" }}
                         {% elif field.name == 'color_event' %}
                             {{ field|add_class:"jscolor" }}
+                        {% elif field.name == 'rule' %}
+                            {{ field|add_class:"form-control" }}
                         {% else %}
                             {{ field }}
                         {% endif %}

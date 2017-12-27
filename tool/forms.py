@@ -18,7 +18,8 @@ class AvatarForm(forms.ModelForm):
 class EventForm(forms.ModelForm):
     class Meta:
         model = Event
-        fields = ('title', 'description', 'start', 'end', 'color_event', )
+        fields = ('title', 'description', 'start', 'end', 'color_event',
+                  'rule')
 
 
 class WordForm(forms.ModelForm):
