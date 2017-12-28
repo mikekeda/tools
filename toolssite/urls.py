@@ -9,7 +9,7 @@ from django.contrib.sitemaps.views import sitemap
 from django.urls import path
 from django.utils.translation import ugettext_lazy as _
 
-from tool.views import (tool, calendar, dictionary, FlashcardsView, users_list,
+from tool.views import (tool, CalendarView, dictionary, FlashcardsView, users_list,
                         profile_view, update_profile, user_events, card_order,
                         task_order, FlightsView, TasksView, CanvasView,
                         CanvasesView, CodeView, log_in, log_out)
@@ -27,10 +27,12 @@ urlpatterns = [
     path('ajax/tool/<str:slug>', tool, name='ajax_tool'),
     path('user/<str:username>/tool/<str:slug>', tool, name='user_tool'),
     path('ajax/user/<str:username>/tool/<str:slug>', tool, name='ajax_user_tool'),
-    path('calendar', calendar, name='calendar'),
-    path('ajax/calendar', calendar, name='ajax_calendar'),
-    path('user/<str:username>/calendar', calendar, name='user_calendar'),
-    path('ajax/user/<str:username>/calendar', calendar, name='ajax_user_calendar'),
+    path('calendar', CalendarView.as_view(), name='calendar'),
+    path('ajax/calendar', CalendarView.as_view(), name='ajax_calendar'),
+    path('user/<str:username>/calendar', CalendarView.as_view(), name='user_calendar'),
+    path('ajax/user/<str:username>/calendar', CalendarView.as_view(), name='ajax_user_calendar'),
+    path('calendar/<int:pk>', CalendarView.as_view(), name='calendar_pk'),
+    path('ajax/calendar/<int:pk>', CalendarView.as_view(), name='ajax_calendar_pk'),
     path('dictionary', dictionary, name='dictionary'),
     path('ajax/dictionary', dictionary, name='ajax_dictionary'),
     path('user/<str:username>/dictionary', dictionary, name='user_dictionary'),

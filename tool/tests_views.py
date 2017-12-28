@@ -1,7 +1,12 @@
+import datetime
+import pytz
+
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.test import TestCase
 from django.urls import reverse
+
+from schedule.models import Calendar, Event
 
 from .models import Profile, Card, Task, Canvas, Code
 
@@ -193,7 +198,7 @@ class ToolViewTest(TestCase):
             '""'
         )
 
-    def test_views_calendar(self):
+    def test_views_calendar_get(self):
         resp = self.client.get(reverse('calendar'))
         self.assertRedirects(resp, '/login?next=/calendar')
         resp = self.client.get(reverse('user_calendar',
@@ -208,6 +213,194 @@ class ToolViewTest(TestCase):
                                        kwargs={'username': 'testuser'}))
         self.assertEqual(resp.status_code, 200)
         self.assertTemplateUsed(resp, 'calendar.html')
+        self.client.logout()
+        # Admin can see user's events.
+        self.client.login(username='testadmin', password='12345')
+        resp = self.client.get(reverse('user_calendar',
+                                       kwargs={'username': 'testuser'}))
+        self.assertEqual(resp.status_code, 200)
+        self.assertTemplateUsed(resp, 'calendar.html')
+
+    def test_views_calendar_post(self):
+        # Create an event.
+        resp = self.client.post(reverse('calendar'), {
+            'title': 'Test title',
+            'description': 'Test description',
+            'start': '2018-01-17 19:27',
+            'end': '2018-01-27 19:28',
+            'color_event': 'EBDFD6',
+            'rule': 4,
+        })
+        self.assertRedirects(resp, '/login?next=/calendar')
+        self.client.login(username='testuser', password='12345')
+        # Title can't be empty.
+        resp = self.client.post(reverse('calendar'), {
+            'title': '',
+            'description': 'Test description',
+            'start': '2018-01-17 19:27',
+            'end': '2018-01-27 19:28',
+            'color_event': 'EBDFD6',
+            'rule': 4,
+        })
+        self.assertEqual(resp.status_code, 200)
+        resp = self.client.post(reverse('calendar'), {
+            'title': 'Test title',
+            'description': 'Test description',
+            'start': '2018-01-17 19:27',
+            'end': '2018-01-27 19:28',
+            'color_event': 'EBDFD6',
+            'rule': 4,
+        })
+        self.assertRedirects(resp, reverse('calendar'))
+        test_user = User.objects.get(username='testuser')
+        test_event = Event.objects.get(title='Test title', creator=test_user)
+        self.assertEqual(test_event.description, 'Test description')
+        self.assertEqual(test_event.color_event, '#EBDFD6')
+        self.client.logout()
+        # Admin can create an event for any user.
+        self.client.login(username='testadmin', password='12345')
+        resp = self.client.post(
+            reverse('user_calendar', kwargs={'username': 'testuser'}),
+            {
+                'title': 'Test title admin',
+                'description': 'Test description admin',
+                'start': '2018-01-20 19:27',
+                'end': '2018-01-21 19:28',
+                'color_event': '7DA2FF',
+                'rule': 2,
+            }
+        )
+        self.assertRedirects(resp, reverse('user_calendar',
+                                           kwargs={'username': 'testuser'}))
+        test_event_admin = Event.objects.get(title='Test title admin',
+                                             creator=test_user)
+        self.assertEqual(test_event_admin.description,
+                         'Test description admin')
+        self.assertEqual(test_event_admin.color_event, '#7DA2FF')
+        self.client.logout()
+
+        # Edit the event.
+        resp = self.client.post(reverse('calendar'), {
+            'id': test_event_admin.pk,
+            'title': 'Test title user',
+            'description': 'Test description user',
+            'start': '2018-02-20 19:27',
+            'end': '2018-02-21 19:28',
+            'color_event': 'FFA3F5',
+            'rule': 3,
+        })
+        self.assertRedirects(resp, '/login?next=/calendar')
+        self.client.login(username='testuser', password='12345')
+        resp = self.client.post(reverse('calendar'), {
+            'id': test_event_admin.pk,
+            'title': 'Test title user',
+            'description': 'Test description user',
+            'start': '2018-02-20 19:27',
+            'end': '2018-02-21 19:28',
+            'color_event': 'FFA3F5',
+            'rule': 3,
+        })
+        self.assertRedirects(resp, reverse('calendar'))
+        test_event_admin = Event.objects.get(pk=test_event_admin.pk)
+        self.assertEqual(test_event_admin.title, 'Test title user')
+        self.assertEqual(test_event_admin.description, 'Test description user')
+        self.assertEqual(test_event_admin.color_event, '#FFA3F5')
+        # Try to edit not existing event.
+        resp = self.client.post(reverse('calendar'), {
+            'id': 77777,
+            'title': 'Test title not exists',
+            'description': 'Test description not exists',
+            'start': '2018-04-20 19:27',
+            'end': '2018-04-21 19:28',
+            'color_event': '4549FF',
+            'rule': 1,
+        })
+        self.assertEqual(resp.status_code, 404)
+        self.client.logout()
+        # Admin can edit an event for any user.
+        self.client.login(username='testadmin', password='12345')
+        resp = self.client.post(
+            reverse('user_calendar', kwargs={'username': 'testuser'}),
+            {
+                'id': test_event.pk,
+                'title': 'Test title admin 2',
+                'description': 'Test description admin 2',
+                'start': '2018-06-20 19:27',
+                'end': '2018-06-21 19:28',
+                'color_event': 'FFC678',
+                'rule': 2,
+            }
+        )
+        self.assertRedirects(resp, reverse('user_calendar',
+                                           kwargs={'username': 'testuser'}))
+        test_event = Event.objects.get(pk=test_event.pk)
+        self.assertEqual(test_event.title, 'Test title admin 2')
+        self.assertEqual(test_event.description,
+                         'Test description admin 2')
+        self.assertEqual(test_event.color_event, '#FFC678')
+
+    def test_views_calendar_delete(self):
+        test_user = User.objects.get(username='testuser')
+        cal = Calendar.objects.create(name="testuser")
+        test_event = Event(
+            title='Test title 3',
+            description='Test description 3',
+            start=datetime.datetime(2018, 1, 5, 8, 0, tzinfo=pytz.utc),
+            end=datetime.datetime(2018, 1, 5, 9, 0, tzinfo=pytz.utc),
+            color_event='#FFA3F5',
+            creator=test_user,
+            calendar=cal
+        )
+
+        test_event.save()
+        test_event_admin = Event(
+            title='Test title 3 admin',
+            description='Test description 3 admin',
+            start=datetime.datetime(2018, 1, 4, 8, 0, tzinfo=pytz.utc),
+            end=datetime.datetime(2018, 1, 4, 10, 0, tzinfo=pytz.utc),
+            color_event='#A3E2FF',
+            creator=test_user,
+            calendar=cal
+        )
+        test_event_admin.save()
+        # Delete event.
+        resp = self.client.delete(
+            reverse('calendar_pk', kwargs={'pk': test_event.pk})
+        )
+        self.assertRedirects(
+            resp,
+            '/login?next=/calendar/' + str(test_event.pk)
+        )
+        self.client.login(username='testuser', password='12345')
+        resp = self.client.delete(reverse('calendar_pk', kwargs={'pk': 77777}))
+        self.assertEqual(resp.status_code, 404)
+        resp = self.client.delete(
+            reverse('calendar_pk', kwargs={'pk': test_event.pk})
+        )
+        self.assertEqual(resp.status_code, 200)
+        self.assertJSONEqual(
+            str(resp.content, encoding='utf8'),
+            {'redirect': '/calendar', 'success': True}
+        )
+        test_event_exists = Event.objects.filter(
+            pk=test_event.pk
+        ).exists()
+        self.assertFalse(test_event_exists)
+        self.client.logout()
+        # Admin can delete an event for any user.
+        self.client.login(username='testadmin', password='12345')
+        resp = self.client.delete(
+            reverse('calendar_pk', kwargs={'pk': test_event_admin.pk})
+        )
+        self.assertEqual(resp.status_code, 200)
+        self.assertJSONEqual(
+            str(resp.content, encoding='utf8'),
+            {'redirect': '/calendar', 'success': True}
+        )
+        test_event_admin_exists = Event.objects.filter(
+            pk=test_event_admin.pk
+        ).exists()
+        self.assertFalse(test_event_admin_exists)
 
     def test_views_flights(self):
         resp = self.client.get(reverse('flights'))

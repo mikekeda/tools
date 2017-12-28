@@ -4,6 +4,7 @@ from collections import OrderedDict
 from datetime import timedelta
 import requests
 import pytz
+
 from schedule.models import Calendar, Event
 
 from django.core.exceptions import PermissionDenied, ValidationError
@@ -233,27 +234,55 @@ class TasksView(LoginRequiredMixin, View, GetUserMixin):
         )
 
 
-@login_required
-def calendar(request, username=None):
-    """Calendar."""
-    user = GetUserMixin().get_user(request, username)
+class CalendarView(LoginRequiredMixin, View, GetUserMixin):
+    def get(self, request, username=None):
+        """Get form."""
+        user = self.get_user(request, username)
+        if user == request.user:
+            form_action = reverse('calendar')
+        else:
+            form_action = reverse('user_calendar', args=[user.username])
 
-    calendar_obj, _ = Calendar.objects.get_or_create(
-        slug=user.username,
-        defaults={'name': '{} Calendar'.format(user.username)},
-    )
-    if user == request.user:
-        form_action = reverse('calendar')
-    else:
-        form_action = reverse('user_calendar', args=[user.username])
+        form = EventForm()
 
-    if request.method == 'POST':
-        form = EventForm(data=request.POST)
+        return render(request, "calendar.html", dict(
+            profile_user=user,
+            form=form,
+            form_action=form_action,
+            active_page=form_action.lstrip('/')
+        ))
+
+    def post(self, request, username=None):
+        """Form submit."""
+        user = self.get_user(request, username)
+
+        calendar_obj, _ = Calendar.objects.get_or_create(
+            slug=user.username,
+            defaults={'name': '{} Calendar'.format(user.username)},
+        )
+        if user == request.user:
+            form_action = reverse('calendar')
+        else:
+            form_action = reverse('user_calendar', args=[user.username])
+
+        post_object = request.POST.copy()
+        post_id = post_object.pop('id', [None])[0]
+        if post_id:
+            event = Event.objects.filter(id=post_id, creator=user).first()
+            if not event:
+                raise Http404
+        else:
+            event = Event(creator=user)
+
+        form = EventForm(data=post_object, instance=event)
         if form.is_valid():
-            user_timezone = pytz.timezone(request.user.profile.timezone)
+            user_timezone = 'UTC'
+            if hasattr(request.user, 'profile') \
+                    and request.user.profile.timezone:
+                user_timezone = request.user.profile.timezone
+            user_timezone = pytz.timezone(user_timezone)
 
             event = form.save(commit=False)
-            event.creator = user
             event.calendar = calendar_obj
             event.start = user_timezone.localize(
                 event.start.replace(tzinfo=None)
@@ -263,15 +292,28 @@ def calendar(request, username=None):
             event.save()
 
             return redirect(form_action)
-    else:
-        form = EventForm()
 
-    return render(request, "calendar.html", dict(
-        profile_user=user,
-        form=form,
-        form_action=form_action,
-        active_page=form_action.lstrip('/')
-    ))
+        return render(request, "calendar.html", dict(
+            profile_user=user,
+            form=form,
+            form_action=form_action,
+            active_page=form_action.lstrip('/')
+        ))
+
+    def delete(self, request, pk, username=None):
+        """Delete the event."""
+        user = self.get_user(request, username)
+        event = get_object_or_404(Event, pk=pk)
+        event.delete()
+
+        if user == request.user:
+            form_action = reverse('calendar')
+        else:
+            form_action = reverse('user_calendar', args=[user.username])
+
+        return JsonResponse(
+            {'redirect': form_action, 'success': True}
+        )
 
 
 @login_required
