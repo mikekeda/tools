@@ -19,7 +19,7 @@ class EventForm(forms.ModelForm):
     class Meta:
         model = Event
         fields = ('title', 'description', 'start', 'end', 'color_event',
-                  'rule')
+                  'rule', 'end_recurring_period')
 
 
 class WordForm(forms.ModelForm):
