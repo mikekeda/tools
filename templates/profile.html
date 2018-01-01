@@ -39,6 +39,11 @@
                         {% trans "Canvases" %}
                     </a>
                 </li>
+                <li role="presentation">
+                    <a class="ajax-link" data-annyang="user snippets" href="{% url 'user_code' profile_user.username %}">
+                        {% trans "Code snippets" %}
+                    </a>
+                </li>
             </ul>
             <div class="col-lg-8 pull-right">
                 <div id="profile">
