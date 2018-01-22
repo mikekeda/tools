@@ -1,5 +1,6 @@
 import datetime
 import pytz
+from urllib.parse import urlencode
 
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -8,7 +9,7 @@ from django.urls import reverse
 
 from schedule.models import Calendar, Event
 
-from .models import Profile, Card, Task, Canvas, Code
+from .models import Profile, Card, Task, Canvas, Code, Word
 
 
 class ToolViewTest(TestCase):
@@ -430,7 +431,7 @@ class ToolViewTest(TestCase):
         })
         self.assertEqual(resp.status_code, 200)
 
-    def test_views_dictionary(self):
+    def test_views_dictionary_get(self):
         resp = self.client.get(reverse('dictionary'))
         self.assertRedirects(resp, '/login?next=/dictionary')
         resp = self.client.get(reverse('user_dictionary',
@@ -445,6 +446,90 @@ class ToolViewTest(TestCase):
                                        kwargs={'username': 'testuser'}))
         self.assertEqual(resp.status_code, 200)
         self.assertTemplateUsed(resp, 'dictionary.html')
+
+    def test_views_dictionary_post(self):
+        # Anonymous user - redirect.
+        resp = self.client.post(reverse('dictionary'), {
+            lang[0]: 'test' + lang[0]
+            for lang in settings.LANGUAGES
+        })
+        self.assertEqual(resp.status_code, 403)
+
+        # Registered user.
+        self.client.login(username='testuser', password='12345')
+        resp = self.client.post(reverse('dictionary'), {
+            lang[0]: 'test' + lang[0]
+            for lang in settings.LANGUAGES
+        })
+        self.assertRedirects(resp, '/dictionary')
+        test_user = User.objects.get(username='testuser')
+        test_word = Word.objects.get(en='testen', user=test_user)
+        self.assertEqual(test_word.es, 'testes')
+
+        # Admin user - can create a new word for any user.
+        self.client.login(username='testadmin', password='12345')
+        resp = self.client.post(
+            reverse('user_dictionary', kwargs={'username': 'testuser'}),
+            {lang[0]: 'testadmin' + lang[0] for lang in settings.LANGUAGES}
+        )
+        self.assertRedirects(resp, '/user/testuser/dictionary')
+        test_word = Word.objects.get(en='testadminen', user=test_user)
+        self.assertEqual(test_word.es, 'testadmines')
+
+    def test_views_dictionary_put(self):
+        test_user = User.objects.get(username='testuser')
+        test_word = Word(en='testen', es='testes', user=test_user)
+        test_word.save()
+
+        # Anonymous user - redirect.
+        resp = self.client.put(
+            path=reverse('dictionary'),
+            data=urlencode({
+                'pk': test_word.pk,
+                'lang': 'en',
+                'value': 'put_test_anonymous_en',
+            }),
+            content_type='application/x-www-form-urlencoded'
+        )
+        self.assertEqual(resp.status_code, 403)
+
+        # Registered user.
+        self.client.login(username='testuser', password='12345')
+        resp = self.client.put(
+            path=reverse('dictionary'),
+            data=urlencode({
+                'pk': test_word.pk,
+                'lang': 'en',
+                'value': 'put_test_en',
+            }),
+            content_type='application/x-www-form-urlencoded'
+        )
+        self.assertEqual(resp.status_code, 200)
+        self.assertJSONEqual(
+            str(resp.content, encoding='utf8'),
+            {'redirect': '/dictionary', 'success': True}
+        )
+        test_word = Word.objects.get(pk=test_word.pk)
+        self.assertEqual(test_word.en, 'put_test_en')
+
+        # Admin user - can edit any word for any user.
+        self.client.login(username='testadmin', password='12345')
+        resp = self.client.put(
+            path=reverse('dictionary'),
+            data=urlencode({
+                'pk': test_word.pk,
+                'lang': 'en',
+                'value': 'put_test_admin_en',
+            }),
+            content_type='application/x-www-form-urlencoded'
+        )
+        self.assertEqual(resp.status_code, 200)
+        self.assertJSONEqual(
+            str(resp.content, encoding='utf8'),
+            {'redirect': '/dictionary', 'success': True}
+        )
+        test_word = Word.objects.get(pk=test_word.pk)
+        self.assertEqual(test_word.en, 'put_test_admin_en')
 
     def test_views_flashcards_get(self):
         resp = self.client.get(reverse('flashcards'))

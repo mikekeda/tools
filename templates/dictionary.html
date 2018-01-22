@@ -55,8 +55,8 @@
                 <tr>
                     {% for lang in languages %}
                         <th lang="{{ lang.0 }}">
-                            {{ word|get_item:lang.0 }}
-                            <a href="#" class="editable pull-right" style="border-bottom: none;" data-type="text" data-pk="{{ lang.0 }}" data-value="{{ word|get_item:lang.0 }}" data-url="{% url 'update_profile' %}" data-placeholder="{% trans 'Edit the text' %}" data-params="{csrfmiddlewaretoken:'{{csrf_token}}'}">
+                            <span>{{ word|get_item:lang.0 }}</span>
+                            <a href="#" class="editable pull-right" style="border-bottom: none;" data-type="text" data-pk="{{ word.pk }}" data-value="{{ word|get_item:lang.0 }}" data-url="{% url 'user_dictionary' profile_user.username  %}" data-placeholder="{% trans 'Edit the text' %}" data-params="{lang: '{{ lang.0 }}'}">
                                 <span class="glyphicon glyphicon-pencil"></span>
                             </a>
                         </th>
@@ -87,14 +87,14 @@
           });
         });
 
+        $.fn.editable.defaults.ajaxOptions = {type: "PUT"};
+        $.ajaxSetup({
+            headers: {
+                'X-Csrftoken': '{{ csrf_token }}'
+            }
+        });
         $('.editable').editable({mode: 'popup', display: false}).on('save', function(e, params) {
-            console.log(this);
-            console.log(e);
-            console.log(params);
-        }).on('shown', function(e, editable) {
-            console.log(this);
-            console.log(e);
-            console.log(editable);
+            window.location.replace(params.response.redirect);
         });
 
         $dictionary.find('th').click(function() {

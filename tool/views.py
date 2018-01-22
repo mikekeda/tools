@@ -17,6 +17,7 @@ from django.contrib.auth import get_user_model, login, logout
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.http import QueryDict
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 from django.utils.translation import ugettext
@@ -466,37 +467,67 @@ def user_events(request):
     raise Http404
 
 
-@login_required
-def dictionary(request, username=None):
-    """Dictionary."""
-    user = GetUserMixin().get_user(request, username)
+class DictionaryView(View, GetUserMixin):
+    def get(self, request, username=None):
+        """Get form."""
+        try:
+            user = self.get_user(request, username)
+        except PermissionDenied:
+            return redirect(reverse('login') + '?next=' + request.path)
+        form = WordForm()
+        words = Word.objects.filter(user=user).order_by('-id')
 
-    # it could be current user that open a page by his username
-    if user == request.user:
-        form_action = reverse('dictionary')
-    else:
-        form_action = reverse('user_dictionary', args=[user.username])
+        return render(request, "dictionary.html", dict(
+            profile_user=user,
+            words=words,
+            languages=settings.LANGUAGES,
+            form=form,
+            form_action=request.path,
+            active_page=request.path.lstrip('/')
+        ))
 
-    if request.method == 'POST':
+    def post(self, request, username=None):
+        """Form submit."""
+        user = self.get_user(request, username)
+
         form = WordForm(data=request.POST)
         if form.is_valid():
             word = form.save(commit=False)
             word.user = user
             word.save()
 
-            return redirect(form_action)
-    else:
-        form = WordForm()
+            return redirect(request.path)
 
-    words = Word.objects.filter(user=user).order_by('-id')
+        words = Word.objects.filter(user=user).order_by('-id')
 
-    return render(request, "dictionary.html", dict(
-        words=words,
-        languages=settings.LANGUAGES,
-        form=form,
-        form_action=form_action,
-        active_page=form_action.lstrip('/')
-    ))
+        return render(request, "dictionary.html", dict(
+            profile_user=user,
+            words=words,
+            languages=settings.LANGUAGES,
+            form=form,
+            form_action=request.path,
+            active_page=request.path.lstrip('/')
+        ))
+
+    def put(self, request, username=None):
+        """Word edit."""
+        put = QueryDict(request.body)
+        field = put.get('lang', '')
+
+        if field in [lang[0] for lang in settings.LANGUAGES]:
+            self.get_user(request, username)
+            pk = put.get('pk', '')
+            word = get_object_or_404(Word, pk=pk)
+            value = put.get('value', '')
+            setattr(word, field, value)
+            word.save()
+            return JsonResponse({'redirect': request.path, 'success': True})
+
+        return JsonResponse(
+            ugettext("You can't change this field"),
+            safe=False,
+            status=403
+        )
 
 
 class FlightsView(LoginRequiredMixin, View):

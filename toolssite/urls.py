@@ -9,10 +9,10 @@ from django.contrib.sitemaps.views import sitemap
 from django.urls import path
 from django.utils.translation import ugettext_lazy as _
 
-from tool.views import (tool, CalendarView, dictionary, FlashcardsView, users_list,
-                        profile_view, update_profile, user_events, card_order,
-                        task_order, FlightsView, TasksView, CanvasView,
-                        CanvasesView, CodeView, log_in, log_out)
+from tool.views import (tool, CalendarView, DictionaryView, FlashcardsView,
+                        users_list, profile_view, update_profile, user_events,
+                        card_order, task_order, FlightsView, TasksView,
+                        CanvasView, CanvasesView, CodeView, log_in, log_out)
 from tool.sitemaps import StaticViewSitemap
 
 sitemaps = {
@@ -33,10 +33,10 @@ urlpatterns = [
     path('ajax/user/<str:username>/calendar', CalendarView.as_view(), name='ajax_user_calendar'),
     path('calendar/<int:pk>', CalendarView.as_view(), name='calendar_pk'),
     path('ajax/calendar/<int:pk>', CalendarView.as_view(), name='ajax_calendar_pk'),
-    path('dictionary', dictionary, name='dictionary'),
-    path('ajax/dictionary', dictionary, name='ajax_dictionary'),
-    path('user/<str:username>/dictionary', dictionary, name='user_dictionary'),
-    path('ajax/user/<str:username>/dictionary', dictionary, name='ajax_user_dictionary'),
+    path('dictionary', DictionaryView.as_view(), name='dictionary'),
+    path('ajax/dictionary', DictionaryView.as_view(), name='ajax_dictionary'),
+    path('user/<str:username>/dictionary', DictionaryView.as_view(), name='user_dictionary'),
+    path('ajax/user/<str:username>/dictionary', DictionaryView.as_view(), name='ajax_user_dictionary'),
     path('flashcards', FlashcardsView.as_view(), name='flashcards'),
     path('ajax/flashcards', FlashcardsView.as_view(), name='ajax_flashcards'),
     path('user/<str:username>/flashcards', FlashcardsView.as_view(), name='user_flashcards'),
