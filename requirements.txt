@@ -27,6 +27,7 @@ django-redis==4.8.0
 django-scheduler==0.8.8
 django-widget-tweaks==1.4.1
 et-xmlfile==1.0.1
+gunicorn==19.7.1
 hyperlink==17.3.1
 icalendar==4.0.0
 idna==2.6
