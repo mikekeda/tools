@@ -54,7 +54,7 @@ def save_and_add_slug(obj, force_insert=False, force_update=False, using=None,
 
 
 class ColorField(models.CharField):
-    """Color field"""
+    """ Color field. """
 
     def formfield(self, **kwargs):
         kwargs['widget'] = ColorWidget
@@ -62,7 +62,7 @@ class ColorField(models.CharField):
 
 
 class Profile(models.Model):
-    """Profile model"""
+    """ Profile model. """
     user = models.OneToOneField(
         settings.AUTH_USER_MODEL,
         related_name='profile',
@@ -91,7 +91,7 @@ class Profile(models.Model):
 
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):
-        """Encrypt password on save in case if it was changed."""
+        """ Encrypt password on save in case if it was changed. """
         if self.email_password:
             origin = None
             if self.pk:
@@ -120,7 +120,7 @@ for i, default_color in enumerate(default_palette_colors, 1):
 
 
 class Card(models.Model):
-    """Flashcard model"""
+    """ Flashcard model. """
     DIFFICULTIES = (
         ('easy', 'Easy'),
         ('middle', 'Medium'),
@@ -151,7 +151,7 @@ class Card(models.Model):
 
 
 class Word(models.Model):
-    """Word model"""
+    """ Word model. """
     user = models.ForeignKey(
         User,
         related_name='words',
@@ -172,7 +172,7 @@ for lang in settings.LANGUAGES:
 
 
 class Task(models.Model):
-    """Task model"""
+    """ Task model. """
     STATUSES = (
         ('todo', 'TODO'),
         ('doing', 'Doing'),
@@ -203,7 +203,7 @@ class Task(models.Model):
 
 
 class Canvas(models.Model):
-    """Canvas model"""
+    """ Canvas model. """
     user = models.ForeignKey(
         User,
         related_name='canvases',
@@ -230,7 +230,7 @@ class Canvas(models.Model):
 
 
 class Code(models.Model):
-    """Code model"""
+    """ Code model. """
     title = models.CharField(max_length=60)
     text = models.TextField()
     user = models.ForeignKey(

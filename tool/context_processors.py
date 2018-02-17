@@ -7,7 +7,7 @@ from .models import Profile
 
 
 def categories(request=None):
-    """Get all tools."""
+    """ Get all tools. """
     tools = []
     folders = settings.TEMPLATES[0]['DIRS']
     for folder in folders:
@@ -31,18 +31,18 @@ def categories(request=None):
 
 
 def select_parent_template(request):
-    """Check if it's ajax, if so no need to parent template."""
+    """ Check if it's ajax, if so no need to parent template. """
     parent_template = "dummy_parent.html" if request.is_ajax() else "base.html"
     return {'parent_template': parent_template}
 
 
 def arrival_date(request=None):
-    """Arrival date."""
+    """ Arrival date. """
     return {'today': date.today(), 'arrival_date': date(2018, 4, 1)}
 
 
 def user_profile(request):
-    """User profile."""
+    """ User profile. """
     profile = None
     if request.user.is_authenticated:
         profile, _ = Profile.objects.get_or_create(user=request.user)

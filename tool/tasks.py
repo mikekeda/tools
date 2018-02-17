@@ -12,7 +12,7 @@ app = Celery('tool')
 
 @app.task
 def send_notification():
-    """Send email notification about upcoming events."""
+    """ Send email notification about upcoming events. """
     interval = 15
     before = 60
 
@@ -56,7 +56,7 @@ def send_notification():
 
 @app.task
 def daily_notification():
-    """Send daily email notification about upcoming events."""
+    """ Send daily email notification about upcoming events. """
     sending_hour = 8
 
     start = timezone.now()

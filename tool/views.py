@@ -46,7 +46,7 @@ class GetUserMixin(object):
 
 
 def tool(request, slug, username=None):
-    """Show needed tool."""
+    """ Show needed tool. """
     try:
         user = request.user
         if username:
@@ -62,7 +62,7 @@ def tool(request, slug, username=None):
 
 class FlashcardsView(LoginRequiredMixin, View, GetUserMixin):
     def get(self, request, username=None):
-        """Get form."""
+        """ Get form. """
         user = self.get_user(request, username)
         cards = Card.objects.filter(user=user).order_by('order')
         if user == request.user:
@@ -84,7 +84,7 @@ class FlashcardsView(LoginRequiredMixin, View, GetUserMixin):
         )
 
     def post(self, request, username=None):
-        """Form submit."""
+        """ Form submit. """
         user = self.get_user(request, username)
         cards = Card.objects.filter(user=user).order_by('order')
         if user == request.user:
@@ -128,7 +128,7 @@ class FlashcardsView(LoginRequiredMixin, View, GetUserMixin):
         )
 
     def delete(self, request, pk, username=None):
-        """Delete the flashcard."""
+        """ Delete the flashcard. """
         self.get_user(request, username)
         flashcard = get_object_or_404(Card, pk=pk)
         flashcard.delete()
@@ -140,7 +140,7 @@ class FlashcardsView(LoginRequiredMixin, View, GetUserMixin):
 
 class TasksView(LoginRequiredMixin, View, GetUserMixin):
     def get(self, request, username=None):
-        """Get form."""
+        """ Get form. """
         user = self.get_user(request, username)
 
         if user == request.user:
@@ -177,7 +177,7 @@ class TasksView(LoginRequiredMixin, View, GetUserMixin):
         )
 
     def post(self, request, username=None):
-        """Form submit."""
+        """ Form submit. """
         user = self.get_user(request, username)
 
         if user == request.user:
@@ -225,7 +225,7 @@ class TasksView(LoginRequiredMixin, View, GetUserMixin):
         )
 
     def delete(self, request, pk, username=None):
-        """Delete the task."""
+        """ Delete the task. """
         self.get_user(request, username)
         task = get_object_or_404(Task, pk=pk)
         task.delete()
@@ -237,7 +237,7 @@ class TasksView(LoginRequiredMixin, View, GetUserMixin):
 
 class CalendarView(LoginRequiredMixin, View, GetUserMixin):
     def get(self, request, username=None):
-        """Get form."""
+        """ Get form. """
         user = self.get_user(request, username)
         if user == request.user:
             form_action = reverse('calendar')
@@ -254,7 +254,7 @@ class CalendarView(LoginRequiredMixin, View, GetUserMixin):
         ))
 
     def post(self, request, username=None):
-        """Form submit."""
+        """ Form submit. """
         user = self.get_user(request, username)
 
         calendar_obj, _ = Calendar.objects.get_or_create(
@@ -302,7 +302,7 @@ class CalendarView(LoginRequiredMixin, View, GetUserMixin):
         ))
 
     def delete(self, request, pk, username=None):
-        """Delete the event."""
+        """ Delete the event. """
         user = self.get_user(request, username)
         event = get_object_or_404(Event, pk=pk)
         event.delete()
@@ -319,7 +319,7 @@ class CalendarView(LoginRequiredMixin, View, GetUserMixin):
 
 @login_required
 def profile_view(request, username):
-    """User profile."""
+    """ User profile. """
     user = get_object_or_404(User, username=username)
     profile, _ = Profile.objects.get_or_create(user=user)
     form = AvatarForm(data=request.POST)
@@ -344,7 +344,7 @@ def profile_view(request, username):
 
 @staff_member_required
 def users_list(request):
-    """Users list."""
+    """ Users list. """
     users = User.objects.all()
 
     return render(request, 'user_list.html', dict(
@@ -355,7 +355,7 @@ def users_list(request):
 
 @login_required
 def update_profile(request):
-    """Update user callback."""
+    """ Update user callback. """
     if request.method == 'POST':
         profile = get_object_or_404(Profile, user=request.user)
         avatar = request.FILES.get('avatar', '')
@@ -407,7 +407,7 @@ def update_profile(request):
 
 @login_required
 def card_order(request, username=None):
-    """Change Flashcards order callback."""
+    """ Change Flashcards order callback. """
     if request.is_ajax():
         user = GetUserMixin().get_user(request, username)
 
@@ -425,7 +425,7 @@ def card_order(request, username=None):
 
 @login_required
 def task_order(request, username=None):
-    """Change Task order and status callback."""
+    """ Change Task order and status callback. """
     if request.is_ajax():
         user = GetUserMixin().get_user(request, username)
         order = request.POST.get('order', '')
@@ -445,7 +445,7 @@ def task_order(request, username=None):
 
 @login_required
 def user_events(request):
-    """Get today's events."""
+    """ Get today's events. """
     if request.is_ajax():
         start = timezone.now()
         end = start + timezone.timedelta(days=1)
@@ -469,7 +469,7 @@ def user_events(request):
 
 class DictionaryView(View, GetUserMixin):
     def get(self, request, username=None):
-        """Get form."""
+        """ Get form. """
         try:
             user = self.get_user(request, username)
         except PermissionDenied:
@@ -487,7 +487,7 @@ class DictionaryView(View, GetUserMixin):
         ))
 
     def post(self, request, username=None):
-        """Form submit."""
+        """ Form submit. """
         user = self.get_user(request, username)
 
         form = WordForm(data=request.POST)
@@ -510,7 +510,7 @@ class DictionaryView(View, GetUserMixin):
         ))
 
     def put(self, request, username=None):
-        """Word edit."""
+        """ Word edit. """
         put = QueryDict(request.body)
         field = put.get('lang', '')
 
@@ -532,7 +532,7 @@ class DictionaryView(View, GetUserMixin):
 
 class FlightsView(LoginRequiredMixin, View):
     def get(self, request):
-        """Get form."""
+        """ Get form. """
         form = FlightsForm()
 
         return render(request, 'flights.html', dict(
@@ -540,7 +540,7 @@ class FlightsView(LoginRequiredMixin, View):
         ))
 
     def post(self, request):
-        """Form submit."""
+        """ Form submit. """
         form = FlightsForm(data=request.POST)
 
         if form.is_valid():
@@ -621,7 +621,7 @@ class FlightsView(LoginRequiredMixin, View):
 
 
 def log_in(request):
-    """User login page."""
+    """ User login page. """
     if request.user.is_authenticated:
         return redirect(settings.LOGIN_REDIRECT_URL)
     form = AuthenticationForm()
@@ -636,7 +636,7 @@ def log_in(request):
 
 class CanvasView(View, GetUserMixin):
     def get(self, request, slug):
-        """Get canvas by slug."""
+        """ Get canvas by slug. """
         canvas = get_object_or_404(Canvas.objects.values_list(
             'canvas', flat=True), slug=slug)
 
@@ -645,7 +645,7 @@ class CanvasView(View, GetUserMixin):
 
 class CanvasesView(View, GetUserMixin):
     def get(self, request, username=None):
-        """Get list of user canvases."""
+        """ Get list of user canvases. """
         user = get_object_or_404(User, username=username)
         canvases = Canvas.objects.filter(user=user).order_by('-pk')\
             .values_list('slug', 'canvas')
@@ -653,7 +653,7 @@ class CanvasesView(View, GetUserMixin):
         return JsonResponse(dict(canvases), safe=False)
 
     def post(self, request, username=None):
-        """Save or create canvas."""
+        """ Save or create canvas. """
         user = self.get_user(request, username)
         data = request.POST.get('imgBase64', '')
         slug = request.POST.get('slug', '')
@@ -676,7 +676,7 @@ class CanvasesView(View, GetUserMixin):
 
 class CodeView(View, GetUserMixin):
     def get(self, request, slug=None, username=None):
-        """Get list of user code snippets or user snippet."""
+        """ Get list of user code snippets or user snippet. """
         save_btn = True
         code_snippet = None
         code_snippets = ()
@@ -707,7 +707,7 @@ class CodeView(View, GetUserMixin):
         })
 
     def post(self, request, slug=None, username=None):
-        """Save or create code snippet."""
+        """ Save or create code snippet. """
         user = self.get_user(request, username)
         code_snippet = None
         code_snippets = []
@@ -744,7 +744,7 @@ class CodeView(View, GetUserMixin):
         })
 
     def delete(self, request, slug, username=None):
-        """Delete code snippet."""
+        """ Delete code snippet. """
         self.get_user(request, username)
         code_snippet = get_object_or_404(Code, slug=slug)
         code_snippet.delete()
@@ -754,6 +754,6 @@ class CodeView(View, GetUserMixin):
 
 @login_required
 def log_out(request):
-    """User logout callback."""
+    """ User logout callback. """
     logout(request)
     return redirect(reverse('login'))
