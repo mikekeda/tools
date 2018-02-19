@@ -2,12 +2,39 @@ import pytz
 
 from django.conf import settings
 from django.core.mail import send_mail
+from django.db.models import Q
 from django.utils import timezone
 from schedule.models import Event
 
 from celery import Celery
 
 app = Celery('tool')
+
+
+def get_occurrences(start, end):
+    """ Helper function to get all events in provided period. """
+    # Get events without a rule.
+    events = set(Event.objects.filter(
+        start__gt=start,
+        start__lte=end,
+        rule__isnull=True
+    ).select_related('creator'))
+
+    # Get events with a rule and check occurrences.
+    event_list = Event.objects.filter(
+        start__lte=end,
+        rule__isnull=False
+    ).filter(
+        Q(end_recurring_period__gte=start) |
+        Q(end_recurring_period__isnull=True)
+    ).select_related('creator')
+    for event in event_list:
+        occurrences = event.get_occurrences(start, end)
+        if any((start < occurrence.start <= end
+                for occurrence in occurrences)):
+            events.add(event)
+
+    return events
 
 
 @app.task
@@ -25,10 +52,8 @@ def send_notification():
 
     start = now + timezone.timedelta(minutes=before - interval)
     end = timezone.now() + timezone.timedelta(minutes=before)
-    events = Event.objects.filter(
-        start__gt=start,
-        start__lte=end
-    ).select_related('creator')
+    events = get_occurrences(start, end)
+
     for event in events:
         name = event.creator.username
         if event.creator.first_name:
@@ -61,10 +86,7 @@ def daily_notification():
 
     start = timezone.now()
     end = start + timezone.timedelta(days=1)
-    events = Event.objects.filter(
-        start__gt=start,
-        start__lte=end
-    ).select_related('creator')
+    events = get_occurrences(start, end)
 
     user_events = {}
     for event in events:
