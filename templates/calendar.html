@@ -100,7 +100,7 @@
                     $modal.find('#id_color_event')[0].jscolor.importColor(calEvent.color.slice(1));
                     $modal.find('#id_rule option').each(function() {
                         if ($(this).text().indexOf(calEvent.rule) !== -1) {
-                            $(this).attr("selected", "selected");
+                            $(this).attr("selected", "selected").prop("selected", "selected");;
                         }
                     });
 
@@ -121,7 +121,7 @@
                 if (result) {
                     pk = $(this).closest('form').find('#id_id').val();
                     $.ajax({
-                        url: "{% url 'calendar' %}" + '/' + pk,
+                        url: "{% url 'user_calendar' profile_user.username %}" + '/' + pk,
                         type: 'DELETE',
                         beforeSend: function(xhr) {
                             xhr.setRequestHeader('X-CSRFTOKEN', '{{ csrf_token }}');
