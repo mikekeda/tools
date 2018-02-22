@@ -32,8 +32,9 @@ from .forms import (WordForm, EventForm, CardForm, AvatarForm, FlightsForm,
 User = get_user_model()
 
 
-class GetUserMixin(object):
+class GetUserMixin:
     def get_user(self, request, username: str):
+        """ Get user by username and check access. """
         if not request.user.is_authenticated or (
                 not request.user.is_superuser and
                 username and username != request.user.username):
@@ -71,17 +72,13 @@ class FlashcardsView(LoginRequiredMixin, View, GetUserMixin):
             form_action = reverse('user_flashcards', args=[user.username])
         form = CardForm()
 
-        return render(
-            request,
-            "flashcards.html",
-            dict(
-                cards=cards,
-                profile_user=user,
-                form=form,
-                form_action=form_action,
-                active_page=form_action.lstrip('/')
-            )
-        )
+        return render(request, "flashcards.html", dict(
+            cards=cards,
+            profile_user=user,
+            form=form,
+            form_action=form_action,
+            active_page=form_action.lstrip('/')
+        ))
 
     def post(self, request, username=None):
         """ Form submit. """
@@ -115,17 +112,13 @@ class FlashcardsView(LoginRequiredMixin, View, GetUserMixin):
                     )
                 )
 
-        return render(
-            request,
-            "flashcards.html",
-            dict(
-                cards=cards,
-                profile_user=user,
-                form=form,
-                form_action=form_action,
-                active_page=form_action.lstrip('/')
-            )
-        )
+        return render(request, "flashcards.html", dict(
+            cards=cards,
+            profile_user=user,
+            form=form,
+            form_action=form_action,
+            active_page=form_action.lstrip('/')
+        ))
 
     def delete(self, request, pk, username=None):
         """ Delete the flashcard. """
@@ -163,18 +156,14 @@ class TasksView(LoginRequiredMixin, View, GetUserMixin):
         form.fields['color'].widget.choices = [(i, k) for i, k in
                                                palette.items()]
 
-        return render(
-            request,
-            "tasks.html",
-            dict(
-                tasks_dict=tasks_dict.items(),
-                palette=palette,
-                profile_user=user,
-                form=form,
-                form_action=form_action,
-                active_page=form_action.lstrip('/')
-            )
-        )
+        return render(request, "tasks.html", dict(
+            tasks_dict=tasks_dict.items(),
+            palette=palette,
+            profile_user=user,
+            form=form,
+            form_action=form_action,
+            active_page=form_action.lstrip('/')
+        ))
 
     def post(self, request, username=None):
         """ Form submit. """
@@ -211,18 +200,14 @@ class TasksView(LoginRequiredMixin, View, GetUserMixin):
 
             return redirect(form_action)
 
-        return render(
-            request,
-            "tasks.html",
-            dict(
-                tasks_dict=tasks_dict.items(),
-                palette=palette,
-                profile_user=user,
-                form=form,
-                form_action=form_action,
-                active_page=form_action.lstrip('/')
-            )
-        )
+        return render(request, "tasks.html", dict(
+            tasks_dict=tasks_dict.items(),
+            palette=palette,
+            profile_user=user,
+            form=form,
+            form_action=form_action,
+            active_page=form_action.lstrip('/')
+        ))
 
     def delete(self, request, pk, username=None):
         """ Delete the task. """
@@ -230,9 +215,7 @@ class TasksView(LoginRequiredMixin, View, GetUserMixin):
         task = get_object_or_404(Task, pk=pk)
         task.delete()
 
-        return JsonResponse(
-            {'redirect': reverse('tasks'), 'success': True}
-        )
+        return JsonResponse({'redirect': reverse('tasks'), 'success': True})
 
 
 class CalendarView(LoginRequiredMixin, View, GetUserMixin):
@@ -312,9 +295,7 @@ class CalendarView(LoginRequiredMixin, View, GetUserMixin):
         else:
             form_action = reverse('user_calendar', args=[user.username])
 
-        return JsonResponse(
-            {'redirect': form_action, 'success': True}
-        )
+        return JsonResponse({'redirect': form_action, 'success': True})
 
 
 @login_required
@@ -533,11 +514,7 @@ class DictionaryView(View, GetUserMixin):
 class FlightsView(LoginRequiredMixin, View):
     def get(self, request):
         """ Get form. """
-        form = FlightsForm()
-
-        return render(request, 'flights.html', dict(
-            form=form,
-        ))
+        return render(request, 'flights.html', {'form': FlightsForm()})
 
     def post(self, request):
         """ Form submit. """
@@ -605,19 +582,13 @@ class FlightsView(LoginRequiredMixin, View):
                     })
 
                 result.append({
-                    'price': float(re.sub(
-                        r'[^0-9.]',
-                        '',
-                        fly['saleTotal']
-                    )),
+                    'price': float(re.sub(r'[^0-9.]', '', fly['saleTotal'])),
                     'slice': slice_data
                 })
 
             return JsonResponse(result, safe=False)
 
-        return render(request, 'flights.html', dict(
-            form=form,
-        ))
+        return render(request, 'flights.html', {'form': form})
 
 
 def log_in(request):
