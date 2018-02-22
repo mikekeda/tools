@@ -100,7 +100,8 @@
                     $modal.find('#id_color_event')[0].jscolor.importColor(calEvent.color.slice(1));
                     $modal.find('#id_rule option').each(function() {
                         if ($(this).text().indexOf(calEvent.rule) !== -1) {
-                            $(this).attr("selected", "selected").prop("selected", "selected");;
+                            $modal.find('#id_rule').val($(this).text()).change();
+                            $(this).attr("selected", "selected").prop("selected", "selected");
                         }
                     });
 
