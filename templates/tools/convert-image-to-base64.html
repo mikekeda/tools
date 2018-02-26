@@ -12,19 +12,21 @@
     <img id="img" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" alt="preview" style="display: none;"/>
     <p id="base" style="word-wrap: break-word;"></p>
     <script type="text/javascript">
-        function el(id){return document.getElementById(id);}
-
         function readImage() {
-            if ( this.files && this.files[0] ) {
+            if (this.files && this.files[0]) {
                 var FR= new FileReader();
                 FR.onload = function(e) {
-                     el("img").src = e.target.result;
-                     el("base").innerHTML = e.target.result;
+                    document.getElementById("img").src = e.target.result;
+                    document.getElementById("base").innerHTML = e.target.result;
                 };
-                FR.readAsDataURL( this.files[0] );
+                FR.readAsDataURL(this.files[0]);
             }
         }
 
-        el("asd").addEventListener("change", readImage, false);
+        // Dynamically set page title and description.
+        document.title = '{% trans "base64 image converting" %}';
+        document.head.querySelector('meta[name=description]').content = '{% trans "Covert image to base64 format." %}';
+
+        document.getElementById("asd").addEventListener("change", readImage, false);
     </script>
 {% endblock %}

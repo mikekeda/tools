@@ -3,6 +3,9 @@
 {% load i18n %}
 {% load widget_tweaks %}
 
+{% block title %}{% trans "Calendar" %}{% endblock %}
+{% block description %}{% trans "Add events to your Calendar and get email notifications about upcoming events." %}{% endblock description %}
+
 {% block content %}
     <!-- Button trigger modal -->
     <button type="button" class="add-btn btn btn-default btn-md" data-toggle="modal" data-target="#add-event" data-annyang="add event">
@@ -61,18 +64,22 @@
     <div id="calendar"></div>
     <script type="text/javascript">
         if("undefined" == typeof jQuery) {
-          window.onload = function() {
-            init_app();
-          };
+            window.onload = function() {
+                init_app();
+            };
         }
         else {
-          init_app();
+            init_app();
         }
         function init_app() {
             var $field;
             var $modal;
             var start;
             var end;
+
+            // Dynamically set page title and description.
+            document.title = '{% trans "Calendar" %}';
+            document.head.querySelector('meta[name=description]').content = '{% trans "Add events to your Calendar and get email notifications about upcoming events." %}';
 
             $modal = $('#content').find('.modal');
             $end_recurring_period = $modal.find('#id_end_recurring_period').closest('.form-group');
@@ -109,7 +116,7 @@
                 dayClick: function(date, jsEvent, view) {
                     $('#add-event').modal('show');
                 },
-                eventAfterRender: function (event, element) {
+                eventAfterRender: function(event, element) {
                     $(element).tooltip({
                         title:event.description,
                         container: "body"
@@ -136,7 +143,7 @@
             });
 
             // Hide end of recurring period field.
-            $(document).on('hidden.bs.modal', '.modal', function () {
+            $(document).on('hidden.bs.modal', '.modal', function() {
                 $end_recurring_period.hide();
 
             });

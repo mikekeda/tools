@@ -2,32 +2,41 @@
 {% load i18n %}
 {% load widget_tweaks %}
 
+{% block title %}{% trans "Login page" %}{% endblock %}
+{% block description %}{% trans "Login or register to get access to all tools." %}{% endblock description %}
+
 {% block content %}
   <div class="mt-6">
-  <form action="{% url 'login' %}" method="post" class="form-horizontal">
-    {% csrf_token %}
-    {% for field in form %}
-      <div class="form-group row">
-        <label class="col-sm-3 col-form-label">{{ field.label }}</label>
-        <div class="col-sm-9">
-        {{ field|add_class:"form-control" }}
-        {% if field.errors %}
-        <div class="alert alert-warning col-sm-9 offset-sm-3" role="alert">
-          {{ field.errors }}
+    <form action="{% url 'login' %}" method="post" class="form-horizontal">
+      {% csrf_token %}
+      {% for field in form %}
+        <div class="form-group row">
+          <label class="col-sm-3 col-form-label">{{ field.label }}</label>
+          <div class="col-sm-9">
+          {{ field|add_class:"form-control" }}
+          {% if field.errors %}
+          <div class="alert alert-warning col-sm-9 offset-sm-3" role="alert">
+            {{ field.errors }}
+          </div>
+          {% endif %}
+          </div>
         </div>
-        {% endif %}
+      {% endfor %}
+      {% if form.non_field_errors %}
+        <div class="alert alert-warning col-sm-9 col-sm-offset-3" role="alert">
+          {{ form.non_field_errors }}
         </div>
-      </div>
-    {% endfor %}
-    {% if form.non_field_errors %}
-      <div class="alert alert-warning col-sm-9 col-sm-offset-3" role="alert">
-        {{ form.non_field_errors }}
-      </div>
-    {% endif %}
-    <button type="submit" class="btn btn-primary pull-right">{% trans "Log in" %}</button>
-  </form>
+      {% endif %}
+      <button type="submit" class="btn btn-primary pull-right">{% trans "Log in" %}</button>
+    </form>
 
-  <a class="col-sm-offset-3" href="{% url 'social:begin' 'facebook' %}">{% trans "Login with Facebook" %}</a>
-  <a class="col-xs-offset-1" href="{% url 'social:begin' 'github' %}">{% trans "Login with GitHub" %}</a>
+    <a class="col-sm-offset-3" href="{% url 'social:begin' 'facebook' %}">{% trans "Login with Facebook" %}</a>
+    <a class="col-xs-offset-1" href="{% url 'social:begin' 'github' %}">{% trans "Login with GitHub" %}</a>
   </div>
+
+    <script type="text/javascript">
+      // Dynamically set page title and description.
+      document.title = '{% trans "Login page" %}';
+      document.head.querySelector('meta[name=description]').content = '{% trans "Login or register to get access to all tools." %}';
+    </script>
 {% endblock content %}

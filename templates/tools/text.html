@@ -6,7 +6,7 @@
 
 {% block content %}
   <div class="container-fluid">
-  	<textarea name="content" id="text-content" class="col-xs-12" rows="10" cols="60" data-placeholder="Type or paste your content here"></textarea>
+  	<textarea name="content" id="text-content" class="col-xs-12" rows="10" cols="60" data-placeholder="{% trans 'Type or paste your content here' %}"></textarea>
   	<button id="upper" class="col-sm-4 col-xs-12 btn btn-default">{% trans "UPPER CASE" %}</button>
   	<button id="lower" class="col-sm-4 col-xs-12 btn btn-default">{% trans "lower case" %}</button>
   	<button id="capitalized" class="col-sm-4 col-xs-12 btn btn-default">{% trans "Capitalized Case" %}</button>
@@ -24,24 +24,29 @@
       init_app();
     }
     function init_app() {
-    	var $textarea = $('#content #text-content').first();
-    	String.prototype.capitalize = function(){
-        return this.toLowerCase().replace( /((?:\S[^\.\?\!]*)[\.\?\!]*)/g, function (m) {
+      var $textarea = $('#content #text-content').first();
+
+	  // Dynamically set page title and description.
+      document.title = '{% trans "Text manipulation" %}';
+      document.head.querySelector('meta[name=description]').content = '{% trans "Capitalize text, convert text to lowercase or uppercase. Count amount of letters in the text." %}';
+
+      String.prototype.capitalize = function() {
+        return this.toLowerCase().replace(/((?:\S[^\.\?\!]*)[\.\?\!]*)/g, function(m) {
           return m.charAt(0).toUpperCase() + m.substring(1);
         });
       };
-    	$textarea.bind('input propertychange', function() {
-    		$('#content #count-characters').text($textarea[0].textLength);
-			});
-			$('#content #lower').click(function(event) {
-				$textarea.val($textarea.val().toLowerCase());
-			});
-			$('#content #upper').click(function(event) {
-				$textarea.val($textarea.val().toUpperCase());
-			});
-			$('#content #capitalized').click(function(event) {
-				$textarea.val($textarea.val().capitalize());
-			});
+      $textarea.bind('input propertychange', function() {
+        $('#content #count-characters').text($textarea[0].textLength);
+      });
+      $('#content #lower').click(function(event) {
+        $textarea.val($textarea.val().toLowerCase());
+      });
+      $('#content #upper').click(function(event) {
+        $textarea.val($textarea.val().toUpperCase());
+      });
+      $('#content #capitalized').click(function(event) {
+        $textarea.val($textarea.val().capitalize());
+      });
     }
   </script>
 {% endblock %}

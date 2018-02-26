@@ -2,6 +2,10 @@
 {% load i18n %}
 {% load widget_tweaks %}
 {% load static from staticfiles %}
+
+{% block title %}{% trans "Flashcards" %}{% endblock %}
+{% block description %}{% trans "Add flashcards to memorize something." %}{% endblock description %}
+
 {% block content %}
     <!-- Modal -->
     <div class="modal{% if form.errors %} error{% endif %}" id="add-card" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
@@ -111,6 +115,10 @@
         var order;
         var result;
         var pk;
+
+        // Dynamically set page title and description.
+        document.title = '{% trans "Flashcards" %}';
+        document.head.querySelector('meta[name=description]').content = '{% trans "Add flashcards to memorize something." %}';
 
         $('.sortable').sortable({
           placeholderClass: 'col-md-6'

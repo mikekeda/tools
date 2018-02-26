@@ -2,6 +2,10 @@
 {% load i18n %}
 {% load widget_tweaks %}
 {% load static from staticfiles %}
+
+{% block title %}{% trans "Task Board" %}{% endblock %}
+{% block description %}{% trans "Task Board where you can manage your tasks." %}{% endblock description %}
+
 {% block content %}
     <!-- Modal -->
     <div class="modal{% if form.errors %} error{% endif %}" id="add-card" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
@@ -131,6 +135,10 @@
             });
           }
         }
+
+        // Dynamically set page title and description.
+        document.title = '{% trans "Task Board" %}';
+        document.head.querySelector('meta[name=description]').content = '{% trans "Task Board where you can manage your tasks." %}';
 
         $('select#id_color').select2({
           minimumResultsForSearch: -1,
