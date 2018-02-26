@@ -2,6 +2,10 @@
 {% load static from staticfiles %}
 {% load i18n %}
 {% load tool_tags %}
+
+{% block title %}{% trans "Dictionary" %}{% endblock %}
+{% block description %}{% trans "Online dictionary." %}{% endblock description %}
+
 {% block content %}
     <link rel="stylesheet" type="text/css" href="{% static 'bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css' %}"/>
 
@@ -79,6 +83,10 @@
         var msg;
         var $dictionary = $('#dictionary');
 
+        // Dynamically set page title and description.
+        document.title = '{% trans "Dictionary" %}';
+        document.head.querySelector('meta[name=description]').content = '{% trans "Online dictionary." %}';
+
         $.getScript("{% static 'bower_components/datatables.net/js/jquery.dataTables.min.js' %}", function() {
           $.getScript("{% static 'bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js' %}", function() {
             $dictionary.DataTable({
@@ -89,12 +97,12 @@
 
         $.fn.editable.defaults.ajaxOptions = {type: "PUT"};
         $.ajaxSetup({
-            headers: {
-                'X-Csrftoken': '{{ csrf_token }}'
-            }
+          headers: {
+            'X-Csrftoken': '{{ csrf_token }}'
+          }
         });
         $('.editable').editable({mode: 'popup', display: false}).on('save', function(e, params) {
-            window.location.replace(params.response.redirect);
+          window.location.replace(params.response.redirect);
         });
 
         $dictionary.find('th').click(function() {

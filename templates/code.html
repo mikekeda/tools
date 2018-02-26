@@ -3,8 +3,11 @@
 {% load i18n %}
 {% load widget_tweaks %}
 
+{% block title %}{% trans "Code snippets" %}{% endblock %}
+{% block description %}{% trans "Instantly share code, notes, and snippets." %}{% endblock description %}
+
 {% block content %}
-    <style scoped>
+    <style>
         .cke_bottom {
             display: none !important;
         }
@@ -54,6 +57,12 @@
         </ul>
     </div>
 
+
+    <script type="text/javascript">
+        // Dynamically set page title and description.
+        document.title = '{% trans "Code snippets" %}';
+        document.head.querySelector('meta[name=description]').content = '{% trans "Instantly share code, notes, and snippets." %}';
+    </script>
     <script type="text/javascript" src="{% static 'bower_components/ckeditor/ckeditor.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/code.js' %}" defer></script>
 

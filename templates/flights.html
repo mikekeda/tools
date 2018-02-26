@@ -2,10 +2,11 @@
 {% load i18n %}
 {% load widget_tweaks %}
 
-{% block title %}{% trans "Profile" %}{% endblock title %}
+{% block title %}{% trans "Flights" %}{% endblock %}
+{% block description %}{% trans "Check tickets price for specified date." %}{% endblock description %}
 
 {% block content %}
-    <style scoped>
+    <style>
       #id_round_trip {
         width: 24px;
       }
@@ -67,16 +68,20 @@
         init_app();
       }
       function init_app() {
-        var $tbody = $('#content table.flights tbody').first(),
-            $form = $('#content #check-flights').first(),
-            $submit_btn = $form.find('[type="submit"]').first(),
-            $date_back = $form.find('#id_date_back').parents().eq(1),
-            odd_even,
-            tbl_body,
-            tbl_row,
-            fly;
+        var $tbody = $('#content table.flights tbody').first();
+        var $form = $('#content #check-flights').first();
+        var $submit_btn = $form.find('[type="submit"]').first();
+        var $date_back = $form.find('#id_date_back').parents().eq(1);
+        var odd_even;
+        var tbl_body;
+        var tbl_row;
+        var fly;
 
-        $('#id_round_trip').change(function () {
+        // Dynamically set page title and description.
+        document.title = '{% trans "Flights" %}';
+        document.head.querySelector('meta[name=description]').content = '{% trans "Check tickets price for specified date." %}';
+
+        $('#id_round_trip').change(function() {
           $date_back.toggle(this.checked);
         }).change();
 
@@ -100,11 +105,11 @@
                   tbl_row = '';
 
                   tbl_row += '<td><p>' + data[fly].price + '</p></td>';
-                  tbl_row += '<td><p>' + data[fly].slice[0].stops + ( 1 in data[fly].slice ? '<p>' + data[fly].slice[1].stops + '</p>' : '') + '</p></td>';
-                  tbl_row += '<td><p>' + data[fly].slice[0].duration + ( 1 in data[fly].slice ? '<p>' + data[fly].slice[1].duration + '</p>' : '') + '</p></td>';
-                  tbl_row += '<td><p>' + data[fly].slice[0].slice + ( 1 in data[fly].slice ? '<p>' + data[fly].slice[1].slice + '</p>' : '') + '</p></td>';
+                  tbl_row += '<td><p>' + data[fly].slice[0].stops + (1 in data[fly].slice ? '<p>' + data[fly].slice[1].stops + '</p>' : '') + '</p></td>';
+                  tbl_row += '<td><p>' + data[fly].slice[0].duration + (1 in data[fly].slice ? '<p>' + data[fly].slice[1].duration + '</p>' : '') + '</p></td>';
+                  tbl_row += '<td><p>' + data[fly].slice[0].slice + (1 in data[fly].slice ? '<p>' + data[fly].slice[1].slice + '</p>' : '') + '</p></td>';
 
-                  tbl_body += '<tr class="' + ( odd_even ? 'odd' : 'even') + '">' + tbl_row + '</tr>';
+                  tbl_body += '<tr class="' + (odd_even ? 'odd' : 'even') + '">' + tbl_row + '</tr>';
                   odd_even = !odd_even;
                 }
               }

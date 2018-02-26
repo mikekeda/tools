@@ -3,7 +3,8 @@
 {% load static from staticfiles %}
 {% load widget_tweaks %}
 
-{% block title %}{% trans "Profile" %}{% endblock title %}
+{% block title %}{% trans "Profile" %}{% endblock %}
+{% block description %}{% trans "User profile." %}{% endblock description %}
 
 {% block content %}
     <div class="bg-white mt-5">
@@ -140,6 +141,10 @@
         init_app();
       }
       function init_app() {
+        // Dynamically set page title and description.
+        document.title = '{% trans "Profile" %}';
+        document.head.querySelector('meta[name=description]').content = '{% trans "User profile." %}';
+
         $('.editable:not(".palette-color")').editable();
         $('.editable.palette-color').editable({onblur: 'ignore'}).on('save', function(e, params) {
             $(this).css('background-color', '#' + params.newValue).css('color', '#' + params.newValue);

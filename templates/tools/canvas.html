@@ -5,7 +5,7 @@
 {% block description %}{% trans "Online canvas image drawing tool." %}{% endblock description %}
 
 {% block content %}
-<style scoped>
+<style>
   div#div2 {
     position: fixed;
     bottom: 0px;
@@ -462,8 +462,6 @@
 
         function paste() {
             var items = document.clipboardData.items;
-
-            console.log(JSON.stringify(items));  // will give you the mime types
             var blob = items[0].getAsFile();
             var reader = new FileReader();
             reader.onload = function(event) {
@@ -893,6 +891,10 @@
 
         function init_app() {
             var canv = getParameterByName('canv');
+
+            // Dynamically set page title and description.
+            document.title = '{% trans "Canvas" %}';
+            document.head.querySelector('meta[name=description]').content = '{% trans "Online canvas image drawing tool." %}';
 
             if (canv) {
                 $.getJSON("/canvas/" + canv, function(data) {

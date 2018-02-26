@@ -5,7 +5,7 @@
 {% block description %}{% trans "Convert units for temperature, distance, volume, area, mass." %}{% endblock description %}
 
 {% block content %}
-  <style scoped>
+  <style>
     label {
       padding: 6px 12px;
     }
@@ -217,6 +217,10 @@
       var value;
       var cc;
 
+      // Dynamically set page title and description.
+      document.title = '{% trans "Unit convector" %}';
+      document.head.querySelector('meta[name=description]').content = '{% trans "Convert units for temperature, distance, volume, area, mass." %}';
+
       // Temperature.
       $C.on('keyup change', function() {
         var value = parseFloat($(this).val(), 10);
@@ -229,12 +233,12 @@
 
       // Another units.
       $('.conversion').on('keyup change', function() {
-         $this = $(this)
-         value = parseFloat($this.val(), 10);
-         cc = parseFloat($this.data('cc'), 10);
-         $this.closest('.conversion-container').siblings().find('.conversion').each(function() {
-            this.value = parseFloat((value / cc * this.getAttribute('data-cc')).toFixed(2));
-         });
+        $this = $(this)
+        value = parseFloat($this.val(), 10);
+        cc = parseFloat($this.data('cc'), 10);
+        $this.closest('.conversion-container').siblings().find('.conversion').each(function() {
+          this.value = parseFloat((value / cc * this.getAttribute('data-cc')).toFixed(2));
+        });
       });
     }
   </script>
