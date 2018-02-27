@@ -9,6 +9,7 @@ from cryptography.fernet import Fernet
 from django.db import models
 from django.contrib.auth.models import User
 from django.conf import settings
+from django.core.cache import cache
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.urls import reverse
 from django.utils.html import format_html
@@ -51,6 +52,23 @@ def save_and_add_slug(obj, force_insert=False, force_update=False, using=None,
         obj.slug = ''.join(random.sample(_char_map, 3)) +\
                     number_to_chars(obj.pk)
         obj.save()
+
+
+def get_username_by_uid(obj):
+    """ Helper function to get user username by user id. """
+    # Try to get username from the cache to avoid unneeded queries,
+    # pattern is 'username_by_id_<user_id>'
+    username = cache.get('username_by_id_{}'.format(obj.user_id))
+    if not username:
+        # We don't have the username - get username and set it to the cache.
+        username = obj.user.username
+        cache.set(
+            'username_by_id_{}'.format(obj.user_id),
+            username,
+            settings.USER_ONLINE_TIMEOUT
+        )
+
+    return username
 
 
 class ColorField(models.CharField):
@@ -109,7 +127,7 @@ class Profile(models.Model):
         super().save(force_insert, force_update, using, update_fields)
 
     def __str__(self):
-        return self.user.username
+        return get_username_by_uid(self)
 
 
 for i, default_color in enumerate(default_palette_colors, 1):
@@ -268,7 +286,7 @@ class Canvas(models.Model):
     preview.allow_tags = True
 
     def __str__(self):
-        return '{}: {}'.format(self.user.username, self.pk)
+        return '{}: {}'.format(get_username_by_uid(self), self.pk)
 
 
 class Code(models.Model):
@@ -300,4 +318,4 @@ class Code(models.Model):
                           update_fields)
 
     def __str__(self):
-        return '{}: {}'.format(self.user.username, self.title)
+        return '{}: {}'.format(get_username_by_uid(self), self.title)

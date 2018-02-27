@@ -57,7 +57,7 @@ ADMINS = [
 
 # Application definition
 
-INSTALLED_APPS = (
+INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -75,9 +75,12 @@ INSTALLED_APPS = (
     'silk',
 
     'tool',
-)
+]
 
-MIDDLEWARE = (
+if DEBUG:
+    INSTALLED_APPS += ['debug_toolbar']
+
+MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.locale.LocaleMiddleware',
@@ -89,7 +92,10 @@ MIDDLEWARE = (
 
     'social_django.middleware.SocialAuthExceptionMiddleware',
     'silk.middleware.SilkyMiddleware',
-)
+]
+
+if DEBUG:
+    MIDDLEWARE += ['debug_toolbar.middleware.DebugToolbarMiddleware']
 
 ROOT_URLCONF = 'toolssite.urls'
 
@@ -153,6 +159,9 @@ CELERY_ACCEPT_CONTENT = ['application/json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TIMEZONE = 'UTC'
+
+# Number of seconds of inactivity before a user is marked offline
+USER_ONLINE_TIMEOUT = 2 * 60  # 2 minutes
 
 AUTHENTICATION_BACKENDS = (
     'social_core.backends.github.GithubOAuth2',

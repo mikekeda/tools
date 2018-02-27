@@ -1,6 +1,8 @@
 from django import forms
 from django.contrib import admin
 from django.contrib.auth import get_user_model
+from django.conf import settings
+from django.core.cache import cache
 from django.contrib.auth.admin import UserAdmin
 from django.db import models
 
@@ -13,6 +15,23 @@ from .models import Profile, Card, Word, Task, Canvas, Code, Label
 
 User = get_user_model()
 ProfileForm = select2_modelform(Profile)
+
+
+class BaseModelAdmin(ImportExportModelAdmin):
+    def get_changelist_instance(self, request):
+        changelist = super().get_changelist_instance(request)
+
+        # Get all related user usernames and send to the cache,
+        # we will use it later in __str__ method to improve performance.
+        uids = {instance.user_id for instance in changelist.result_list}
+        elements = User.objects.filter(pk__in=uids)\
+            .values_list('pk', 'username')
+        cache.set_many({
+            'username_by_id_{}'.format(element[0]): element[1]
+            for element in elements
+        }, settings.USER_ONLINE_TIMEOUT)
+
+        return changelist
 
 
 class ProfileInline(admin.StackedInline):
@@ -71,12 +90,12 @@ class TaskAdmin(ImportExportModelAdmin):
         return db_field.formfield(**kwargs)
 
 
-class CanvasAdmin(ImportExportModelAdmin):
+class CanvasAdmin(BaseModelAdmin):
     fields = ('user', 'preview', 'canvas')
     readonly_fields = ('preview',)
 
 
-class CodeAdmin(ImportExportModelAdmin):
+class CodeAdmin(BaseModelAdmin):
     fields = ('title', 'user', 'link_to_code_snippet', 'text')
     readonly_fields = ('link_to_code_snippet',)
 
