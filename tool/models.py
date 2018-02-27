@@ -171,6 +171,21 @@ for lang in settings.LANGUAGES:
     )
 
 
+class Label(models.Model):
+    """ Label model. """
+    title = models.CharField(max_length=60)
+    user = models.ForeignKey(
+        User,
+        related_name='labels',
+        on_delete=models.CASCADE
+    )
+    created = models.DateTimeField(auto_now_add=True)
+    changed = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.title
+
+
 class Task(models.Model):
     """ Task model. """
     STATUSES = (
@@ -178,10 +193,30 @@ class Task(models.Model):
         ('doing', 'Doing'),
         ('done', 'Done'),
     )
+    RESOLUTIONS = (
+        ('done', 'Done'),
+        ("won't do", "Won't do"),
+        ('work as designed', 'Work as designed'),
+    )
 
     title = models.CharField(max_length=60)
     description = models.TextField(blank=True, null=True)
     status = models.CharField(max_length=10, choices=STATUSES, default='todo')
+    resolution = models.CharField(
+        max_length=16,
+        choices=RESOLUTIONS,
+        blank=True,
+        null=True
+    )
+    progress = models.PositiveSmallIntegerField(
+        default=0,
+        blank=True,
+        validators=[
+            MinValueValidator(0),
+            MaxValueValidator(100)
+        ]
+    )
+    labels = models.ManyToManyField(Label, blank=True)
     color = models.PositiveSmallIntegerField(
         default=1,
         validators=[
@@ -195,6 +230,7 @@ class Task(models.Model):
         on_delete=models.CASCADE
     )
     weight = models.SmallIntegerField(default=0)
+    due_date = models.DateTimeField(blank=True, null=True)
     created_date = models.DateTimeField(auto_now_add=True)
     changed_date = models.DateTimeField(auto_now=True)
 
