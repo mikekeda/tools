@@ -35,15 +35,9 @@ class CardForm(forms.ModelForm):
 
 
 class FlightsForm(forms.Form):
-    origin = forms.CharField(
-        max_length=3,
-        initial='AUS')
-    destination = forms.CharField(
-        max_length=3,
-        initial='LWO')
-    round_trip = forms.BooleanField(
-        required=False,
-        initial=True)
+    origin = forms.CharField(max_length=3, initial='AUS')
+    destination = forms.CharField(max_length=3, initial='LWO')
+    round_trip = forms.BooleanField(required=False, initial=True)
     date_start = forms.DateField(
         initial=datetime.datetime.today() + datetime.timedelta(days=7))
     date_back = forms.DateField(
