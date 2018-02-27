@@ -395,10 +395,11 @@ def card_order(request, username=None):
         cards = Card.objects.filter(user=user)
         order = request.POST.get('order', '')
         order = json.loads(order)
-        for card in cards:
-            if str(card.id) in order:
-                card.order = order[str(card.id)]
-                card.save()
+        with transaction.atomic():
+            for card in cards:
+                if str(card.id) in order:
+                    card.order = order[str(card.id)]
+                    card.save()
 
         return JsonResponse(ugettext('The order was changed'), safe=False)
     raise Http404
@@ -414,11 +415,12 @@ def task_order(request, username=None):
         if status in (status[0] for status in Task.STATUSES):
             tasks = Task.objects.filter(user=user)
             order = json.loads(order)
-            for task in tasks:
-                if str(task.id) in order:
-                    task.weight = order[str(task.id)]
-                    task.status = status
-                    task.save()
+            with transaction.atomic():
+                for task in tasks:
+                    if str(task.id) in order:
+                        task.weight = order[str(task.id)]
+                        task.status = status
+                        task.save()
 
         return JsonResponse(ugettext('The order was changed'), safe=False)
     raise Http404
