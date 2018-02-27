@@ -194,9 +194,15 @@ class Task(models.Model):
         ('done', 'Done'),
     )
     RESOLUTIONS = (
-        ('done', 'Done'),
-        ("won't do", "Won't do"),
-        ('work as designed', 'Work as designed'),
+        ("fixed", "Fixed"),
+        ("won't fix", "Won't Fix"),
+        ("duplicate", "Duplicate"),
+        ("incomplete", "Incomplete"),
+        ("Cannot Reproduce", "Cannot Reproduce"),
+        ("obsolete", "Obsolete"),
+        ("works as designed", "Works as Designed"),
+        ("done", "Done"),
+        ("won't Do", "Won't Do"),
     )
 
     title = models.CharField(max_length=60)
