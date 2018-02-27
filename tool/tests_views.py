@@ -134,6 +134,7 @@ class ToolViewTest(TestCase):
 
         user = User.objects.get(username='testuser')
         test_canvas = Canvas.objects.get(user=user)
+        self.assertEqual(str(test_canvas), 'testuser: 1')
 
         resp = self.client.get(reverse('canvas',
                                        kwargs={'slug': test_canvas.slug}))
@@ -480,6 +481,7 @@ class ToolViewTest(TestCase):
         test_user = User.objects.get(username='testuser')
         test_word = Word(en='testen', es='testes', user=test_user)
         test_word.save()
+        self.assertEqual(str(test_word), 'testen')
 
         # Anonymous user - redirect.
         resp = self.client.put(
@@ -664,6 +666,7 @@ class ToolViewTest(TestCase):
             difficulty='middle',
         )
         test_flashcard.save()
+        self.assertEqual(str(test_flashcard), 'Test flashcard 3')
         test_flashcard_admin = Card(
             word='Test flashcard admin',
             user=test_user,
@@ -671,6 +674,7 @@ class ToolViewTest(TestCase):
             difficulty='middle',
         )
         test_flashcard_admin.save()
+        self.assertEqual(str(test_flashcard_admin), 'Test flashcard admin')
         # Delete flashcard.
         resp = self.client.delete(
             reverse('flashcards_pk', kwargs={'pk': test_flashcard.pk})
@@ -692,7 +696,7 @@ class ToolViewTest(TestCase):
             str(resp.content, encoding='utf8'),
             {'redirect': '/flashcards', 'success': True}
         )
-        test_flashcard_exists = Code.objects.filter(
+        test_flashcard_exists = Card.objects.filter(
             pk=test_flashcard.pk
         ).exists()
         self.assertFalse(test_flashcard_exists)
@@ -707,7 +711,7 @@ class ToolViewTest(TestCase):
             str(resp.content, encoding='utf8'),
             {'redirect': '/flashcards', 'success': True}
         )
-        test_flashcard_admin_exists = Code.objects.filter(
+        test_flashcard_admin_exists = Card.objects.filter(
             pk=test_flashcard_admin.pk
         ).exists()
         self.assertFalse(test_flashcard_admin_exists)
@@ -850,6 +854,7 @@ class ToolViewTest(TestCase):
             color=3,
         )
         test_task.save()
+        self.assertEqual(str(test_task), 'Test task 3')
         test_task_admin = Task(
             title='Test task admin',
             user=test_user,
@@ -857,6 +862,7 @@ class ToolViewTest(TestCase):
             color=5,
         )
         test_task_admin.save()
+        self.assertEqual(str(test_task_admin), 'Test task admin')
         # Delete the task.
         resp = self.client.delete(
             reverse('tasks_pk', kwargs={'pk': test_task.pk})
@@ -878,7 +884,7 @@ class ToolViewTest(TestCase):
             str(resp.content, encoding='utf8'),
             {'redirect': '/tasks', 'success': True}
         )
-        test_task_exists = Code.objects.filter(pk=test_task.pk).exists()
+        test_task_exists = Task.objects.filter(pk=test_task.pk).exists()
         self.assertFalse(test_task_exists)
         self.client.logout()
         # Admin can delete a task for any user.
@@ -891,7 +897,7 @@ class ToolViewTest(TestCase):
             str(resp.content, encoding='utf8'),
             {'redirect': '/tasks', 'success': True}
         )
-        test_task_admin_exists = Code.objects.filter(
+        test_task_admin_exists = Task.objects.filter(
             pk=test_task_admin.pk
         ).exists()
         self.assertFalse(test_task_admin_exists)
