@@ -7,6 +7,7 @@ import pytz
 
 from schedule.models import Calendar, Event
 
+from django.core.serializers import serialize
 from django.core.exceptions import PermissionDenied, ValidationError
 from django.conf import settings
 from django.db import transaction
@@ -393,8 +394,7 @@ def card_order(request, username=None):
         user = GetUserMixin().get_user(request, username)
 
         cards = Card.objects.filter(user=user)
-        order = request.POST.get('order', '')
-        order = json.loads(order)
+        order = json.loads(request.POST.get('order', ''))
         with transaction.atomic():
             for card in cards:
                 if str(card.id) in order:
@@ -410,19 +410,35 @@ def task_order(request, username=None):
     """ Change Task order and status callback. """
     if request.is_ajax():
         user = GetUserMixin().get_user(request, username)
-        order = request.POST.get('order', '')
+        serialized_task = {}
         status = request.POST.get('status', '')
+        try:
+            task_id = int(str(request.POST.get('id')))
+        except ValueError:
+            task_id = None
+
         if status in (status[0] for status in Task.STATUSES):
             tasks = Task.objects.filter(user=user)
-            order = json.loads(order)
+            order = json.loads(request.POST.get('order', ''))
             with transaction.atomic():
                 for task in tasks:
                     if str(task.id) in order:
                         task.weight = order[str(task.id)]
                         task.status = status
+
+                        # Adjust progress and resolution.
+                        if status == 'todo':
+                            task.progress = 0
+                        elif status == 'done':
+                            task.resolution = task.resolution or 'done'
+                            task.progress = 100
+
                         task.save()
 
-        return JsonResponse(ugettext('The order was changed'), safe=False)
+                        if task.pk == task_id:
+                            serialized_task = serialize('json', [task])[1:-1]
+
+        return JsonResponse({'task': serialized_task})
     raise Http404
 
 

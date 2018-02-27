@@ -119,7 +119,7 @@
         var substring;
         var order;
 
-        function change_tasks_order($cards) {
+        function change_tasks_order($cards, card) {
           if (!$cards.hasClass('disabled')) {
             order = {};
             $cards.find('.card-container').each(function(index) {
@@ -130,9 +130,13 @@
             $.post("{% url 'task_order' profile_user.username %}", {
               order: JSON.stringify(order),
               status: $cards.data('status'),
+              id: card.dataset.id,
               'csrfmiddlewaretoken': '{{ csrf_token }}'
             }, function() {
               $cards.addClass('disabled');
+            })
+            .done(function(data) {
+              $(card).attr('data-json', data.task).data('json', JSON.parse(data.task));
             })
             .always(function() {
               $cards.removeClass('disabled');
@@ -150,16 +154,17 @@
             return '<div style="padding: 0 5px 0 10px; line-height: 26px; color: #' + markup + '; background-color: #' + markup + ';">' + markup + '</div>';
           }
         });
+        $('select#id_resolution').select2({width: '150px'});
 
         $('.sortable').sortable({
           placeholderClass: 'col-md-6',
           connectWith: '.sortable'
         }).on('sortupdate', function(e, ui) {
-          change_tasks_order(ui.item.parent());
+          change_tasks_order(ui.item.parent(), ui.item[0]);
         }).on('sortconnect', function(e, ui) {
           $cards = ui.item.parent();
           if (!$cards.hasClass('disabled') && ui.item.index() == 0) {
-            change_tasks_order($cards);
+            change_tasks_order($cards, ui.item[0]);
           }
         });
 

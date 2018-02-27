@@ -233,6 +233,7 @@ $(document).ready(function() {
     $modal.find('select').prop('selectedIndex', 0).trigger('change.select2');
     $modal.find('.btn.delete').hide();
     $modal.find('form [role="alert"]').remove();
+    $modal.find('.form-group').show();
 
     // Clean ckeditors.
     if (typeof CKEDITOR !== 'undefined') {
@@ -273,6 +274,14 @@ $(document).ready(function() {
       else if ($field.is('select')) {
         // We need update select2 too.
         $field.trigger('change.select2');
+      }
+
+      // For Task we need to show/hide resolution and progress fields.
+      if (card.model === 'tool.task') {
+        if ((card.fields['status'] !== 'done' && key === 'resolution') ||
+            (card.fields['status'] !== 'doing' && key === 'progress')) {
+          $field.parents('.form-group').hide();
+        }
       }
     }
 

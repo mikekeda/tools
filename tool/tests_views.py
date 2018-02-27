@@ -917,7 +917,7 @@ class ToolViewTest(TestCase):
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(
             str(resp.content, encoding='utf8'),
-            '"The order was changed"'
+            '{"task": {}}'
         )
 
     def test_views_code_snippets(self):
