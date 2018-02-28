@@ -196,6 +196,17 @@ ul {
     &.difficult .face {
       background-color: $brand-danger;
     }
+
+    .card-progress {
+      bottom: 0;
+      position: absolute;
+      width: 100%;
+
+      .determinate {
+        background-color: green;
+        height: 3px;
+      }
+    }
   }
 
   .front {
