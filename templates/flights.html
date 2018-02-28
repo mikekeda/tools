@@ -108,9 +108,9 @@
                   tbl_row += '<td><p>' + data[fly].slice[0].stops + (1 in data[fly].slice ? '<p>' + data[fly].slice[1].stops + '</p>' : '') + '</p></td>';
                   tbl_row += '<td><p>' + data[fly].slice[0].duration + (1 in data[fly].slice ? '<p>' + data[fly].slice[1].duration + '</p>' : '') + '</p></td>';
                   tbl_row += '<td>';
-                  tbl_row += '<p><a href="http://airtickets.mkeda.me/route/' + data[fly].slice[0].slice + '">' + data[fly].slice[0].slice + '</a></p>';
+                  tbl_row += '<p><a href="http://airtickets.mkeda.me/route/' + data[fly].slice[0].slice.split('>').join('') + '">' + data[fly].slice[0].slice + '</a></p>';
                   if (1 in data[fly].slice) {
-                    tbl_row += '<p><a href="http://airtickets.mkeda.me/route/' + data[fly].slice[1].slice + '">' + data[fly].slice[1].slice + '</a></p>';
+                    tbl_row += '<p><a href="http://airtickets.mkeda.me/route/' + data[fly].slice[1].slice.split('>').join('') + '">' + data[fly].slice[1].slice + '</a></p>';
                   }
                   tbl_row += '</td>';
 
