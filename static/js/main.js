@@ -70,6 +70,8 @@ $(document).ready(function() {
     $modal.find('.btn.delete').hide();
     $modal.find('form [role="alert"]').remove();
     $modal.find('.form-group').show();
+    $modal.find('#id_progress').parents('.form-group').hide();
+    $modal.find('#id_resolution').parents('.form-group').hide();
 
     // Clean ckeditors.
     if (typeof CKEDITOR !== 'undefined') {
@@ -114,9 +116,9 @@ $(document).ready(function() {
 
       // For Task we need to show/hide resolution and progress fields.
       if (card.model === 'tool.task') {
-        if ((card.fields['status'] !== 'done' && key === 'resolution') ||
-            (card.fields['status'] !== 'doing' && key === 'progress')) {
-          $field.parents('.form-group').hide();
+        if ((card.fields['status'] === 'done' && key === 'resolution') ||
+            (card.fields['status'] === 'doing' && key === 'progress')) {
+          $field.parents('.form-group').show();
         }
       }
     }

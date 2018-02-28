@@ -25,7 +25,7 @@
                     </div>
                 </div>
                 {% for field in form %}
-                    <div class="form-group">
+                    <div class="form-group" {% if field.name == 'progress' or field.name == 'resolution' %}style="display: none;"{% endif %}>
                         <label class="control-label col-sm-2">{{ field.label_tag }}</label>
                         <div class="col-sm-10">
                             {% if field.name == 'due_date' %}
