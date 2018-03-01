@@ -139,7 +139,7 @@
               $cards.addClass('disabled');
             })
             .done(function(data) {
-              $(card).attr('data-json', data.task).data('json', JSON.parse(data.task));
+              $(card).attr('data-json', data.task).data('json', JSON.parse(data.task)).find('.card-progress .determinate').css('width', JSON.parse(data.task).fields.progress + '%');
             })
             .always(function() {
               $cards.removeClass('disabled');
