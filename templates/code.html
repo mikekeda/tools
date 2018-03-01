@@ -14,6 +14,9 @@
         form .btn-danger {
           margin-right: 15px;
         }
+        .select2-container {
+            display: block;
+        }
     </style>
 
     <h2>{% trans "Code snippets" %}</h2>
@@ -62,6 +65,21 @@
         // Dynamically set page title and description.
         document.title = '{% trans "Code snippets" %}';
         document.head.querySelector('meta[name=description]').content = '{% trans "Instantly share code, notes, and snippets." %}';
+
+        if("undefined" == typeof jQuery) {
+            window.onload = function() {
+                init_app();
+            };
+        }
+        else {
+            init_app();
+        }
+        function init_app() {
+            $('#id_labels').select2({
+                dropdownAutoWidth : true,
+                width: 'auto'
+            });
+        }
     </script>
     <script type="text/javascript" src="{% static 'bower_components/ckeditor/ckeditor.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/code.js' %}" defer></script>

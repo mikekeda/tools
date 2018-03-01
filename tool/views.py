@@ -711,6 +711,8 @@ class CodeView(View, GetUserMixin):
             try:
                 with transaction.atomic():
                     code.save()
+
+                form.save_m2m()
             except IntegrityError:
                 form.add_error(
                     'title',

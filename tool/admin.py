@@ -96,7 +96,7 @@ class CanvasAdmin(BaseModelAdmin):
 
 
 class CodeAdmin(BaseModelAdmin):
-    fields = ('title', 'user', 'link_to_code_snippet', 'text')
+    fields = ('title', 'user', 'link_to_code_snippet', 'text', 'labels')
     readonly_fields = ('link_to_code_snippet',)
 
     formfield_overrides = {

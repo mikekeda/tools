@@ -191,11 +191,22 @@ for lang in settings.LANGUAGES:
 
 class Label(models.Model):
     """ Label model. """
+    CATEGORIES = (
+        ('programing', 'Programing'),
+    )
+
     title = models.CharField(max_length=60)
     user = models.ForeignKey(
         User,
         related_name='labels',
-        on_delete=models.CASCADE
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True
+    )
+    category = models.CharField(
+        max_length=16,
+        choices=CATEGORIES,
+        default='programing'
     )
     created = models.DateTimeField(auto_now_add=True)
     changed = models.DateTimeField(auto_now=True)
@@ -299,6 +310,7 @@ class Code(models.Model):
         on_delete=models.CASCADE
     )
     slug = models.CharField(max_length=10, unique=True)
+    labels = models.ManyToManyField(Label, blank=True)
     created = models.DateTimeField(auto_now_add=True)
     changed = models.DateTimeField(auto_now=True)
 
