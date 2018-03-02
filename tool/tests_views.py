@@ -224,6 +224,21 @@ class ToolViewTest(TestCase):
             '"{} Test event"'.format(start.strftime('%H:%M'))
         )
 
+        # Set user timezone (event should be aware of user's timezone).
+        profile = Profile.objects.get(user=test_user)
+        profile.timezone = 'Europe/Kiev'
+        profile.save()
+        local_start = timezone.localtime(start, pytz.timezone('Europe/Kiev'))
+        resp = self.client.get(
+            reverse('events'),
+            HTTP_X_REQUESTED_WITH='XMLHttpRequest'
+        )
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(
+            str(resp.content, encoding='utf8'),
+            '"{} Test event"'.format(local_start.strftime('%H:%M'))
+        )
+
     def test_views_calendar_get(self):
         resp = self.client.get(reverse('calendar'))
         self.assertRedirects(resp, '/login?next=/calendar')
@@ -439,25 +454,26 @@ class ToolViewTest(TestCase):
             str(resp.content, encoding='utf8'),
             {'redirect': '/calendar', 'success': True}
         )
-        test_event_exists = Event.objects.filter(
+        test_event1_exists = Event.objects.filter(
             pk=test_event1.pk
         ).exists()
-        self.assertFalse(test_event_exists)
+        self.assertFalse(test_event1_exists)
 
         # Admin can delete an event for any user.
         self.client.login(username='testadmin', password='12345')
         resp = self.client.delete(
-            reverse('calendar_pk', kwargs={'pk': test_event2.pk})
+            reverse('user_calendar_pk', kwargs={'pk': test_event2.pk,
+                                                'username': 'testuser'})
         )
         self.assertEqual(resp.status_code, 200)
         self.assertJSONEqual(
             str(resp.content, encoding='utf8'),
-            {'redirect': '/calendar', 'success': True}
+            {'redirect': '/user/testuser/calendar', 'success': True}
         )
-        test_event_admin_exists = Event.objects.filter(
+        test_event2_exists = Event.objects.filter(
             pk=test_event2.pk
         ).exists()
-        self.assertFalse(test_event_admin_exists)
+        self.assertFalse(test_event2_exists)
 
     def test_views_flights(self):
         resp = self.client.get(reverse('flights'))
@@ -568,6 +584,21 @@ class ToolViewTest(TestCase):
         )
         test_word = Word.objects.get(pk=test_word.pk)
         self.assertEqual(test_word.en, 'put_test_en')
+        # Not valid lang.
+        resp = self.client.put(
+            path=reverse('dictionary'),
+            data=urlencode({
+                'pk': test_word.pk,
+                'lang': 'dummy',
+                'value': 'put_test_dummy',
+            }),
+            content_type='application/x-www-form-urlencoded'
+        )
+        self.assertEqual(resp.status_code, 403)
+        self.assertEqual(
+            str(resp.content, encoding='utf8'),
+            '"You can\'t change this field"'
+        )
 
         # Admin user - can edit any word for any user.
         self.client.login(username='testadmin', password='12345')

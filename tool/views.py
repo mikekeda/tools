@@ -288,7 +288,7 @@ class CalendarView(LoginRequiredMixin, View, GetUserMixin):
     def delete(self, request, pk, username=None):
         """ Delete the event. """
         user = self.get_user(request, username)
-        event = get_object_or_404(Event, pk=pk)
+        event = get_object_or_404(Event, pk=pk, creator=user)
         event.delete()
 
         if user == request.user:

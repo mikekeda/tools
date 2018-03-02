@@ -53,25 +53,17 @@ class ToolModelTest(TestCase):
         ).decode('utf-8')
         self.assertEqual(email_password, 'testpass1')
 
-        # email_password wasn't changed.
-        user_profile.email_password = 'testpass1'
+        # Email password wasn't changed.
+        user_profile.email = 'dummy@test.me'
         user_profile.save()
-
-        key = base64.urlsafe_b64encode(
-            settings.SECRET_KEY[:32].encode('utf-8')
-        )
         email_password = Fernet(key).decrypt(
             user_profile.email_password.encode('utf-8')
         ).decode('utf-8')
         self.assertEqual(email_password, 'testpass1')
 
-        # email_password was changed.
+        # Email password was changed.
         user_profile.email_password = 'testpass2'
         user_profile.save()
-
-        key = base64.urlsafe_b64encode(
-            settings.SECRET_KEY[:32].encode('utf-8')
-        )
         email_password = Fernet(key).decrypt(
             user_profile.email_password.encode('utf-8')
         ).decode('utf-8')
