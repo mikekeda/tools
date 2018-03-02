@@ -6,6 +6,7 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.test import TestCase
 from django.urls import reverse
+from django.utils import timezone
 
 from schedule.models import Calendar, Event
 
@@ -77,16 +78,14 @@ class ToolViewTest(TestCase):
         slug = list(resp.json().keys())[0]
         resp = self.client.post(
             reverse('canvases', kwargs={'username': 'testuser'}),
-            {'imgBase64': sample_2,
-             'slug': slug}
+            {'imgBase64': sample_2, 'slug': slug}
         )
         self.assertEqual(resp.status_code, 200)
 
         # Try to change not existing canvas.
         resp = self.client.post(
             reverse('canvases', kwargs={'username': 'testuser'}),
-            {'imgBase64': sample_2,
-             'slug': 'not-exists'}
+            {'imgBase64': sample_2, 'slug': 'not-exists'}
         )
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(len(resp.json()), 1)
@@ -200,6 +199,31 @@ class ToolViewTest(TestCase):
             '""'
         )
 
+        # Create an event.
+        test_user = User.objects.get(username='testuser')
+        cal = Calendar.objects.create(name="testuser")
+        start = timezone.now() + timezone.timedelta(hours=2)
+        test_event1 = Event(
+            title='Test event',
+            description='Test description 3',
+            start=start,
+            end=start + timezone.timedelta(hours=2),
+            color_event='#FFA3F5',
+            creator=test_user,
+            calendar=cal
+        )
+        test_event1.save()
+
+        resp = self.client.get(
+            reverse('events'),
+            HTTP_X_REQUESTED_WITH='XMLHttpRequest'
+        )
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(
+            str(resp.content, encoding='utf8'),
+            '"{} Test event"'.format(start.strftime('%H:%M'))
+        )
+
     def test_views_calendar_get(self):
         resp = self.client.get(reverse('calendar'))
         self.assertRedirects(resp, '/login?next=/calendar')
@@ -215,7 +239,7 @@ class ToolViewTest(TestCase):
                                        kwargs={'username': 'testuser'}))
         self.assertEqual(resp.status_code, 200)
         self.assertTemplateUsed(resp, 'calendar.html')
-        self.client.logout()
+
         # Admin can see user's events.
         self.client.login(username='testadmin', password='12345')
         resp = self.client.get(reverse('user_calendar',
@@ -258,7 +282,7 @@ class ToolViewTest(TestCase):
         test_event = Event.objects.get(title='Test title', creator=test_user)
         self.assertEqual(test_event.description, 'Test description')
         self.assertEqual(test_event.color_event, '#EBDFD6')
-        self.client.logout()
+
         # Admin can create an event for any user.
         self.client.login(username='testadmin', password='12345')
         resp = self.client.post(
@@ -318,7 +342,7 @@ class ToolViewTest(TestCase):
             'rule': 1,
         })
         self.assertEqual(resp.status_code, 404)
-        self.client.logout()
+
         # Admin can edit an event for any user.
         self.client.login(username='testadmin', password='12345')
         resp = self.client.post(
@@ -337,14 +361,45 @@ class ToolViewTest(TestCase):
                                            kwargs={'username': 'testuser'}))
         test_event = Event.objects.get(pk=test_event.pk)
         self.assertEqual(test_event.title, 'Test title admin 2')
-        self.assertEqual(test_event.description,
-                         'Test description admin 2')
+        self.assertEqual(test_event.description, 'Test description admin 2')
         self.assertEqual(test_event.color_event, '#FFC678')
+
+        # Set user timezone (event should be aware of user's timezone).
+        profile = Profile.objects.get(user=test_user)
+        profile.timezone = 'Europe/Kiev'
+        profile.save()
+        # Edit user event.
+        resp = self.client.post(
+            reverse('user_calendar', kwargs={'username': 'testuser'}),
+            {
+                'id': test_event.pk,
+                'title': 'Test title admin 3',
+                'description': 'Test description admin 3',
+                'start': '2022-02-20 11:27',
+                'end': '2022-02-21 11:28',
+                'color_event': 'FFC677',
+                'rule': 2,
+            }
+        )
+        self.assertRedirects(resp, reverse('user_calendar',
+                                           kwargs={'username': 'testuser'}))
+        test_event = Event.objects.get(pk=test_event.pk)
+        self.assertEqual(test_event.title, 'Test title admin 3')
+        self.assertEqual(test_event.description, 'Test description admin 3')
+        self.assertEqual(test_event.color_event, '#FFC677')
+        self.assertEqual(
+            test_event.start,
+            datetime.datetime(2022, 2, 20, 9, 27, tzinfo=pytz.utc)
+        )
+        self.assertEqual(
+            test_event.end,
+            datetime.datetime(2022, 2, 21, 9, 28, tzinfo=pytz.utc)
+        )
 
     def test_views_calendar_delete(self):
         test_user = User.objects.get(username='testuser')
         cal = Calendar.objects.create(name="testuser")
-        test_event = Event(
+        test_event1 = Event(
             title='Test title 3',
             description='Test description 3',
             start=datetime.datetime(2018, 1, 5, 8, 0, tzinfo=pytz.utc),
@@ -353,9 +408,9 @@ class ToolViewTest(TestCase):
             creator=test_user,
             calendar=cal
         )
+        test_event1.save()
 
-        test_event.save()
-        test_event_admin = Event(
+        test_event2 = Event(
             title='Test title 3 admin',
             description='Test description 3 admin',
             start=datetime.datetime(2018, 1, 4, 8, 0, tzinfo=pytz.utc),
@@ -364,20 +419,20 @@ class ToolViewTest(TestCase):
             creator=test_user,
             calendar=cal
         )
-        test_event_admin.save()
+        test_event2.save()
         # Delete event.
         resp = self.client.delete(
-            reverse('calendar_pk', kwargs={'pk': test_event.pk})
+            reverse('calendar_pk', kwargs={'pk': test_event1.pk})
         )
         self.assertRedirects(
             resp,
-            '/login?next=/calendar/' + str(test_event.pk)
+            '/login?next=/calendar/' + str(test_event1.pk)
         )
         self.client.login(username='testuser', password='12345')
         resp = self.client.delete(reverse('calendar_pk', kwargs={'pk': 77777}))
         self.assertEqual(resp.status_code, 404)
         resp = self.client.delete(
-            reverse('calendar_pk', kwargs={'pk': test_event.pk})
+            reverse('calendar_pk', kwargs={'pk': test_event1.pk})
         )
         self.assertEqual(resp.status_code, 200)
         self.assertJSONEqual(
@@ -385,14 +440,14 @@ class ToolViewTest(TestCase):
             {'redirect': '/calendar', 'success': True}
         )
         test_event_exists = Event.objects.filter(
-            pk=test_event.pk
+            pk=test_event1.pk
         ).exists()
         self.assertFalse(test_event_exists)
-        self.client.logout()
+
         # Admin can delete an event for any user.
         self.client.login(username='testadmin', password='12345')
         resp = self.client.delete(
-            reverse('calendar_pk', kwargs={'pk': test_event_admin.pk})
+            reverse('calendar_pk', kwargs={'pk': test_event2.pk})
         )
         self.assertEqual(resp.status_code, 200)
         self.assertJSONEqual(
@@ -400,7 +455,7 @@ class ToolViewTest(TestCase):
             {'redirect': '/calendar', 'success': True}
         )
         test_event_admin_exists = Event.objects.filter(
-            pk=test_event_admin.pk
+            pk=test_event2.pk
         ).exists()
         self.assertFalse(test_event_admin_exists)
 
@@ -548,7 +603,7 @@ class ToolViewTest(TestCase):
                                        kwargs={'username': 'testuser'}))
         self.assertEqual(resp.status_code, 200)
         self.assertTemplateUsed(resp, 'flashcards.html')
-        self.client.logout()
+
         # Admin can see user's flashcards.
         self.client.login(username='testadmin', password='12345')
         resp = self.client.get(reverse('user_flashcards',
@@ -592,7 +647,7 @@ class ToolViewTest(TestCase):
         test_flashcard = Card.objects.get(word='Test flashcard',
                                           user=test_user)
         self.assertEqual(test_flashcard.description, 'Dummy text')
-        self.client.logout()
+
         # Admin can create a flashcard for any user.
         self.client.login(username='testadmin', password='12345')
         resp = self.client.post(
@@ -638,7 +693,7 @@ class ToolViewTest(TestCase):
             'difficulty': 'difficult',
         })
         self.assertEqual(resp.status_code, 404)
-        self.client.logout()
+
         # Admin can edit a flashcard for any user.
         self.client.login(username='testadmin', password='12345')
         resp = self.client.post(
@@ -700,7 +755,7 @@ class ToolViewTest(TestCase):
             pk=test_flashcard.pk
         ).exists()
         self.assertFalse(test_flashcard_exists)
-        self.client.logout()
+
         # Admin can delete a flashcard for any user.
         self.client.login(username='testadmin', password='12345')
         resp = self.client.delete(
@@ -754,7 +809,7 @@ class ToolViewTest(TestCase):
                                        kwargs={'username': 'testuser'}))
         self.assertEqual(resp.status_code, 200)
         self.assertTemplateUsed(resp, 'tasks.html')
-        self.client.logout()
+
         # Admin can see user's tasks.
         self.client.login(username='testadmin', password='12345')
         resp = self.client.get(reverse('user_tasks',
@@ -780,7 +835,7 @@ class ToolViewTest(TestCase):
         test_user = User.objects.get(username='testuser')
         test_task = Task.objects.get(title='Test task', user=test_user)
         self.assertEqual(test_task.description, 'Dummy text')
-        self.client.logout()
+
         # Admin can create a task for any user.
         self.client.login(username='testadmin', password='12345')
         resp = self.client.post(
@@ -826,7 +881,7 @@ class ToolViewTest(TestCase):
             'color': 3,
         })
         self.assertEqual(resp.status_code, 404)
-        self.client.logout()
+
         # Admin can edit a task for any user.
         self.client.login(username='testadmin', password='12345')
         resp = self.client.post(
@@ -840,6 +895,18 @@ class ToolViewTest(TestCase):
         )
         self.assertRedirects(resp, reverse('user_tasks',
                                            kwargs={'username': 'testuser'}))
+        test_flashcard = Task.objects.get(pk=test_task.pk)
+        self.assertEqual(test_flashcard.title, 'Test title admin 2')
+        self.assertEqual(test_flashcard.description, 'Dummy text admin 2')
+        self.assertEqual(test_flashcard.color, 2)
+
+        # Try to post not valid form.
+        resp = self.client.post(
+            reverse('user_tasks', kwargs={'username': 'testuser'}),
+            {}
+        )
+        self.assertEqual(resp.status_code, 200)
+        self.assertTemplateUsed(resp, 'tasks.html')
         test_flashcard = Task.objects.get(pk=test_task.pk)
         self.assertEqual(test_flashcard.title, 'Test title admin 2')
         self.assertEqual(test_flashcard.description, 'Dummy text admin 2')
@@ -886,7 +953,7 @@ class ToolViewTest(TestCase):
         )
         test_task_exists = Task.objects.filter(pk=test_task.pk).exists()
         self.assertFalse(test_task_exists)
-        self.client.logout()
+
         # Admin can delete a task for any user.
         self.client.login(username='testadmin', password='12345')
         resp = self.client.delete(
@@ -1087,10 +1154,10 @@ class ToolViewTest(TestCase):
 
     def test_views_update_profile(self):
         resp = self.client.post(
-            reverse('update_profile'),
+            reverse('user', kwargs={'username': 'testuser'}),
             {'first_name': 'test1'}
         )
-        self.assertRedirects(resp, '/login?next=/update-profile')
+        self.assertRedirects(resp, '/login?next=/user/testuser')
         self.client.login(username='testuser', password='12345')
         # Need to create profile for the users.
         resp = self.client.get(reverse('user',
@@ -1099,7 +1166,7 @@ class ToolViewTest(TestCase):
 
         # Change first name.
         resp = self.client.post(
-            reverse('update_profile'),
+            reverse('user', kwargs={'username': 'testuser'}),
             {'name': 'first_name', 'value': 'test name'}
         )
         self.assertEqual(resp.status_code, 200)
@@ -1112,7 +1179,7 @@ class ToolViewTest(TestCase):
 
         # Change last name.
         resp = self.client.post(
-            reverse('update_profile'),
+            reverse('user', kwargs={'username': 'testuser'}),
             {'name': 'last_name', 'value': 'test last name'}
         )
         self.assertEqual(resp.status_code, 200)
@@ -1125,7 +1192,7 @@ class ToolViewTest(TestCase):
 
         # Change email.
         resp = self.client.post(
-            reverse('update_profile'),
+            reverse('user', kwargs={'username': 'testuser'}),
             {'name': 'email', 'value': 'myemail2@test.com'}
         )
         self.assertEqual(resp.status_code, 200)
@@ -1138,7 +1205,7 @@ class ToolViewTest(TestCase):
 
         # Change palette_color_2.
         resp = self.client.post(
-            reverse('update_profile'),
+            reverse('user', kwargs={'username': 'testuser'}),
             {'name': 'palette_color_2', 'value': '4AF560'}
         )
         self.assertEqual(resp.status_code, 200)
@@ -1149,9 +1216,9 @@ class ToolViewTest(TestCase):
         profile = Profile.objects.get(user=user)
         self.assertEqual(profile.palette_color_2, '4AF560')
 
-        # Change timezone (fail).
+        # Change timezone (fail, not valid timezone).
         resp = self.client.post(
-            reverse('update_profile'),
+            reverse('user', kwargs={'username': 'testuser'}),
             {'name': 'timezone', 'value': 'dummy_zone'}
         )
         self.assertEqual(resp.status_code, 403)
@@ -1162,7 +1229,7 @@ class ToolViewTest(TestCase):
 
         # Change timezone (success).
         resp = self.client.post(
-            reverse('update_profile'),
+            reverse('user', kwargs={'username': 'testuser'}),
             {'name': 'timezone', 'value': 'Europe/Kiev'}
         )
         self.assertEqual(resp.status_code, 200)
@@ -1175,7 +1242,7 @@ class ToolViewTest(TestCase):
 
         # Change not existing field (fail).
         resp = self.client.post(
-            reverse('update_profile'),
+            reverse('user', kwargs={'username': 'testuser'}),
             {'name': 'dummy_field', 'value': 'dummy_value'}
         )
         self.assertEqual(resp.status_code, 403)

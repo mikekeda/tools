@@ -144,18 +144,20 @@
       <!-- Include js -->
       <script type="text/javascript" src="{% static 'js/all.js' %}?v=26"></script>
       <script>
-        // Update user timezone if it's not set.
-        if ('{{ profile.timezone }}' === 'None') {
-          var timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+        {% if user.is_authenticated %}
+          // Update user timezone if it's not set.
+          if ('{{ profile.timezone }}' === 'None') {
+            var timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
-          if (timeZone) {
-            $.post('{% url 'update_profile' %}', {
-              name: 'timezone',
-              value: timeZone,
-              csrfmiddlewaretoken: '{{ csrf_token }}'
-            });
+            if (timeZone) {
+              $.post('{% url 'user' profile.user.username %}', {
+                name: 'timezone',
+                value: timeZone,
+                csrfmiddlewaretoken: '{{ csrf_token }}'
+              });
+            }
           }
-        }
+        {% endif %}
       </script>
       <script type="text/javascript" src="{% static 'easy_select2/vendor/select2/js/select2.min.js' %}"></script>
 

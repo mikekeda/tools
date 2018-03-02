@@ -54,7 +54,7 @@
                                 <div class="col-md-4 float-left"><label>{% trans "First name" %}</label></div>
                                 <div class="col-md-8 float-right">
                                     {% if is_current_user %}
-                                        <a href="#" id="first_name" class="editable" data-type="text" data-pk="first_name" data-url="{% url 'update_profile' %}" data-placeholder="{% trans 'Enter first name' %}" data-params="{csrfmiddlewaretoken:'{{csrf_token}}'}">{{ profile_user.first_name }}</a>
+                                        <a href="#" id="first_name" class="editable" data-type="text" data-pk="first_name" data-url="{% url 'user' profile_user.username %}" data-placeholder="{% trans 'Enter first name' %}" data-params="{csrfmiddlewaretoken:'{{csrf_token}}'}">{{ profile_user.first_name }}</a>
                                     {% else %}
                                         {{ profile_user.first_name }}
                                     {% endif %}
@@ -64,7 +64,7 @@
                                 <div class="col-md-4 float-left"><label>{% trans "Last name" %}</label></div>
                                 <div class="col-md-8 float-right">
                                     {% if is_current_user %}
-                                        <a href="#" id="last_name" class="editable" data-type="text" data-pk="last_name" data-url="{% url 'update_profile' %}" data-placeholder="{% trans 'Enter last name' %}" data-params="{csrfmiddlewaretoken:'{{csrf_token}}'}">{{ profile_user.last_name }}</a>
+                                        <a href="#" id="last_name" class="editable" data-type="text" data-pk="last_name" data-url="{% url 'user' profile_user.username %}" data-placeholder="{% trans 'Enter last name' %}" data-params="{csrfmiddlewaretoken:'{{csrf_token}}'}">{{ profile_user.last_name }}</a>
                                     {% else %}
                                         {{ profile_user.last_name }}
                                     {% endif %}
@@ -74,7 +74,7 @@
                                 <div class="col-md-4 float-left"><label>{% trans "Email" %}</label></div>
                                 <div class="col-md-8 float-right">
                                     {% if is_current_user %}
-                                        <a href="#" id="email" class="editable" data-type="email" data-pk="email" data-url="{% url 'update_profile' %}" data-placeholder="{% trans 'Enter email' %}" data-params="{csrfmiddlewaretoken:'{{csrf_token}}'}">{{ profile_user.email }}</a>
+                                        <a href="#" id="email" class="editable" data-type="email" data-pk="email" data-url="{% url 'user' profile_user.username %}" data-placeholder="{% trans 'Enter email' %}" data-params="{csrfmiddlewaretoken:'{{csrf_token}}'}">{{ profile_user.email }}</a>
                                     {% else %}
                                         {{ profile_user.email }}
                                     {% endif %}
@@ -84,7 +84,7 @@
                                 <div class="col-md-4 float-left"><label>{% trans "Timezone" %}</label></div>
                                 <div class="col-md-8 float-right">
                                     {% if is_current_user %}
-                                        <a href="#" id="timezone" class="editable" data-type="select" data-value="{{ profile.timezone }}" data-source="{{ timezones }}" data-pk="timezone" data-url="{% url 'update_profile' %}" data-placeholder="{% trans 'Enter email' %}" data-params="{csrfmiddlewaretoken:'{{csrf_token}}'}">{{ profile.timezone }}</a>
+                                        <a href="#" id="timezone" class="editable" data-type="select" data-value="{{ profile.timezone }}" data-source="{{ timezones }}" data-pk="timezone" data-url="{% url 'user' profile_user.username %}" data-placeholder="{% trans 'Enter email' %}" data-params="{csrfmiddlewaretoken:'{{csrf_token}}'}">{{ profile.timezone }}</a>
                                     {% else %}
                                         {{ profile_user.profile.timezone }}
                                     {% endif %}
@@ -95,7 +95,7 @@
                                 {% for color in palette_colors %}
                                     <div class="col-md-2 float-left palette-item">
                                         {% if is_current_user %}
-                                            <a href="#" id="palette_color_{{ forloop.counter }}" class="editable palette-color" style="background-color: #{{ color }}; color: #{{ color }};" data-type="text" data-value="{{ color }}" data-source="{{ color }}" data-pk="color" data-inputclass="jscolor" data-url="{% url 'update_profile' %}" data-placeholder="{% trans 'Enter color' %}" data-params="{csrfmiddlewaretoken:'{{csrf_token}}'}"></a>
+                                            <a href="#" id="palette_color_{{ forloop.counter }}" class="editable palette-color" style="background-color: #{{ color }}; color: #{{ color }};" data-type="text" data-value="{{ color }}" data-source="{{ color }}" data-pk="color" data-inputclass="jscolor" data-url="{% url 'user' profile_user.username %}" data-placeholder="{% trans 'Enter color' %}" data-params="{csrfmiddlewaretoken:'{{csrf_token}}'}"></a>
                                         {% else %}
                                             <div style="background-color: #{{ color }}; color: #{{ color }};">{{ color }}</div>
                                         {% endif %}
@@ -111,7 +111,7 @@
                 {% if is_current_user %}
                     <img src="{{ profile.avatar.url }}" class="m-x-auto img-fluid rounded-circle" alt="avatar">
                     <h5 class="mt-2">{% trans "Upload a different photo" %}</h5>
-                    <form action="{% url 'update_profile' %}" method="post" enctype="multipart/form-data" id="avatar-upload">
+                    <form action="{% url 'user' profile_user.username %}" method="post" enctype="multipart/form-data" id="avatar-upload">
                         {% csrf_token %}
                         {% for field in form %}
                             <label class="custom-file text-left">

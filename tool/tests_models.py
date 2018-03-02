@@ -1,4 +1,5 @@
 import base64
+from collections import namedtuple
 
 from cryptography.fernet import Fernet
 
@@ -6,7 +7,7 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.test import TestCase
 
-from .models import number_to_chars, Profile, Code, Label
+from .models import number_to_chars, get_username_by_uid, Profile, Code, Label
 
 
 class ToolModelTest(TestCase):
@@ -22,12 +23,39 @@ class ToolModelTest(TestCase):
         result = number_to_chars(45219)
         self.assertEqual(result, 'lVv')
 
+    def test_get_username_by_uid(self):
+        obj = namedtuple('DummyClass', ('user_id', 'user',))
+        obj.user_id = 2670427
+        obj.user = namedtuple('User', ('username',))
+        obj.user.username = 'dummy_user'
+
+        # Not cached.
+        username = get_username_by_uid(obj)
+        self.assertEqual(username, 'dummy_user')
+
+        # Cached.
+        username = get_username_by_uid(obj)
+        self.assertEqual(username, 'dummy_user')
+
     def test_models_profile_email_password(self):
         test_user = User.objects.get(username='testuser')
-        user_profile = Profile(user=test_user, email_password='testpass')
+        user_profile = Profile(user=test_user, email_password='testpass1')
         user_profile.save()
 
         self.assertEqual(str(user_profile), 'testuser')
+
+        # Test email_password.
+        key = base64.urlsafe_b64encode(
+            settings.SECRET_KEY[:32].encode('utf-8')
+        )
+        email_password = Fernet(key).decrypt(
+            user_profile.email_password.encode('utf-8')
+        ).decode('utf-8')
+        self.assertEqual(email_password, 'testpass1')
+
+        # email_password wasn't changed.
+        user_profile.email_password = 'testpass1'
+        user_profile.save()
 
         key = base64.urlsafe_b64encode(
             settings.SECRET_KEY[:32].encode('utf-8')
@@ -35,7 +63,19 @@ class ToolModelTest(TestCase):
         email_password = Fernet(key).decrypt(
             user_profile.email_password.encode('utf-8')
         ).decode('utf-8')
-        self.assertEqual(email_password, 'testpass')
+        self.assertEqual(email_password, 'testpass1')
+
+        # email_password was changed.
+        user_profile.email_password = 'testpass2'
+        user_profile.save()
+
+        key = base64.urlsafe_b64encode(
+            settings.SECRET_KEY[:32].encode('utf-8')
+        )
+        email_password = Fernet(key).decrypt(
+            user_profile.email_password.encode('utf-8')
+        ).decode('utf-8')
+        self.assertEqual(email_password, 'testpass2')
 
     def test_models_code(self):
         test_user = User.objects.get(username='testuser')

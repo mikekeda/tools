@@ -29,6 +29,7 @@ from .models import (TIMEZONES, Card, Word, Profile, Task, Canvas, Code,
                      default_palette_colors)
 from .forms import (WordForm, EventForm, CardForm, AvatarForm, FlightsForm,
                     TaskForm, CodeForm)
+from .tasks import get_occurrences
 
 User = get_user_model()
 
@@ -262,9 +263,8 @@ class CalendarView(LoginRequiredMixin, View, GetUserMixin):
         form = EventForm(data=post_object, instance=event)
         if form.is_valid():
             user_timezone = 'UTC'
-            if hasattr(request.user, 'profile') \
-                    and request.user.profile.timezone:
-                user_timezone = request.user.profile.timezone
+            if hasattr(user, 'profile') and user.profile.timezone:
+                user_timezone = user.profile.timezone
             user_timezone = pytz.timezone(user_timezone)
 
             event = form.save(commit=False)
@@ -299,47 +299,34 @@ class CalendarView(LoginRequiredMixin, View, GetUserMixin):
         return JsonResponse({'redirect': form_action, 'success': True})
 
 
-@login_required
-def profile_view(request, username):
-    """ User profile. """
-    user = get_object_or_404(User, username=username)
-    profile, _ = Profile.objects.get_or_create(user=user)
-    form = AvatarForm(data=request.POST)
+class ProfileView(LoginRequiredMixin, View, GetUserMixin):
+    def get(self, request, username):
+        """ User profile. """
+        user = self.get_user(request, username)
+        profile, _ = Profile.objects.get_or_create(user=user)
+        form = AvatarForm(data=request.POST)
 
-    timezones = '['
-    for val, text in TIMEZONES:
-        timezones += '{value: "' + val + '", text: "' + text + '"},'
-    timezones += ']'
+        timezones = '['
+        for val, text in TIMEZONES:
+            timezones += '{value: "' + val + '", text: "' + text + '"},'
+        timezones += ']'
 
-    return render(request, 'profile.html', dict(
-        profile_user=user,
-        profile=profile,
-        palette_colors=(
-            getattr(profile, 'palette_color_' + str(i), c)
-            for i, c in enumerate(default_palette_colors, 1)
-        ),
-        is_current_user=user == request.user,
-        form=form,
-        timezones=timezones
-    ))
+        return render(request, 'profile.html', dict(
+            profile_user=user,
+            profile=profile,
+            palette_colors=(
+                getattr(profile, 'palette_color_' + str(i), c)
+                for i, c in enumerate(default_palette_colors, 1)
+            ),
+            is_current_user=user == request.user,
+            form=form,
+            timezones=timezones
+        ))
 
-
-@staff_member_required
-def users_list(request):
-    """ Users list. """
-    users = User.objects.all()
-
-    return render(request, 'user_list.html', dict(
-        users=users,
-        active_page=users
-    ))
-
-
-@login_required
-def update_profile(request):
-    """ Update user callback. """
-    if request.method == 'POST':
-        profile = get_object_or_404(Profile, user=request.user)
+    def post(self, request, username=None):
+        """ Update user callback. """
+        user = self.get_user(request, username)
+        profile = get_object_or_404(Profile, user=user)
         avatar = request.FILES.get('avatar', '')
         if avatar:
             form = AvatarForm(request.POST, request.FILES, instance=profile)
@@ -380,11 +367,22 @@ def update_profile(request):
                         status=422
                     )
 
-    return JsonResponse(
-        ugettext("You can't change this field"),
-        safe=False,
-        status=403
-    )
+        return JsonResponse(
+            ugettext("You can't change this field"),
+            safe=False,
+            status=403
+        )
+
+
+@staff_member_required
+def users_list(request):
+    """ Users list. """
+    users = User.objects.all()
+
+    return render(request, 'user_list.html', dict(
+        users=users,
+        active_page=users
+    ))
 
 
 @login_required
@@ -448,18 +446,15 @@ def user_events(request):
     if request.is_ajax():
         start = timezone.now()
         end = start + timezone.timedelta(days=1)
-        events = Event.objects.filter(
-            start__gt=start,
-            start__lte=end,
-            creator=request.user
-        ).select_related('creator')
+        events = get_occurrences(start, end, request.user)
 
         user_events_list = []
         for event in events:
-            local_time = timezone.localtime(
-                event.start,
-                pytz.timezone(event.creator.profile.timezone)
-            ).strftime('%H:%M')
+            user_timezone = pytz.utc
+            if event.creator.profile.timezone:
+                user_timezone = pytz.timezone(event.creator.profile.timezone)
+            local_time = timezone.localtime(event.start,
+                                            user_timezone).strftime('%H:%M')
             user_events_list.append(local_time + ' ' + event.title)
         return JsonResponse(' and '.join(user_events_list), safe=False)
 

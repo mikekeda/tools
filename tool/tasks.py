@@ -11,20 +11,27 @@ from celery import Celery
 app = Celery('tool')
 
 
-def get_occurrences(start, end):
-    """ Helper function to get all events in provided period. """
+def get_occurrences(start, end, creator=None):
+    """ Helper function to get events in provided period. """
     # Get events without a rule.
-    events = set(Event.objects.filter(
+    query = Event.objects.filter(
         start__gt=start,
         start__lte=end,
         rule__isnull=True
-    ).select_related('creator'))
+    )
+    if creator:
+        query = query.filter(creator=creator)
+
+    events = set(query.select_related('creator'))
 
     # Get events with a rule and check occurrences.
-    event_list = Event.objects.filter(
+    query = Event.objects.filter(
         start__lte=end,
         rule__isnull=False
-    ).filter(
+    )
+    if creator:
+        query = query.filter(creator=creator)
+    event_list = query.filter(
         Q(end_recurring_period__gte=start) |
         Q(end_recurring_period__isnull=True)
     ).select_related('creator')
