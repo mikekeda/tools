@@ -78,6 +78,18 @@ class ToolModelTest(TestCase):
         self.assertEqual(test_code.text, 'code block 1')
         self.assertEqual(test_code.slug[3:], number_to_chars(test_code.pk))
 
+        test_label1 = Label.objects.get(title='Python')
+        test_label2 = Label.objects.get(title='HTML')
+        test_code = Code(title='test2', text='code block 2', user=test_user)
+        test_code.save()
+        test_code.labels.add(test_label1, test_label2)
+        test_code.save()
+
+        codes = Code.get_code_snippets_with_labels(test_user)
+        for code in codes:
+            self.assertTrue(code.title in ('test1', 'test2'))
+            self.assertTrue(code.labels__title in ([], ['Python', 'HTML']))
+
     def test_models_label(self):
         test_user = User.objects.get(username='testuser')
         test_label = Label(title='test1', user=test_user)

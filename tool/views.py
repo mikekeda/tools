@@ -662,11 +662,13 @@ class CodeView(View, GetUserMixin):
     def get(self, request, slug=None, username=None):
         """ Get list of user code snippets or user snippet. """
         save_btn = True
+        active_page = 'code'
         code_snippet = None
         code_snippets = ()
         if slug:
             # Show single code snippet and edit form.
             code_snippet = get_object_or_404(Code, slug=slug)
+            active_page = 'code/{}'.format(code_snippet.title)
             try:
                 self.get_user(request, username)
             except PermissionDenied:
@@ -677,8 +679,7 @@ class CodeView(View, GetUserMixin):
                 user = self.get_user(request, username)
             except PermissionDenied:
                 return redirect(reverse('login') + '?next=' + request.path)
-            code_snippets = Code.objects.filter(user=user).order_by('-pk') \
-                .values_list('title', 'slug')
+            code_snippets = Code.get_code_snippets_with_labels(user)
 
         form = CodeForm(instance=code_snippet)
 
@@ -687,14 +688,13 @@ class CodeView(View, GetUserMixin):
             'codes': code_snippets,
             'save_btn': save_btn,
             'delete_btn': save_btn and slug,
-            'active_page': 'code'
+            'active_page': active_page
         })
 
     def post(self, request, slug=None, username=None):
         """ Save or create code snippet. """
         user = self.get_user(request, username)
         code_snippet = None
-        code_snippets = []
         if slug:
             code_snippet = get_object_or_404(Code, slug=slug)
 
@@ -717,13 +717,10 @@ class CodeView(View, GetUserMixin):
                 )
             else:
                 return redirect(reverse('code'))
-        elif slug:
-            code_snippets = Code.objects.filter(user=user).order_by('-pk') \
-                .values_list('title', 'slug')
 
         return render(request, 'code.html', {
             'form': form,
-            'codes': code_snippets,
+            'codes': Code.get_code_snippets_with_labels(user),
             'save_btn': True,  # only privileged user will have access to post
             'delete_btn': bool(slug),
             'active_page': 'code'

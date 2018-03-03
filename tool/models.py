@@ -1,4 +1,5 @@
 import base64
+from collections import namedtuple
 import datetime
 import random
 import string
@@ -323,6 +324,34 @@ class Code(models.Model):
             reverse('code_slug', kwargs={'slug': self.slug}),
             self.title
         ) if self.slug else ''
+
+    @classmethod
+    def get_code_snippets_with_labels(cls, user):
+        """ Get code snippets with labels. """
+        code_snippets = cls.objects.filter(user=user).prefetch_related(
+            'labels'
+        ).order_by('-pk').values_list(
+            'title', 'slug', 'labels__title', named=True
+        )
+
+        code_snippets_dict = {}
+        for snippet in code_snippets:
+            snippet = snippet._asdict()
+            snippet['labels__title'] = [snippet['labels__title']]
+            if snippet['labels__title'][0] is None:
+                snippet['labels__title'] = []
+
+            if snippet['slug'] in code_snippets_dict:
+                code_snippets_dict[snippet['slug']]['labels__title'] += \
+                    snippet['labels__title']
+            else:
+                code_snippets_dict[snippet['slug']] = snippet
+
+        for slug, snippet in code_snippets_dict.items():
+            code_snippets_dict[slug] = \
+                namedtuple('Row', snippet.keys())(**snippet)
+
+        return code_snippets_dict.values()
 
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):

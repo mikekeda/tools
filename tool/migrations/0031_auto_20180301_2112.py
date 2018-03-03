@@ -13,7 +13,7 @@ class Migration(migrations.Migration):
         labels = ('Apache', 'Bash', 'CoffeeScript', 'C++', 'C#', 'CSS', 'Diff',
                   'HTTP', 'Ini', 'Java', 'JavaScript', 'JSON', 'Makefile',
                   'Markdown', 'Nginx', 'Objective-C', 'Perl', 'PHP', 'Python',
-                  'Ruby', 'Shell Session', 'SQL', 'HTML, XML')
+                  'Ruby', 'Shell Session', 'SQL', 'HTML', 'XML')
         for title in labels:
             label = Label(title=title, category='programing')
             label.save()
