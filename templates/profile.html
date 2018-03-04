@@ -51,7 +51,7 @@
                     <div class="row">
                         <div class="col-md-12 mt-3">
                             <div class="form-group row">
-                                <div class="col-md-4 float-left"><label>{% trans "First name" %}</label></div>
+                                <div class="col-md-4 float-left"><label for="first_name">{% trans "First name" %}</label></div>
                                 <div class="col-md-8 float-right">
                                     {% if is_current_user %}
                                         <a href="#" id="first_name" class="editable" data-type="text" data-pk="first_name" data-url="{% url 'user' profile_user.username %}" data-placeholder="{% trans 'Enter first name' %}" data-params="{csrfmiddlewaretoken:'{{csrf_token}}'}">{{ profile_user.first_name }}</a>
@@ -61,7 +61,7 @@
                                 </div>
                             </div>
                             <div class="form-group row">
-                                <div class="col-md-4 float-left"><label>{% trans "Last name" %}</label></div>
+                                <div class="col-md-4 float-left"><label for="last_name">{% trans "Last name" %}</label></div>
                                 <div class="col-md-8 float-right">
                                     {% if is_current_user %}
                                         <a href="#" id="last_name" class="editable" data-type="text" data-pk="last_name" data-url="{% url 'user' profile_user.username %}" data-placeholder="{% trans 'Enter last name' %}" data-params="{csrfmiddlewaretoken:'{{csrf_token}}'}">{{ profile_user.last_name }}</a>
@@ -71,7 +71,7 @@
                                 </div>
                             </div>
                             <div class="form-group row">
-                                <div class="col-md-4 float-left"><label>{% trans "Email" %}</label></div>
+                                <div class="col-md-4 float-left"><label for="email">{% trans "Email" %}</label></div>
                                 <div class="col-md-8 float-right">
                                     {% if is_current_user %}
                                         <a href="#" id="email" class="editable" data-type="email" data-pk="email" data-url="{% url 'user' profile_user.username %}" data-placeholder="{% trans 'Enter email' %}" data-params="{csrfmiddlewaretoken:'{{csrf_token}}'}">{{ profile_user.email }}</a>
@@ -81,7 +81,7 @@
                                 </div>
                             </div>
                             <div class="form-group row">
-                                <div class="col-md-4 float-left"><label>{% trans "Timezone" %}</label></div>
+                                <div class="col-md-4 float-left"><label for="timezone">{% trans "Timezone" %}</label></div>
                                 <div class="col-md-8 float-right">
                                     {% if is_current_user %}
                                         <a href="#" id="timezone" class="editable" data-type="select" data-value="{{ profile.timezone }}" data-source="{{ timezones }}" data-pk="timezone" data-url="{% url 'user' profile_user.username %}" data-placeholder="{% trans 'Enter email' %}" data-params="{csrfmiddlewaretoken:'{{csrf_token}}'}">{{ profile.timezone }}</a>
@@ -114,7 +114,7 @@
                     <form action="{% url 'user' profile_user.username %}" method="post" enctype="multipart/form-data" id="avatar-upload">
                         {% csrf_token %}
                         {% for field in form %}
-                            <label class="custom-file text-left">
+                            <label class="custom-file text-left" for="{{ field.auto_id }}">
                                 {{ field|add_class:"custom-file-input" }}
                                 <span class="custom-file-control"></span>
                             </label>

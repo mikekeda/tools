@@ -68,6 +68,7 @@ urlpatterns = [
     path('user/<str:username>/card-order', card_order, name='card_order'),
     path('user/<str:username>/task-order', task_order, name='task_order'),
     path('login', log_in, name='login'),
+    path('ajax/login', log_in, name='ajax_login'),
     path('logout', log_out, name='logout'),
 
     path('oauth/', include('social_django.urls', namespace='social')),

@@ -32,7 +32,7 @@
             <tbody>
                 {% for code in codes %}
                     <tr>
-                        <td><a href="{% url 'code_slug' code.slug %}">{{ code.title }}</a></td>
+                        <td><a href="{% url 'code_slug' code.slug %}" class="ajax-link">{{ code.title }}</a></td>
                         <td>{{ code.labels__title|join:", " }}</td>
                     </tr>
                 {% endfor %}
@@ -46,7 +46,7 @@
         {% csrf_token %}
         {% for field in form %}
             <div class="form-group">
-                <label class="col-sm-12">{{ field.label_tag }}</label>
+                <label class="col-sm-12" for="{{ field.auto_id }}">{{ field.label_tag }}</label>
                 <div class="col-sm-12">
                     {% if field.name == 'text' %}
                         {{ field|add_class:"ckeditor" }}
