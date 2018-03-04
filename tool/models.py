@@ -360,3 +360,27 @@ class Code(models.Model):
 
     def __str__(self):
         return '{}: {}'.format(get_username_by_uid(self), self.title)
+
+
+class Link(models.Model):
+    """ Link model. """
+    link = models.CharField(max_length=60)
+    color = models.PositiveSmallIntegerField(
+        default=1,
+        validators=[
+            MinValueValidator(1),
+            MaxValueValidator(len(default_palette_colors))
+        ]
+    )
+    user = models.ForeignKey(
+        User,
+        related_name='links',
+        on_delete=models.CASCADE
+    )
+    created_date = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = (('link', 'user'),)
+
+    def __str__(self):
+        return "{}: {}".format(get_username_by_uid(self), self.link)

@@ -8,7 +8,7 @@
 
 {% block content %}
     <div class="bg-white mt-5">
-        <div>
+        <div class="profile">
             <ul class="nav nav-tabs">
                 <li role="presentation" class="active">
                     <a class="ajax-link" data-annyang="user profile" href="{% url 'user' profile_user.username %}">
@@ -43,6 +43,11 @@
                 <li role="presentation">
                     <a class="ajax-link" data-annyang="user snippets" href="{% url 'user_code' profile_user.username %}">
                         {% trans "Code snippets" %}
+                    </a>
+                </li>
+                <li role="presentation">
+                    <a class="ajax-link" data-annyang="user links" href="{% url 'user_links' profile_user.username %}">
+                        {% trans "Links" %}
                     </a>
                 </li>
             </ul>

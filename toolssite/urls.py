@@ -11,7 +11,7 @@ from django.utils.translation import ugettext_lazy as _
 from tool.views import (tool, CalendarView, DictionaryView, FlashcardsView,
                         users_list, ProfileView, user_events, card_order,
                         task_order, FlightsView, TasksView, CanvasView,
-                        CanvasesView, CodeView, log_in, log_out)
+                        CanvasesView, CodeView, LinkView, log_in, log_out)
 from tool.sitemaps import StaticViewSitemap
 
 sitemaps = {
@@ -60,6 +60,10 @@ urlpatterns = [
     path('ajax/user/<str:username>/code', CodeView.as_view(), name='ajax_user_code'),
     path('code/<str:slug>', CodeView.as_view(), name='code_slug'),
     path('ajax/code/<str:slug>', CodeView.as_view(), name='ajax_code_slug'),
+    path('links', LinkView.as_view(), name='links'),
+    path('ajax/links', LinkView.as_view(), name='ajax_links'),
+    path('user/<str:username>/links', LinkView.as_view(), name='user_links'),
+    path('ajax/user/<str:username>/links', LinkView.as_view(), name='ajax_user_links'),
     path('users', users_list, name='users'),
     path('ajax/users', users_list, name='ajax_users'),
     path('user/<str:username>', ProfileView.as_view(), name='user'),

@@ -1,0 +1,95 @@
+{% extends parent_template %}
+{% load i18n %}
+{% load widget_tweaks %}
+{% load static from staticfiles %}
+
+{% block title %}{% trans "Read it later" %}{% endblock %}
+{% block description %}{% trans "Save links to read it later" %}{% endblock description %}
+
+{% block content %}
+    <div class="container-fluid no-padding row cards-filters">
+      <div class="col-md-4">
+        <!-- Button trigger modal -->
+        <button type="button" class="add-btn btn btn-default btn-md" data-toggle="modal" data-target="#add-card" data-annyang="add link">
+          <span class="glyphicon glyphicon-plus"></span> {% trans "Add a link" %}
+        </button>
+      </div>
+      <div class="col-md-4 col-sm-6">
+        <ul class="difficulty-filters">
+            {% for color in palette %}
+                <li><a href="#" class="difficulty-filter color-filter active" style="background-color: #{{ palette|get_item:color }};" data-difficulty="{{ color }}"></a></li>
+            {% endfor %}
+        </ul>
+      </div>
+      <div class="col-md-4 col-sm-6">
+        <div class="input-group pull-right">
+          <input id="card-search" type="text" class="form-control" placeholder="Search">
+        </div>
+      </div>
+    </div>
+
+    <h2 class="mt-2">{% trans "Read it later" %}</h2>
+    <ul id="links" class="cards row sortable">
+      {% for link in links %}
+        <li class="link-container" data-difficulty="{{ link.color }}" data-title="{{ link.link }}" data-id="{{ link.id }}" data-json="{{ link|serialize }}">
+          <a target="_blank" href="{{ link.link }}" style="color: #{{ palette|get_item:link.color }};">{{ link.link }}</a>
+        </li>
+        {% endfor %}
+    </ul>
+
+    <script type="text/javascript" defer>
+      if("undefined" == typeof jQuery) {
+        window.onload = function() {
+          init_app();
+        };
+      }
+      else {
+        init_app();
+      }
+
+      function init_app() {
+        var $cards;
+        var $cards_container = $('#links');
+        var $this;
+        var $difficulty_filters = $('.difficulty-filter');
+        var $card_search = $('#card-search');
+        var substring;
+        var order;
+
+        // Dynamically set page title and description.
+        document.title = '{% trans "Read it later" %}';
+        document.head.querySelector('meta[name=description]').content = '{% trans "Save links to read it later" %}';
+
+        $('select#id_color').select2({
+          minimumResultsForSearch: -1,
+          escapeMarkup: function(markup) {
+            return '<div style="padding: 0 5px 0 10px; line-height: 26px; color: #' + markup + '; background-color: #' + markup + ';">' + markup + '</div>';
+          }
+        });
+        $('select#id_resolution').select2({width: '150px'});
+
+        $difficulty_filters.click(function() {
+          $this = $(this);
+          $this.toggleClass('active');
+          $cards_container.find('.link-container[data-difficulty=' + $this.data('difficulty') + ']').toggle($this.hasClass('active')).toggleClass('difficulty-hidden');
+
+          return false;
+        });
+
+        $card_search.on('input', function(e) {
+          substring = this.value;
+
+          $cards_container.find('.link-container:not(.difficulty-hidden)').each(function(index) {
+            $this = $(this);
+            if ($this.data('title') == substring || $this.data('title').toString().indexOf(substring) !== -1) {
+              $this.show();
+            }
+            else {
+              $this.hide();
+            }
+          });
+        });
+
+      }
+    </script>
+{% endblock %}

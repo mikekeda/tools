@@ -25,7 +25,7 @@ from django.utils.translation import ugettext
 from django.utils import timezone
 from django.views import View
 
-from .models import (TIMEZONES, Card, Word, Profile, Task, Canvas, Code,
+from .models import (TIMEZONES, Card, Word, Profile, Task, Canvas, Code, Link,
                      default_palette_colors)
 from .forms import (WordForm, EventForm, CardForm, AvatarForm, FlightsForm,
                     TaskForm, CodeForm)
@@ -733,6 +733,24 @@ class CodeView(View, GetUserMixin):
         code_snippet.delete()
 
         return JsonResponse({'redirect': reverse('code'), 'success': True})
+
+
+class LinkView(View, GetUserMixin):
+    def get(self, request, username=None):
+        """ Get list of links. """
+        user = self.get_user(request, username)
+        links = Link.objects.filter(user=user).order_by('created_date')
+
+        profile, _ = Profile.objects.get_or_create(user=user)
+        palette = {
+            str(i): getattr(profile, 'palette_color_' + str(i), c)
+            for i, c in enumerate(default_palette_colors, 1)
+        }
+
+        return render(request, "links.html", dict(
+            links=links,
+            palette=palette,
+        ))
 
 
 @login_required

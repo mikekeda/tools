@@ -79,3 +79,12 @@ class ToolAdminTest(TestCase):
         resp = self.client.get('/admin/tool/label/add/')
         self.assertEqual(resp.status_code, 200)
         self.assertTemplateUsed(resp, 'admin/change_form.html')
+
+    def test_admin_link(self):
+        self.client.login(username='testadmin', password='12345')
+        resp = self.client.get('/admin/tool/link/')
+        self.assertEqual(resp.status_code, 200)
+
+        resp = self.client.get('/admin/tool/link/add/')
+        self.assertEqual(resp.status_code, 200)
+        self.assertTemplateUsed(resp, 'admin/change_form.html')

@@ -11,7 +11,7 @@ from schedule.models import Event, Calendar
 from schedule.admin import EventAdmin
 from import_export.admin import ImportExportModelAdmin
 
-from .models import Profile, Card, Word, Task, Canvas, Code, Label
+from .models import Profile, Card, Word, Task, Canvas, Code, Label, Link
 
 User = get_user_model()
 ProfileForm = select2_modelform(Profile)
@@ -129,6 +129,16 @@ class LabelAdmin(ImportExportModelAdmin):
         return db_field.formfield(**kwargs)
 
 
+class LinkAdmin(BaseModelAdmin):
+    search_fields = ('link',)
+    list_filter = ('user__username',)
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == 'user':
+            kwargs['initial'] = request.user.id
+        return db_field.formfield(**kwargs)
+
+
 admin.site.register(Card, CardAdmin)
 admin.site.register(Word, WordAdmin)
 admin.site.unregister(Event)
@@ -139,3 +149,4 @@ admin.site.register(Code, CodeAdmin)
 admin.site.unregister(User)
 admin.site.register(User, AuthUserAdmin)
 admin.site.register(Label, LabelAdmin)
+admin.site.register(Link, LinkAdmin)
