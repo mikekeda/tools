@@ -10,9 +10,9 @@
     <div class="container-fluid no-padding row cards-filters">
       <div class="col-md-4">
         <!-- Button trigger modal -->
-        <button type="button" class="add-btn btn btn-default btn-md" data-toggle="modal" data-target="#add-card" data-annyang="add link">
-          <span class="glyphicon glyphicon-plus"></span> {% trans "Add a link" %}
-        </button>
+        <!--<button type="button" class="add-btn btn btn-default btn-md" data-toggle="modal" data-target="#add-card" data-annyang="add link">-->
+          <!--<span class="glyphicon glyphicon-plus"></span> {% trans "Add a link" %}-->
+        <!--</button>-->
       </div>
       <div class="col-md-4 col-sm-6">
         <ul class="difficulty-filters">
@@ -28,7 +28,6 @@
       </div>
     </div>
 
-    <h2 class="mt-2">{% trans "Read it later" %}</h2>
     <ul id="links" class="cards row sortable">
       {% for link in links %}
         <li class="link-container" data-difficulty="{{ link.color }}" data-title="{{ link.link }}" data-id="{{ link.id }}" data-json="{{ link|serialize }}">
