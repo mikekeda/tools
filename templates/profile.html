@@ -9,6 +9,7 @@
 {% block content %}
     <div class="bg-white mt-5">
         <div class="profile">
+            {% if is_current_user %}
             <ul class="nav nav-tabs">
                 <li role="presentation" class="active">
                     <a class="ajax-link" data-annyang="user profile" href="{% url 'user' profile_user.username %}">
@@ -51,6 +52,7 @@
                     </a>
                 </li>
             </ul>
+            {% endif %}
             <div class="col-lg-8 pull-right">
                 <div id="profile">
                     <div class="row">

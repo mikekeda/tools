@@ -304,7 +304,7 @@ class ProfileView(LoginRequiredMixin, View, GetUserMixin):
                 getattr(profile, 'palette_color_' + str(i), c)
                 for i, c in enumerate(default_palette_colors, 1)
             ),
-            is_current_user=user == request.user,
+            is_current_user=True,
             form=form,
             timezones=timezones
         ))
@@ -339,7 +339,7 @@ class ProfileView(LoginRequiredMixin, View, GetUserMixin):
                 if field.startswith('palette_color_'):
                     current_obj = profile
                 else:
-                    current_obj = request.user
+                    current_obj = user
 
                 setattr(current_obj, field, value)
                 try:
