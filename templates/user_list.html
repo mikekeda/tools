@@ -11,7 +11,31 @@
     {% for user in users %}
       <li data-username="{{ user.username }}" class="list-group-item justify-content-between">
         <a href="{% url 'user' user.username %}" data-annyang="{{ user.username|lower }}" class="ajax-link name text-muted">
-          <span class="glyphicon glyphicon-user"></span> {{ user.username }}
+          <span class="glyphicon glyphicon-user"></span>
+          {{ user.username }}
+          <div>
+            <a class="ajax-link" href="{% url 'user_calendar' user.username %}">
+              <small>{% trans "Calendar" %}</small>
+            </a>
+            <a class="ajax-link" href="{% url 'user_dictionary' user.username %}">
+              <small>{% trans "Dictionary" %}</small>
+            </a>
+            <a class="ajax-link" href="{% url 'user_flashcards' user.username %}">
+              <small>{% trans "Flashcards" %}</small>
+            </a>
+            <a class="ajax-link" href="{% url 'user_tasks' user.username %}">
+              <small>{% trans "Tasks" %}</small>
+            </a>
+            <a class="ajax-link" href="{% url 'user_tool' user.username 'canvas' %}">
+              <small>{% trans "Canvases" %}</small>
+            </a>
+            <a class="ajax-link" href="{% url 'user_code' user.username %}">
+              <small>{% trans "Code snippets" %}</small>
+            </a>
+            <a class="ajax-link" href="{% url 'user_links' user.username %}">
+              <small>{% trans "Links" %}</small>
+            </a>
+          </div>
         </a>
       </li>
     {% endfor %}
