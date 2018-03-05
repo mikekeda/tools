@@ -26,7 +26,7 @@ from django.utils import timezone
 from django.views import View
 
 from .models import (TIMEZONES, Card, Word, Profile, Task, Canvas, Code, Link,
-                     default_palette_colors)
+                     Label, default_palette_colors)
 from .forms import (WordForm, EventForm, CardForm, AvatarForm, FlightsForm,
                     TaskForm, CodeForm, LinkForm)
 from .tasks import get_occurrences
@@ -699,6 +699,18 @@ class CodeView(View, GetUserMixin):
                     code.save()
 
                 form.save_m2m()
+
+                # Save used programming languages as labels.
+                langs = set(re.findall('<code class="language-(.*?)">',
+                                       code.text, re.DOTALL))
+                labels = Label.objects.filter(category='programing')
+                filtered_labels = []
+                for label in labels:
+                    # Need to fit 'C++', 'C#', ' Objective-C'.
+                    if label.title.lower().replace('-', '').replace('#', 's')\
+                            .replace('+', 'p', 2) in langs:
+                        filtered_labels.append(label)
+                code.labels.add(*filtered_labels)
             except IntegrityError:
                 form.add_error(
                     'title',
@@ -711,7 +723,7 @@ class CodeView(View, GetUserMixin):
 
         return render(request, 'code.html', {
             'form': form,
-            'codes': Code.get_code_snippets_with_labels(user),
+            'codes': [] if slug else Code.get_code_snippets_with_labels(user),
             'save_btn': True,  # only privileged user will have access to post
             'delete_btn': bool(slug),
             'active_page': 'code'

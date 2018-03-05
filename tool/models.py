@@ -311,7 +311,11 @@ class Code(models.Model):
         on_delete=models.CASCADE
     )
     slug = models.CharField(max_length=10, unique=True)
-    labels = models.ManyToManyField(Label, blank=True)
+    labels = models.ManyToManyField(
+        Label,
+        blank=True,
+        help_text="Used programming languages will be automatically saved" +
+        " as labels.")
     created = models.DateTimeField(auto_now_add=True)
     changed = models.DateTimeField(auto_now=True)
 

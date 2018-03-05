@@ -53,6 +53,7 @@
                     {% else %}
                         {{ field }}
                     {% endif %}
+                    <small class="text-muted">{{ field.help_text }}</small>
                 </div>
                 {% if field.errors %}
                     <div class="col-sm-12" role="alert">
