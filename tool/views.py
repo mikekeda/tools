@@ -726,12 +726,7 @@ class LinkView(View, GetUserMixin):
         """ Get list of links. """
         user = self.get_user(request, username)
         links = Link.objects.filter(user=user).order_by('-id')
-
-        profile, _ = Profile.objects.get_or_create(user=user)
-        palette = {
-            str(i): getattr(profile, 'palette_color_' + str(i), c)
-            for i, c in enumerate(default_palette_colors, 1)
-        }
+        palette = set((link.color for link in links))
 
         return render(request, "links.html", dict(
             links=links,
@@ -752,11 +747,7 @@ class LinkView(View, GetUserMixin):
             return redirect(request.path)
 
         links = Link.objects.filter(user=user).order_by('-id')
-        profile, _ = Profile.objects.get_or_create(user=user)
-        palette = {
-            str(i): getattr(profile, 'palette_color_' + str(i), c)
-            for i, c in enumerate(default_palette_colors, 1)
-        }
+        palette = set((link.color for link in links))
 
         return render(request, "dictionary.html", dict(
             links=links,

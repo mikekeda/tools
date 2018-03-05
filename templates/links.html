@@ -19,7 +19,7 @@
       <div class="col-md-4 col-sm-6">
         <ul class="difficulty-filters">
             {% for color in palette %}
-                <li><a href="#" class="difficulty-filter color-filter active" style="background-color: #{{ palette|get_item:color }};" data-difficulty="{{ color }}"></a></li>
+                <li><a href="#" class="difficulty-filter color-filter active" style="background-color: #{{ color }};" data-difficulty="{{ color }}"></a></li>
             {% endfor %}
         </ul>
       </div>
