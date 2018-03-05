@@ -131,6 +131,10 @@ ul {
   padding-bottom: 100px;
 }
 
+#cards > .done .card-container + .card-container {
+  margin-top: -150px;
+}
+
 .card-container {
   perspective: 800px;
   position: relative;

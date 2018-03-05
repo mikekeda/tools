@@ -74,7 +74,7 @@
     </div>
     <div id="cards" class="row">
         {% for key, tasks in tasks_dict %}
-            <div class="col-sm-4">
+            <div class="col-sm-4 {{ key }}">
                 <h4 class="text-center">{{ key }}</h4>
                 <div class="col-md-12 sortable no-padding" data-status="{{ key }}">
                 {% for task in tasks %}
