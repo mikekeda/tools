@@ -63,6 +63,11 @@ def tool(request, slug, username=None):
         raise Http404
 
 
+def about_page(request):
+    """ About page. """
+    return render(request, 'about.html', {'active_page': 'about'})
+
+
 class FlashcardsView(LoginRequiredMixin, View, GetUserMixin):
     def get(self, request, username=None):
         """ Get form. """

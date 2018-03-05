@@ -45,6 +45,9 @@
                   <a href="{% url 'users' %}" data-annyang="users" class="ajax-link">{% trans "Users" %}</a>
                 </li>
               {% endif %}
+              <li class="nav-item {% if active_page == 'about' %}active{% endif %}">
+                <a href="{% url 'about_page' %}" data-annyang="about" class="ajax-link">{% trans "About" %}</a>
+              </li>
             </ul>
             <ul class="nav navbar-nav navbar-right">
               {% if user.is_authenticated %}

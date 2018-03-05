@@ -1,0 +1,14 @@
+{% extends parent_template %}
+{% load i18n %}
+
+{% block title %}{% trans "About us" %}{% endblock title %}
+{% block description %}{% trans 'Site with a collection of useful tools' %}{% endblock description %}
+
+{% block content %}
+    <div class="mt-5">
+        <h1><wbr>{% trans "About us" %}</h1>
+        <p class="mt-3">{% trans "Site with a collection of useful tools." %}</p>
+        <p>{% trans "Link to the repository:" %} <a href="https://bitbucket.org/voron-raven/tools-site">https://bitbucket.org/voron-raven/tools-site</a></p>
+        <p>{% trans "Site owner:" %} <a href="https://www.linkedin.com/in/mykhailokeda/">Mykhailo Keda</a></p>
+    </div>
+{% endblock content %}

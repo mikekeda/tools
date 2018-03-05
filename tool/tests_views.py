@@ -34,6 +34,11 @@ class ToolViewTest(TestCase):
         self.assertEqual(resp.status_code, 200)
         self.assertTemplateUsed(resp, 'text.html')
 
+    def test_views_about(self):
+        resp = self.client.get(reverse('about_page'))
+        self.assertEqual(resp.status_code, 200)
+        self.assertTemplateUsed(resp, 'about.html')
+
     def test_views_canvas_tool(self):
         resp = self.client.get(reverse('tool', kwargs={'slug': 'canvas'}))
         self.assertEqual(resp.status_code, 200)
