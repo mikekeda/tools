@@ -18,11 +18,20 @@ ProfileForm = select2_modelform(Profile)
 
 
 class BaseModelAdmin(ImportExportModelAdmin):
-    def get_changelist_instance(self, request):
-        changelist = super().get_changelist_instance(request)
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        """ Prepopulate current user. """
+        if db_field.name == 'user':
+            kwargs['initial'] = request.user.id
+        return db_field.formfield(**kwargs)
 
-        # Get all related user usernames and send to the cache,
-        # we will use it later in __str__ method to improve performance.
+    def get_changelist_instance(self, request):
+        """
+        Get all related user usernames and send to the cache,
+        we will use it later in __str__ method to improve performance.
+        :param request: request object
+        :return: `ChangeList` instance based on `request`
+        """
+        changelist = super().get_changelist_instance(request)
         uids = {instance.user_id for instance in changelist.result_list}
         elements = User.objects.filter(pk__in=uids)\
             .values_list('pk', 'username')
@@ -44,13 +53,8 @@ class AuthUserAdmin(UserAdmin):
     inlines = [ProfileInline]
 
 
-class CardAdmin(ImportExportModelAdmin):
+class CardAdmin(BaseModelAdmin):
     list_filter = ('user__username',)
-
-    def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        if db_field.name == 'user':
-            kwargs['initial'] = request.user.id
-        return db_field.formfield(**kwargs)
 
 
 class WordAdmin(CardAdmin):
@@ -113,30 +117,15 @@ class CodeAdmin(BaseModelAdmin):
         )
         css = {'all': ('css/admin-fix.css',)}
 
-    def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        if db_field.name == 'user':
-            kwargs['initial'] = request.user.id
-        return db_field.formfield(**kwargs)
 
-
-class LabelAdmin(ImportExportModelAdmin):
+class LabelAdmin(BaseModelAdmin):
     search_fields = ('title',)
     list_filter = ('user__username',)
-
-    def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        if db_field.name == 'user':
-            kwargs['initial'] = request.user.id
-        return db_field.formfield(**kwargs)
 
 
 class LinkAdmin(BaseModelAdmin):
     search_fields = ('link',)
     list_filter = ('user__username',)
-
-    def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        if db_field.name == 'user':
-            kwargs['initial'] = request.user.id
-        return db_field.formfield(**kwargs)
 
 
 admin.site.register(Card, CardAdmin)
