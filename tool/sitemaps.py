@@ -9,7 +9,9 @@ class StaticViewSitemap(sitemaps.Sitemap):
     changefreq = 'weekly'
 
     def items(self):
-        return [tool['slug'] for tool in categories()['tools']]
+        return [tool['slug'] for tool in categories()['tools']] + ['about']
 
     def location(self, obj):
+        if obj == 'about':
+            return reverse('about_page')
         return reverse('tool', kwargs={'slug': obj})
