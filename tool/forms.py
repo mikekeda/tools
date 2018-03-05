@@ -4,7 +4,7 @@ from django import forms
 from schedule.models import Event
 from easy_select2 import apply_select2, select2_modelform
 
-from .models import Profile, Word, Card, Task, Code
+from .models import Profile, Word, Card, Task, Code, Link
 
 task_form = select2_modelform(Task)
 
@@ -59,3 +59,9 @@ class CodeForm(forms.ModelForm):
     class Meta:
         model = Code
         exclude = ('user', 'slug')
+
+
+class LinkForm(forms.ModelForm):
+    class Meta:
+        model = Link
+        exclude = ('user',)

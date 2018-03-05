@@ -365,13 +365,7 @@ class Code(models.Model):
 class Link(models.Model):
     """ Link model. """
     link = models.CharField(max_length=60)
-    color = models.PositiveSmallIntegerField(
-        default=1,
-        validators=[
-            MinValueValidator(1),
-            MaxValueValidator(len(default_palette_colors))
-        ]
-    )
+    color = ColorField(max_length=6, default='000000')
     user = models.ForeignKey(
         User,
         related_name='links',

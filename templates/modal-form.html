@@ -1,0 +1,51 @@
+{% load i18n %}
+{% load widget_tweaks %}
+
+<!-- Modal -->
+<div class="modal{% if form.errors %} error{% endif %}" id="add-item" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="add-label">{% trans "Add item" %}</h4>
+      </div>
+      <div class="modal-body">
+        <form method="post" class="add-form clearfix form-horizontal">
+          {% csrf_token %}
+          <div class="form-group hide">
+             <label class="control-label col-sm-2" for="id_id">id</label>
+             <div class="col-sm-10">
+                <input type="number" name="id" id="id_id">
+             </div>
+          </div>
+            {% for field in form %}
+              <div class="form-group">
+                <label class="control-label col-sm-2" for="{{ field.auto_id }}">{{ field.label_tag }}</label>
+                <div class="col-sm-10">
+                  {% if field.name == 'start' or field.name == 'end'  or field.name == 'end_recurring_period' %}
+                    {{ field|add_class:"datetimepicker" }}
+                  {% elif field.name == 'color_event' or field.name == 'color' %}
+                    {{ field|add_class:"jscolor" }}
+                  {% elif field.name == 'rule' %}
+                    {{ field|add_class:"form-control" }}
+                  {% else %}
+                    {{ field }}
+                  {% endif %}
+                </div>
+                  {% if field.errors %}
+                    <div class="alert alert-warning col-sm-10 pull-right" role="alert">
+                      {{ field.errors }}
+                    </div>
+                   {% endif %}
+                </div>
+            {% endfor %}
+            <div class="modal-footer">
+              <button type="submit" class="btn btn-danger btn-md delete" style="display: none;">{% trans "Delete" %}</button>
+              <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Close" %}</button>
+              <button type="submit" class="btn btn-primary btn-md pull-right">{% trans "Save" %}</button>
+            </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

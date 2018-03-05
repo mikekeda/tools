@@ -28,7 +28,7 @@ from django.views import View
 from .models import (TIMEZONES, Card, Word, Profile, Task, Canvas, Code, Link,
                      default_palette_colors)
 from .forms import (WordForm, EventForm, CardForm, AvatarForm, FlightsForm,
-                    TaskForm, CodeForm)
+                    TaskForm, CodeForm, LinkForm)
 from .tasks import get_occurrences
 
 User = get_user_model()
@@ -224,18 +224,10 @@ class CalendarView(LoginRequiredMixin, View, GetUserMixin):
     def get(self, request, username=None):
         """ Get form. """
         user = self.get_user(request, username)
-        if user == request.user:
-            form_action = reverse('calendar')
-        else:
-            form_action = reverse('user_calendar', args=[user.username])
-
-        form = EventForm()
 
         return render(request, "calendar.html", dict(
             profile_user=user,
-            form=form,
-            form_action=form_action,
-            active_page=form_action.lstrip('/')
+            form=EventForm()
         ))
 
     def post(self, request, username=None):
@@ -246,10 +238,6 @@ class CalendarView(LoginRequiredMixin, View, GetUserMixin):
             slug=user.username,
             defaults={'name': '{} Calendar'.format(user.username)},
         )
-        if user == request.user:
-            form_action = reverse('calendar')
-        else:
-            form_action = reverse('user_calendar', args=[user.username])
 
         post_object = request.POST.copy()
         post_id = post_object.pop('id', [None])[0]
@@ -276,13 +264,11 @@ class CalendarView(LoginRequiredMixin, View, GetUserMixin):
             event.color_event = '#' + event.color_event
             event.save()
 
-            return redirect(form_action)
+            return redirect(request.path)
 
         return render(request, "calendar.html", dict(
             profile_user=user,
-            form=form,
-            form_action=form_action,
-            active_page=form_action.lstrip('/')
+            form=form
         ))
 
     def delete(self, request, pk, username=None):
@@ -739,7 +725,7 @@ class LinkView(View, GetUserMixin):
     def get(self, request, username=None):
         """ Get list of links. """
         user = self.get_user(request, username)
-        links = Link.objects.filter(user=user).order_by('created_date')
+        links = Link.objects.filter(user=user).order_by('-id')
 
         profile, _ = Profile.objects.get_or_create(user=user)
         palette = {
@@ -750,6 +736,32 @@ class LinkView(View, GetUserMixin):
         return render(request, "links.html", dict(
             links=links,
             palette=palette,
+            form=LinkForm()
+        ))
+
+    def post(self, request, username=None):
+        """ Form submit. """
+        user = self.get_user(request, username)
+
+        form = LinkForm(data=request.POST)
+        if form.is_valid():
+            link = form.save(commit=False)
+            link.user = user
+            link.save()
+
+            return redirect(request.path)
+
+        links = Link.objects.filter(user=user).order_by('-id')
+        profile, _ = Profile.objects.get_or_create(user=user)
+        palette = {
+            str(i): getattr(profile, 'palette_color_' + str(i), c)
+            for i, c in enumerate(default_palette_colors, 1)
+        }
+
+        return render(request, "dictionary.html", dict(
+            links=links,
+            palette=palette,
+            form=form
         ))
 
 
