@@ -1286,3 +1286,17 @@ class ToolViewTest(TestCase):
             str(resp.content, encoding='utf8'),
             '"You can\'t change this field"'
         )
+
+        # Admin can edit any profile.
+        self.client.login(username='testadmin', password='12345')
+        resp = self.client.post(
+            reverse('user', kwargs={'username': 'testuser'}),
+            {'name': 'first_name', 'value': 'test name2'}
+        )
+        self.assertEqual(resp.status_code, 200)
+        self.assertJSONEqual(
+            str(resp.content, encoding='utf8'),
+            {'success': True}
+        )
+        user = User.objects.get(username='testuser')
+        self.assertEqual(user.first_name, 'test name2')
