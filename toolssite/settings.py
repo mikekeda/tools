@@ -4,6 +4,7 @@ Django settings for tools site project.
 
 import os
 import requests
+from google.auth._default import _load_credentials_from_file
 from django.utils.translation import ugettext_lazy as _
 
 SITE_ENV_PREFIX = 'TOOLS'
@@ -218,7 +219,10 @@ LOGIN_URL = '/login'
 
 STATIC_ROOT = '/home/voron/sites/cdn/tools'
 
-STATIC_URL = '/static/' if DEBUG else 'https://cdn.mkeda.me/tools/'
+STATIC_URL = '/static/'
+if not DEBUG:
+    # Use Google bucket for production.
+    STATIC_URL = 'https://storage.cloud.google.com/cdn.mkeda.me/tools/'
 
 STATICFILES_DIRS = (
     ('', os.path.join(BASE_DIR, 'static')),
@@ -240,3 +244,11 @@ SILKY_AUTHORISATION = True  # User must have permissions
 # SILKY_PYTHON_PROFILER = True
 # SILKY_PYTHON_PROFILER_BINARY = True
 SILKY_INTERCEPT_PERCENT = 100
+
+if not DEBUG:
+    # Use Google bucket for production.
+    DEFAULT_FILE_STORAGE = 'tool.storages.ToolStorage'
+    STATICFILES_STORAGE = 'tool.storages.ToolStorage'
+    GS_BUCKET_NAME = 'cdn.mkeda.me'
+    GS_CREDENTIALS, GS_PROJECT_ID = _load_credentials_from_file(
+        get_env_var('GOOGLE_CREDENTIALS'))
