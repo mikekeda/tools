@@ -1129,7 +1129,8 @@ class ToolViewTest(TestCase):
 
     def test_views_code_snippets_delete(self):
         test_user = User.objects.get(username='testuser')
-        test_code_snippet = Code(title='test1', text='code block 1', user=test_user)
+        test_code_snippet = Code(title='test1', text='code block 1',
+                                 user=test_user)
         test_code_snippet.save()
 
         # Delete code snippet.
