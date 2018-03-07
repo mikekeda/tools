@@ -35,7 +35,7 @@
                         <td><a href="{% url 'code_slug' code.slug %}" class="ajax-link">{{ code.title }}</a></td>
                         <td>
                             {% for label in code.labels__title %}
-                                <a class="ajax-link" href="?label={{ label }}">{{ label }}</a>{% if not forloop.last %},{% endif %}
+                                <a class="ajax-link" href="{% url 'code' %}?label={{ label }}">{{ label }}</a>{% if not forloop.last %},{% endif %}
                             {% endfor %}
                         </td>
                     </tr>
