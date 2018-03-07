@@ -4,19 +4,13 @@ from collections import namedtuple
 from cryptography.fernet import Fernet
 
 from django.conf import settings
-from django.contrib.auth.models import User
-from django.test import TestCase
 
-from .models import number_to_chars, get_username_by_uid, Profile, Code, Label
+from tool.models import (number_to_chars, get_username_by_uid, Profile, Code,
+                         Label)
+from tool.tests import BaseTestCase
 
 
-class ToolModelTest(TestCase):
-    def setUp(self):
-        # Create usual user.
-        test_user = User.objects.create_user(username='testuser',
-                                             password='12345')
-        test_user.save()
-
+class ToolModelTest(BaseTestCase):
     def test_models_number_to_chars(self):
         result = number_to_chars(0)
         self.assertEqual(result, 'a')
@@ -38,8 +32,7 @@ class ToolModelTest(TestCase):
         self.assertEqual(username, 'dummy_user')
 
     def test_models_profile_email_password(self):
-        test_user = User.objects.get(username='testuser')
-        user_profile = Profile(user=test_user, email_password='testpass1')
+        user_profile = Profile(user=self.test_user, email_password='testpass1')
         user_profile.save()
 
         self.assertEqual(str(user_profile), 'testuser')
@@ -70,28 +63,27 @@ class ToolModelTest(TestCase):
         self.assertEqual(email_password, 'testpass2')
 
     def test_models_code(self):
-        test_user = User.objects.get(username='testuser')
-        Code(title='test1', text='code block 1', user=test_user).save()
+        Code(title='test1', text='code block 1', user=self.test_user).save()
 
-        test_code = Code.objects.get(title='test1', user=test_user)
+        test_code = Code.objects.get(title='test1', user=self.test_user)
         self.assertEqual(str(test_code), 'testuser: test1')
         self.assertEqual(test_code.text, 'code block 1')
         self.assertEqual(test_code.slug[3:], number_to_chars(test_code.pk))
 
         test_label1 = Label.objects.get(title='Python')
         test_label2 = Label.objects.get(title='HTML')
-        test_code = Code(title='test2', text='code block 2', user=test_user)
+        test_code = Code(title='test2', text='code block 2',
+                         user=self.test_user)
         test_code.save()
         test_code.labels.add(test_label1, test_label2)
         test_code.save()
 
-        codes = Code.get_code_snippets_with_labels(test_user)
+        codes = Code.get_code_snippets_with_labels(self.test_user)
         for code in codes:
             self.assertTrue(code.title in ('test1', 'test2'))
             self.assertTrue(code.labels__title in ([], ['Python', 'HTML']))
 
     def test_models_label(self):
-        test_user = User.objects.get(username='testuser')
-        test_label = Label(title='test1', user=test_user)
+        test_label = Label(title='test1', user=self.test_user)
         test_label.save()
         self.assertEqual(str(test_label), 'test1')

@@ -1,10 +1,9 @@
-from django.test import TestCase
+from tool.templatetags.tool_tags import get_item, serialize
+from tool.models import Task, Card
+from tool.tests import BaseTestCase
 
-from .templatetags.tool_tags import get_item, serialize
-from .models import Task, Card
 
-
-class ToolTemplatetagsTest(TestCase):
+class ToolTemplatetagsTest(BaseTestCase):
     def test_templatetags_get_item(self):
         # Test with dictionary.
         result = get_item({'dummy_key': 'dummy_value'}, 'dummy_key')

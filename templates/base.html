@@ -10,7 +10,7 @@
     <meta name="description" content="{% block description %}{% trans 'Useful tools: get exif data from photo, draw on a canvas, convert an image to base64, lowercase uppercase text.' %}{% endblock description %}"/>
 
     <!-- Bootstrap included -->
-    <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}?v=30"/>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}"/>
     <link rel="stylesheet" type="text/css" href="{% static 'easy_select2/vendor/select2/css/select2.min.css' %}"/>
 
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
@@ -149,7 +149,7 @@
       </footer>
     </div>
       <!-- Include js -->
-      <script type="text/javascript" src="{% static 'js/all.js' %}?v=30"></script>
+      <script type="text/javascript" src="{% static 'js/all.js' %}"></script>
       <script>
         {% if user.is_authenticated %}
           // Update user timezone if it's not set.

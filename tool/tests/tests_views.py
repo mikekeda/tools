@@ -3,31 +3,19 @@ from urllib.parse import urlencode
 import pytz
 
 from django.conf import settings
-from django.contrib.auth.models import User
-from django.test import TestCase
+from django.contrib.auth import get_user_model
 from django.urls import reverse
 from django.utils import timezone
 
 from schedule.models import Calendar, Event
 
-from .models import Profile, Card, Task, Canvas, Code, Word, Link
+from tool.models import Profile, Card, Task, Canvas, Code, Word, Link
+from tool.tests import BaseTestCase
+
+User = get_user_model()
 
 
-class ToolViewTest(TestCase):
-    def setUp(self):
-        # Create usual user.
-        test_user = User.objects.create_user(username='testuser',
-                                             password='12345')
-        test_user.save()
-
-        # Create admin user.
-        test_admin = User.objects.create_superuser(
-            username='testadmin',
-            email='myemail@test.com',
-            password='12345'
-        )
-        test_admin.save()
-
+class ToolViewTest(BaseTestCase):
     # Pages available for anonymous.
     def test_views_home(self):
         resp = self.client.get(reverse('main'))
@@ -136,8 +124,7 @@ class ToolViewTest(TestCase):
         )
         self.assertEqual(resp.status_code, 200)
 
-        user = User.objects.get(username='testuser')
-        test_canvas = Canvas.objects.get(user=user)
+        test_canvas = Canvas.objects.get(user=self.test_user)
         self.assertEqual(str(test_canvas), 'testuser: 1')
 
         resp = self.client.get(reverse('canvas',
@@ -205,7 +192,6 @@ class ToolViewTest(TestCase):
         )
 
         # Create an event.
-        test_user = User.objects.get(username='testuser')
         cal = Calendar.objects.create(name="testuser")
         start = timezone.now() + timezone.timedelta(hours=2)
         test_event1 = Event(
@@ -214,7 +200,7 @@ class ToolViewTest(TestCase):
             start=start,
             end=start + timezone.timedelta(hours=2),
             color_event='#FFA3F5',
-            creator=test_user,
+            creator=self.test_user,
             calendar=cal
         )
         test_event1.save()
@@ -230,7 +216,7 @@ class ToolViewTest(TestCase):
         )
 
         # Set user timezone (event should be aware of user's timezone).
-        profile = Profile.objects.get(user=test_user)
+        profile = Profile.objects.get(user=self.test_user)
         profile.timezone = 'Europe/Kiev'
         profile.save()
         local_start = timezone.localtime(start, pytz.timezone('Europe/Kiev'))
@@ -298,8 +284,9 @@ class ToolViewTest(TestCase):
             'rule': 4,
         })
         self.assertRedirects(resp, reverse('calendar'))
-        test_user = User.objects.get(username='testuser')
-        test_event = Event.objects.get(title='Test title', creator=test_user)
+
+        test_event = Event.objects.get(title='Test title',
+                                       creator=self.test_user)
         self.assertEqual(test_event.description, 'Test description')
         self.assertEqual(test_event.color_event, '#EBDFD6')
 
@@ -319,7 +306,7 @@ class ToolViewTest(TestCase):
         self.assertRedirects(resp, reverse('user_calendar',
                                            kwargs={'username': 'testuser'}))
         test_event_admin = Event.objects.get(title='Test title admin',
-                                             creator=test_user)
+                                             creator=self.test_user)
         self.assertEqual(test_event_admin.description,
                          'Test description admin')
         self.assertEqual(test_event_admin.color_event, '#7DA2FF')
@@ -385,7 +372,7 @@ class ToolViewTest(TestCase):
         self.assertEqual(test_event.color_event, '#FFC678')
 
         # Set user timezone (event should be aware of user's timezone).
-        profile = Profile.objects.get(user=test_user)
+        profile = Profile.objects.get(user=self.test_user)
         profile.timezone = 'Europe/Kiev'
         profile.save()
         # Edit user event.
@@ -417,7 +404,6 @@ class ToolViewTest(TestCase):
         )
 
     def test_views_calendar_delete(self):
-        test_user = User.objects.get(username='testuser')
         cal = Calendar.objects.create(name="testuser")
         test_event1 = Event(
             title='Test title 3',
@@ -425,7 +411,7 @@ class ToolViewTest(TestCase):
             start=datetime.datetime(2018, 1, 5, 8, 0, tzinfo=pytz.utc),
             end=datetime.datetime(2018, 1, 5, 9, 0, tzinfo=pytz.utc),
             color_event='#FFA3F5',
-            creator=test_user,
+            creator=self.test_user,
             calendar=cal
         )
         test_event1.save()
@@ -436,7 +422,7 @@ class ToolViewTest(TestCase):
             start=datetime.datetime(2018, 1, 4, 8, 0, tzinfo=pytz.utc),
             end=datetime.datetime(2018, 1, 4, 10, 0, tzinfo=pytz.utc),
             color_event='#A3E2FF',
-            creator=test_user,
+            creator=self.test_user,
             calendar=cal
         )
         test_event2.save()
@@ -539,8 +525,8 @@ class ToolViewTest(TestCase):
             for lang in settings.LANGUAGES
         })
         self.assertRedirects(resp, '/dictionary')
-        test_user = User.objects.get(username='testuser')
-        test_word = Word.objects.get(en='testen', user=test_user)
+
+        test_word = Word.objects.get(en='testen', user=self.test_user)
         self.assertEqual(test_word.es, 'testes')
 
         # Admin user - can create a new word for any user.
@@ -550,12 +536,11 @@ class ToolViewTest(TestCase):
             {lang[0]: 'testadmin' + lang[0] for lang in settings.LANGUAGES}
         )
         self.assertRedirects(resp, '/user/testuser/dictionary')
-        test_word = Word.objects.get(en='testadminen', user=test_user)
+        test_word = Word.objects.get(en='testadminen', user=self.test_user)
         self.assertEqual(test_word.es, 'testadmines')
 
     def test_views_dictionary_put(self):
-        test_user = User.objects.get(username='testuser')
-        test_word = Word(en='testen', es='testes', user=test_user)
+        test_word = Word(en='testen', es='testes', user=self.test_user)
         test_word.save()
         self.assertEqual(str(test_word), 'testen')
 
@@ -669,9 +654,9 @@ class ToolViewTest(TestCase):
             'difficulty': 'middle',
         })
         self.assertRedirects(resp, reverse('flashcards'))
-        test_user = User.objects.get(username='testuser')
+
         test_flashcard = Card.objects.get(word='Test flashcard',
-                                          user=test_user)
+                                          user=self.test_user)
         self.assertEqual(test_flashcard.description, 'Dummy text')
         # Word should be unique.
         resp = self.client.post(reverse('flashcards'), {
@@ -681,7 +666,7 @@ class ToolViewTest(TestCase):
         })
         self.assertEqual(resp.status_code, 200)
         test_flashcard = Card.objects.get(word='Test flashcard',
-                                          user=test_user)
+                                          user=self.test_user)
         self.assertEqual(test_flashcard.description, 'Dummy text')
 
         # Admin can create a flashcard for any user.
@@ -697,7 +682,7 @@ class ToolViewTest(TestCase):
         self.assertRedirects(resp, reverse('user_flashcards',
                                            kwargs={'username': 'testuser'}))
         test_flashcard_admin = Card.objects.get(word='Test flashcard admin',
-                                                user=test_user)
+                                                user=self.test_user)
         self.assertEqual(test_flashcard_admin.description, 'Dummy text admin')
         self.client.logout()
 
@@ -749,10 +734,9 @@ class ToolViewTest(TestCase):
         self.assertEqual(test_flashcard.difficulty, 'middle')
 
     def test_views_flashcards_delete(self):
-        test_user = User.objects.get(username='testuser')
         test_flashcard = Card(
             word='Test flashcard 3',
-            user=test_user,
+            user=self.test_user,
             description='Dummy text 3',
             difficulty='middle',
         )
@@ -760,7 +744,7 @@ class ToolViewTest(TestCase):
         self.assertEqual(str(test_flashcard), 'Test flashcard 3')
         test_flashcard_admin = Card(
             word='Test flashcard admin',
-            user=test_user,
+            user=self.test_user,
             description='Dummy text admin',
             difficulty='middle',
         )
@@ -868,8 +852,8 @@ class ToolViewTest(TestCase):
             'color': 1,
         })
         self.assertRedirects(resp, reverse('tasks'))
-        test_user = User.objects.get(username='testuser')
-        test_task = Task.objects.get(title='Test task', user=test_user)
+
+        test_task = Task.objects.get(title='Test task', user=self.test_user)
         self.assertEqual(test_task.description, 'Dummy text')
 
         # Admin can create a task for any user.
@@ -885,7 +869,7 @@ class ToolViewTest(TestCase):
         self.assertRedirects(resp, reverse('user_tasks',
                                            kwargs={'username': 'testuser'}))
         test_task_admin = Task.objects.get(title='Test task admin',
-                                           user=test_user)
+                                           user=self.test_user)
         self.assertEqual(test_task_admin.description, 'Dummy text admin')
         self.assertEqual(test_task_admin.color, 5)
         self.client.logout()
@@ -906,7 +890,7 @@ class ToolViewTest(TestCase):
             'color': 3,
         })
         self.assertRedirects(resp, reverse('tasks'))
-        test_task = Task.objects.get(title='Test task 3', user=test_user)
+        test_task = Task.objects.get(title='Test task 3', user=self.test_user)
         self.assertEqual(test_task.description, 'Dummy text 3')
         self.assertEqual(test_task.color, 3)
         # Try to edit not existing task.
@@ -949,10 +933,9 @@ class ToolViewTest(TestCase):
         self.assertEqual(test_flashcard.color, 2)
 
     def test_views_tasks_delete(self):
-        test_user = User.objects.get(username='testuser')
         test_task = Task(
             title='Test task 3',
-            user=test_user,
+            user=self.test_user,
             description='Dummy text 3',
             color=3,
         )
@@ -960,7 +943,7 @@ class ToolViewTest(TestCase):
         self.assertEqual(str(test_task), 'Test task 3')
         test_task_admin = Task(
             title='Test task admin',
-            user=test_user,
+            user=self.test_user,
             description='Dummy text admin',
             color=5,
         )
@@ -1051,9 +1034,9 @@ class ToolViewTest(TestCase):
             'text': '<pre><code>print(1)<code><pre>',
         })
         self.assertRedirects(resp, '/code')
-        test_user = User.objects.get(username='testuser')
+
         test_code_snippet = Code.objects.get(title='Test code snippet',
-                                             user=test_user)
+                                             user=self.test_user)
         self.assertEqual(test_code_snippet.text,
                          '<pre><code>print(1)<code><pre>')
         # Title should be unique.
@@ -1063,7 +1046,7 @@ class ToolViewTest(TestCase):
         })
         self.assertEqual(resp.status_code, 200)
         test_code_snippet = Code.objects.get(title='Test code snippet',
-                                             user=test_user)
+                                             user=self.test_user)
         self.assertEqual(test_code_snippet.text,
                          '<pre><code>print(1)<code><pre>')
         # Text should not be empty.
@@ -1073,7 +1056,7 @@ class ToolViewTest(TestCase):
         })
         self.assertEqual(resp.status_code, 200)
         test_code_snippet = Code.objects.get(title='Test code snippet',
-                                             user=test_user)
+                                             user=self.test_user)
         self.assertEqual(test_code_snippet.text,
                          '<pre><code>print(1)<code><pre>')
         self.client.logout()
@@ -1108,7 +1091,7 @@ class ToolViewTest(TestCase):
         )
         self.assertRedirects(resp, '/code')
         test_code_snippet = Code.objects.get(title='Test code snippet 2',
-                                             user=test_user)
+                                             user=self.test_user)
         self.assertTrue(test_code_snippet)
         self.assertEqual(test_code_snippet.text,
                          '<pre><code>print(2)<code><pre>')
@@ -1122,14 +1105,13 @@ class ToolViewTest(TestCase):
         )
         self.assertEqual(resp.status_code, 200)
         test_code_snippet = Code.objects.get(title='Test code snippet 2',
-                                             user=test_user)
+                                             user=self.test_user)
         self.assertEqual(test_code_snippet.text,
                          '<pre><code>print(2)<code><pre>')
 
     def test_views_code_snippets_delete(self):
-        test_user = User.objects.get(username='testuser')
         test_code_snippet = Code(title='test1', text='code block 1',
-                                 user=test_user)
+                                 user=self.test_user)
         test_code_snippet.save()
 
         # Delete code snippet.
@@ -1179,8 +1161,8 @@ class ToolViewTest(TestCase):
             'color': '000000',
         })
         self.assertRedirects(resp, '/links')
-        test_user = User.objects.get(username='testuser')
-        test_link = Link.objects.get(link='google.com', user=test_user)
+
+        test_link = Link.objects.get(link='google.com', user=self.test_user)
         self.assertEqual(test_link.color, '000000')
 
         # Edit link.
@@ -1190,7 +1172,7 @@ class ToolViewTest(TestCase):
             'color': '777777',
         })
         self.assertRedirects(resp, '/links')
-        test_link = Link.objects.get(link='facebook.com', user=test_user)
+        test_link = Link.objects.get(link='facebook.com', user=self.test_user)
         self.assertEqual(test_link.color, '777777')
 
         # Admin can create a link for any user.
@@ -1203,7 +1185,7 @@ class ToolViewTest(TestCase):
             }
         )
         self.assertRedirects(resp, '/user/testuser/links')
-        test_link = Link.objects.get(link='youtube.com', user=test_user)
+        test_link = Link.objects.get(link='youtube.com', user=self.test_user)
         self.assertEqual(test_link.color, '333333')
 
         # Admin can edit any user's link.
@@ -1216,22 +1198,21 @@ class ToolViewTest(TestCase):
             }
         )
         self.assertRedirects(resp, '/user/testuser/links')
-        test_link = Link.objects.get(pk=test_link.pk, user=test_user)
+        test_link = Link.objects.get(pk=test_link.pk, user=self.test_user)
         self.assertEqual(test_link.color, '444444')
 
     def test_views_links_delete(self):
-        test_user = User.objects.get(username='testuser')
         test_link = Link(
             link='google.com',
             color='111111',
-            user=test_user,
+            user=self.test_user,
         )
         test_link.save()
         self.assertEqual(str(test_link), 'testuser: google.com')
         test_link_admin = Link(
             link='facebook.com',
             color='222222',
-            user=test_user,
+            user=self.test_user,
         )
         test_link_admin.save()
         self.assertEqual(str(test_link_admin), 'testuser: facebook.com')

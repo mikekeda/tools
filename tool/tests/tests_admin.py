@@ -1,17 +1,7 @@
-from django.contrib.auth.models import User
-from django.test import TestCase
+from tool.tests import BaseTestCase
 
 
-class ToolAdminTest(TestCase):
-    def setUp(self):
-        # Create admin user.
-        test_admin = User.objects.create_superuser(
-            username='testadmin',
-            email='myemail@test.com',
-            password='12345'
-        )
-        test_admin.save()
-
+class ToolAdminTest(BaseTestCase):
     def test_admin_event(self):
         self.client.login(username='testadmin', password='12345')
         resp = self.client.get('/admin/schedule/event/')

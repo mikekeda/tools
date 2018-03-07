@@ -1,25 +1,18 @@
 from datetime import date
 
-from django.contrib.auth.models import User
-from django.test import TestCase
 from django.urls import reverse
 
-from .context_processors import (
+from tool.context_processors import (
     categories,
     select_parent_template,
     arrival_date,
     user_profile
 )
-from .models import Profile
+from tool.models import Profile
+from tool.tests import BaseTestCase
 
 
-class ToolContextProcessorTest(TestCase):
-    def setUp(self):
-        # Create usual user.
-        test_user = User.objects.create_user(username='testuser',
-                                             password='12345')
-        test_user.save()
-
+class ToolContextProcessorTest(BaseTestCase):
     def test_context_processor_categories(self):
         result = categories()
         self.assertEqual(result, {'tools': [
@@ -67,7 +60,6 @@ class ToolContextProcessorTest(TestCase):
         resp = self.client.get(reverse('main'))
         request = resp.wsgi_request
         result = user_profile(request)
-        test_user = User.objects.get(username='testuser')
-        profile, created = Profile.objects.get_or_create(user=test_user)
+        profile, created = Profile.objects.get_or_create(user=self.test_user)
         self.assertEqual(created, False)
         self.assertEqual(result, {'profile': profile})
