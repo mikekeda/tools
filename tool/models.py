@@ -14,6 +14,7 @@ from django.core.cache import cache
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.urls import reverse
 from django.utils.html import format_html
+from django.utils.translation import ugettext
 
 from .widgets import ColorWidget
 
@@ -304,7 +305,9 @@ class Canvas(models.Model):
 class Code(models.Model):
     """ Code model. """
     title = models.CharField(max_length=60)
-    text = models.TextField()
+    text = models.TextField(
+        help_text=ugettext("Double click on code block to copy or edit.")
+    )
     user = models.ForeignKey(
         User,
         related_name='code_fragments',
@@ -314,8 +317,9 @@ class Code(models.Model):
     labels = models.ManyToManyField(
         Label,
         blank=True,
-        help_text="Used programming languages will be automatically saved" +
-        " as labels.")
+        help_text=ugettext("Used programming languages will be automatically"
+                           " saved as labels.")
+    )
     created = models.DateTimeField(auto_now_add=True)
     changed = models.DateTimeField(auto_now=True)
 

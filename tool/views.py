@@ -751,7 +751,10 @@ class CodeView(View, GetUserMixin):
 class LinkView(View, GetUserMixin):
     def get(self, request, username=None):
         """ Get list of links. """
-        user = self.get_user(request, username)
+        try:
+            user = self.get_user(request, username)
+        except PermissionDenied:
+            return redirect(reverse('login') + '?next=' + request.path)
         links = Link.objects.filter(user=user).order_by('-id')
         palette = set((link.color for link in links))
 
@@ -765,7 +768,16 @@ class LinkView(View, GetUserMixin):
         """ Form submit. """
         user = self.get_user(request, username)
 
-        form = LinkForm(data=request.POST)
+        post_object = request.POST.copy()
+        link_id = post_object.pop('id', [None])[0]
+        if link_id:
+            link = Link.objects.filter(id=link_id, user=user).first()
+            if not link:
+                raise Http404
+        else:
+            link = Link(user=user)
+
+        form = LinkForm(data=request.POST, instance=link)
         if form.is_valid():
             link = form.save(commit=False)
             link.user = user
@@ -781,6 +793,14 @@ class LinkView(View, GetUserMixin):
             palette=palette,
             form=form
         ))
+
+    def delete(self, request, pk, username=None):
+        """ Delete link. """
+        self.get_user(request, username)
+        link = get_object_or_404(Link, pk=pk)
+        link.delete()
+
+        return JsonResponse({'redirect': reverse('links'), 'success': True})
 
 
 @login_required

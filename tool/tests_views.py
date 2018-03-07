@@ -10,7 +10,7 @@ from django.utils import timezone
 
 from schedule.models import Calendar, Event
 
-from .models import Profile, Card, Task, Canvas, Code, Word
+from .models import Profile, Card, Task, Canvas, Code, Word, Link
 
 
 class ToolViewTest(TestCase):
@@ -1125,7 +1125,6 @@ class ToolViewTest(TestCase):
                                              user=test_user)
         self.assertEqual(test_code_snippet.text,
                          '<pre><code>print(2)<code><pre>')
-        self.client.logout()
 
     def test_views_code_snippets_delete(self):
         test_user = User.objects.get(username='testuser')
@@ -1155,6 +1154,126 @@ class ToolViewTest(TestCase):
             slug=test_code_snippet.slug
         ).exists()
         self.assertFalse(test_code_snippet_exists)
+
+    def test_views_links_get(self):
+        # Get links.
+        resp = self.client.get(reverse('links'))
+        self.assertRedirects(resp, '/login?next=/links')
+
+        self.client.login(username='testuser', password='12345')
+        resp = self.client.get(reverse('links'))
+        self.assertEqual(resp.status_code, 200)
+        self.assertTemplateUsed(resp, 'links.html')
+
+    def test_views_links_post(self):
+        # Create a link.
+        resp = self.client.post(reverse('links'), {
+            'link': 'google.com',
+            'color': '000000',
+        })
+        self.assertEqual(resp.status_code, 403)
+
+        self.client.login(username='testuser', password='12345')
+        resp = self.client.post(reverse('links'), {
+            'link': 'google.com',
+            'color': '000000',
+        })
+        self.assertRedirects(resp, '/links')
+        test_user = User.objects.get(username='testuser')
+        test_link = Link.objects.get(link='google.com', user=test_user)
+        self.assertEqual(test_link.color, '000000')
+
+        # Edit link.
+        resp = self.client.post(reverse('links'), {
+            'id': test_link.pk,
+            'link': 'facebook.com',
+            'color': '777777',
+        })
+        self.assertRedirects(resp, '/links')
+        test_link = Link.objects.get(link='facebook.com', user=test_user)
+        self.assertEqual(test_link.color, '777777')
+
+        # Admin can create a link for any user.
+        self.client.login(username='testadmin', password='12345')
+        resp = self.client.post(
+            reverse('user_links', kwargs={'username': 'testuser'}),
+            {
+                'link': 'youtube.com',
+                'color': '333333',
+            }
+        )
+        self.assertRedirects(resp, '/user/testuser/links')
+        test_link = Link.objects.get(link='youtube.com', user=test_user)
+        self.assertEqual(test_link.color, '333333')
+
+        # Admin can edit any user's link.
+        resp = self.client.post(
+            reverse('user_links', kwargs={'username': 'testuser'}),
+            {
+                'id': test_link.pk,
+                'link': 'codeguida.com',
+                'color': '444444',
+            }
+        )
+        self.assertRedirects(resp, '/user/testuser/links')
+        test_link = Link.objects.get(pk=test_link.pk, user=test_user)
+        self.assertEqual(test_link.color, '444444')
+
+    def test_views_links_delete(self):
+        test_user = User.objects.get(username='testuser')
+        test_link = Link(
+            link='google.com',
+            color='111111',
+            user=test_user,
+        )
+        test_link.save()
+        self.assertEqual(str(test_link), 'testuser: google.com')
+        test_link_admin = Link(
+            link='facebook.com',
+            color='222222',
+            user=test_user,
+        )
+        test_link_admin.save()
+        self.assertEqual(str(test_link_admin), 'testuser: facebook.com')
+
+        # Delete link.
+        resp = self.client.delete(
+            reverse('links_pk', kwargs={'pk': test_link.pk})
+        )
+        self.assertEqual(resp.status_code, 403)
+
+        self.client.login(username='testuser', password='12345')
+        resp = self.client.delete(
+            reverse('links_pk', kwargs={'pk': 77777})
+        )
+        self.assertEqual(resp.status_code, 404)
+        resp = self.client.delete(
+            reverse('links_pk', kwargs={'pk': test_link.pk})
+        )
+        self.assertEqual(resp.status_code, 200)
+        self.assertJSONEqual(
+            str(resp.content, encoding='utf8'),
+            {'redirect': '/links', 'success': True}
+        )
+        test_link_exists = Link.objects.filter(
+            pk=test_link.pk
+        ).exists()
+        self.assertFalse(test_link_exists)
+
+        # Admin can delete a flashcard for any user.
+        self.client.login(username='testadmin', password='12345')
+        resp = self.client.delete(
+            reverse('links_pk', kwargs={'pk': test_link_admin.pk})
+        )
+        self.assertEqual(resp.status_code, 200)
+        self.assertJSONEqual(
+            str(resp.content, encoding='utf8'),
+            {'redirect': '/links', 'success': True}
+        )
+        test_link_admin_exists = Link.objects.filter(
+            pk=test_link_admin.pk
+        ).exists()
+        self.assertFalse(test_link_admin_exists)
 
     def test_views_profile(self):
         resp = self.client.get(reverse('user',

@@ -32,10 +32,13 @@
 
     <ul id="links" class="cards row sortable">
       {% for link in links %}
-        <li class="link-container" data-difficulty="{{ link.color }}" data-title="{{ link.link }}" data-id="{{ link.id }}" data-json="{{ link|serialize }}">
-          <a target="_blank" href="{{ link.link }}" style="color: #{{ link.color }};">{{ link.link }}</a>
+        <li class="link-container item-container" data-difficulty="{{ link.color }}" data-title="{{ link.link }}" data-id="{{ link.id }}" data-json="{{ link|serialize }}">
+          <a target="_blank" href="{{ link.link }}" style="font-size: 1.2em; color: #{{ link.color }};">{{ link.link }}</a>
+          <a href="/admin/tool/link/{{ link.id }}/change/" class="edit">
+            <small class="glyphicon glyphicon-pencil" aria-hidden="true"></small>
+          </a>
         </li>
-        {% endfor %}
+      {% endfor %}
     </ul>
 
     <script type="text/javascript" defer>
@@ -89,6 +92,24 @@
               $this.hide();
             }
           });
+        });
+
+        $('form .btn.delete').click(function() {
+          result = confirm('{% trans "Are you sure you want to delete this link?" %}');
+          if (result) {
+            pk = $(this).closest('form').find('#id_id').val();
+            $.ajax({
+              url: "{% url 'links' %}" + '/' + pk,
+              type: 'DELETE',
+              beforeSend: function(xhr) {
+                xhr.setRequestHeader('X-CSRFTOKEN', '{{ csrf_token }}');
+              },
+              success: function(result) {
+                window.location.replace(result.redirect);
+              }
+            });
+          }
+          return false;
         });
 
       }

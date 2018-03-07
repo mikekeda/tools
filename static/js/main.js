@@ -86,7 +86,7 @@ $(document).ready(function() {
 
   // Show modal edit form.
   $(document).on('click', 'a.edit', function() {
-    var $card = $(this).closest('.card-container');
+    var $card = $(this).closest('.card-container, .item-container');
     var $modal = $card.closest('#content').find('.modal');
     var $field;
     var card = $card.data('json');
@@ -120,6 +120,10 @@ $(document).ready(function() {
             (card.fields['status'] === 'doing' && key === 'progress')) {
           $field.parents('.form-group').show();
         }
+      }
+
+      if (key === 'color' && $field.is('input[type=text]')) {
+        $field[0].jscolor.importColor(card.fields[key]);
       }
     }
 
