@@ -5,16 +5,12 @@ from django.conf import settings
 from django.utils import timezone
 from django.utils.encoding import force_bytes
 from django.utils.six import BytesIO
+from google.cloud.exceptions import NotFound
 from storages.backends.gcloud import GoogleCloudFile, GoogleCloudStorage
 from storages.utils import clean_name
 
 
 class ToolCloudFile(GoogleCloudFile):
-    def __init__(self, name, mode, storage, encoding=None):
-        super().__init__(name, mode, storage)
-        if encoding:
-            self.blob.content_encoding = encoding
-
     def _get_file(self):
         self._file = super()._get_file()
         if self._storage.gzip:
@@ -47,6 +43,12 @@ class ToolStorage(GoogleCloudStorage):
         name = self._normalize_name(clean_name(name))
         blob = self._get_blob(self._encode_name(name))
         return timezone.make_naive(blob.time_created)
+
+    def url(self, name):
+        try:
+            return super().url(name)
+        except NotFound:
+            return None
 
     def _compress_content(self, content):
         """ Gzip a given string content. """
@@ -86,6 +88,9 @@ class ToolStorage(GoogleCloudStorage):
 
         content.name = cleaned_name
         encoded_name = self._encode_name(name)
-        file = ToolCloudFile(encoded_name, 'rw', self, encoding=encoding)
+        file = ToolCloudFile(encoded_name, 'rw', self)
         file.blob.upload_from_file(content, content_type=content_type)
+        if encoding:
+            file.blob.content_encoding = encoding
+            file.blob.patch()
         return cleaned_name
