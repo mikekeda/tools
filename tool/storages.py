@@ -87,5 +87,5 @@ class ToolStorage(GoogleCloudStorage):
         content.name = cleaned_name
         encoded_name = self._encode_name(name)
         file = ToolCloudFile(encoded_name, 'rw', self, encoding=encoding)
-        file.blob.upload_from_file(content, scontent_type=content_type)
+        file.blob.upload_from_file(content, content_type=content_type)
         return cleaned_name
