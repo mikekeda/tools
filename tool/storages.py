@@ -5,7 +5,8 @@ from django.conf import settings
 from django.utils import timezone
 from django.utils.encoding import force_bytes
 from django.utils.six import BytesIO
-from storages.backends.gcloud import GoogleCloudFile, GoogleCloudStorage, NotFound
+from storages.backends.gcloud import (GoogleCloudFile, GoogleCloudStorage,
+                                      NotFound)
 from storages.utils import clean_name
 
 
