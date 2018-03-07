@@ -330,13 +330,14 @@ class Code(models.Model):
         ) if self.slug else ''
 
     @classmethod
-    def get_code_snippets_with_labels(cls, user):
+    def get_code_snippets_with_labels(cls, user, label=None):
         """ Get code snippets with labels. """
-        code_snippets = cls.objects.filter(user=user).prefetch_related(
-            'labels'
-        ).order_by('-pk').values_list(
-            'title', 'slug', 'labels__title', named=True
-        )
+        code_snippets = cls.objects.filter(user=user)
+        if label:
+            code_snippets = code_snippets.filter(labels__title=label)
+        code_snippets = code_snippets.prefetch_related('labels').order_by(
+            '-pk'
+        ).values_list('title', 'slug', 'labels__title', named=True)
 
         code_snippets_dict = {}
         for snippet in code_snippets:

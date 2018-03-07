@@ -670,7 +670,9 @@ class CodeView(View, GetUserMixin):
                 user = self.get_user(request, username)
             except PermissionDenied:
                 return redirect(reverse('login') + '?next=' + request.path)
-            code_snippets = Code.get_code_snippets_with_labels(user)
+            params = request.GET.copy()
+            label = params.get('label')
+            code_snippets = Code.get_code_snippets_with_labels(user, label)
 
         form = CodeForm(instance=code_snippet)
 

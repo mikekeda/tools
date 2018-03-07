@@ -1038,6 +1038,10 @@ class ToolViewTest(TestCase):
         resp = self.client.get(reverse('code'))
         self.assertEqual(resp.status_code, 200)
         self.assertTemplateUsed(resp, 'code.html')
+        # Filter by label.
+        resp = self.client.get(reverse('code') + '?label=test')
+        self.assertEqual(resp.status_code, 200)
+        self.assertTemplateUsed(resp, 'code.html')
 
         # Create code snippet.
         resp = self.client.post(reverse('code'), {
