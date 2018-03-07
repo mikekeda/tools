@@ -10,6 +10,11 @@ from storages.utils import clean_name
 
 
 class ToolCloudFile(GoogleCloudFile):
+    def __init__(self, name, mode, storage, encoding=None):
+        super().__init__(name, mode, storage)
+        if encoding:
+            self.blob.content_encoding = encoding
+
     def _get_file(self):
         self._file = super()._get_file()
         if self._storage.gzip:
@@ -69,7 +74,7 @@ class ToolStorage(GoogleCloudStorage):
         return file_object
 
     def _save(self, name, content):
-        _type, _ = mimetypes.guess_type(name)
+        _type, encoding = mimetypes.guess_type(name)
         content_type = getattr(content, 'content_type', None)
         content_type = content_type or _type or self.default_content_type
 
@@ -81,7 +86,6 @@ class ToolStorage(GoogleCloudStorage):
 
         content.name = cleaned_name
         encoded_name = self._encode_name(name)
-        file = ToolCloudFile(encoded_name, 'rw', self)
-        file.blob.upload_from_file(content, size=content.size,
-                                   content_type=content_type)
+        file = ToolCloudFile(encoded_name, 'rw', self, encoding=encoding)
+        file.blob.upload_from_file(content, scontent_type=content_type)
         return cleaned_name
