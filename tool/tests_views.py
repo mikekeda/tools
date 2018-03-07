@@ -1029,7 +1029,7 @@ class ToolViewTest(TestCase):
             '{"task": {}}'
         )
 
-    def test_views_code_snippets(self):
+    def test_views_code_snippets_get(self):
         # Get user's code snippets.
         resp = self.client.get(reverse('code'))
         self.assertRedirects(resp, '/login?next=/code')
@@ -1043,7 +1043,9 @@ class ToolViewTest(TestCase):
         self.assertEqual(resp.status_code, 200)
         self.assertTemplateUsed(resp, 'code.html')
 
+    def test_views_code_snippets_post(self):
         # Create code snippet.
+        self.client.login(username='testuser', password='12345')
         resp = self.client.post(reverse('code'), {
             'title': 'Test code snippet',
             'text': '<pre><code>print(1)<code><pre>',
@@ -1124,6 +1126,11 @@ class ToolViewTest(TestCase):
         self.assertEqual(test_code_snippet.text,
                          '<pre><code>print(2)<code><pre>')
         self.client.logout()
+
+    def test_views_code_snippets_delete(self):
+        test_user = User.objects.get(username='testuser')
+        test_code_snippet = Code(title='test1', text='code block 1', user=test_user)
+        test_code_snippet.save()
 
         # Delete code snippet.
         resp = self.client.delete(

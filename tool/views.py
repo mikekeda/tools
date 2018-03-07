@@ -656,10 +656,12 @@ class CodeView(View, GetUserMixin):
         active_page = 'code'
         code_snippet = None
         code_snippets = ()
+        page_title = ugettext('Code snippets')
         if slug:
             # Show single code snippet and edit form.
             code_snippet = get_object_or_404(Code, slug=slug)
             active_page = 'code/{}'.format(code_snippet.title)
+            page_title = code_snippet.title
             try:
                 self.get_user(request, username)
             except PermissionDenied:
@@ -681,15 +683,20 @@ class CodeView(View, GetUserMixin):
             'codes': code_snippets,
             'save_btn': save_btn,
             'delete_btn': save_btn and slug,
-            'active_page': active_page
+            'active_page': active_page,
+            'page_title': page_title,
         })
 
     def post(self, request, slug=None, username=None):
         """ Save or create code snippet. """
         user = self.get_user(request, username)
         code_snippet = None
+        active_page = 'code'
+        page_title = ugettext('Code snippets')
         if slug:
             code_snippet = get_object_or_404(Code, slug=slug)
+            active_page = 'code/{}'.format(code_snippet.title)
+            page_title = code_snippet.title
 
         form = CodeForm(data=request.POST, instance=code_snippet)
 
@@ -728,7 +735,8 @@ class CodeView(View, GetUserMixin):
             'codes': [] if slug else Code.get_code_snippets_with_labels(user),
             'save_btn': True,  # only privileged user will have access to post
             'delete_btn': bool(slug),
-            'active_page': 'code'
+            'active_page': active_page,
+            'page_title': page_title,
         })
 
     def delete(self, request, slug, username=None):
