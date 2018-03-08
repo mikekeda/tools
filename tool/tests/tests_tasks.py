@@ -85,6 +85,7 @@ class ToolTaskTest(BaseTestCase):
     def test_tasks_daily_notification(self):
         with patch('tool.tasks.send_mail') as send_mail_mock:
             with patch('tool.tasks.timezone.localtime') as time_mock:
+                time_mock.return_value.strftime.return_value = '09:15'
                 # We are sending emails at 8am, too late - no calls.
                 time_mock.return_value.hour = 9
                 daily_notification()
