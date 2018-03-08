@@ -17,6 +17,8 @@ class BaseTestCase(TestCase):
         cls.test_admin = User.objects.create_superuser(
             username='testadmin',
             email='myemail@test.com',
-            password='12345'
+            password='12345',
+            first_name='Bob',
+            last_name='Smit'
         )
         cls.test_admin.save()

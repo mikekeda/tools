@@ -1,7 +1,7 @@
 from unittest.mock import patch
 from django.utils import timezone
 
-from schedule.models import Calendar, Event
+from schedule.models import Calendar, Event, Rule
 
 from tool.models import Profile
 from tool.tasks import get_occurrences, send_notification, daily_notification
@@ -37,6 +37,7 @@ class ToolTaskTest(BaseTestCase):
 
         cal = Calendar.objects.create(name=cls.test_admin.username,
                                       slug=cls.test_admin.username)
+        rule = Rule.objects.get(name='Daily')
         cls.test_event2 = Event(
             title='Test event2',
             description='Test description 2',
@@ -44,7 +45,8 @@ class ToolTaskTest(BaseTestCase):
             end=now + timezone.timedelta(hours=4),
             color_event='#538F70',
             creator=cls.test_admin,
-            calendar=cal
+            calendar=cal,
+            rule=rule
         )
         cls.test_event2.save()
 
@@ -104,5 +106,5 @@ class ToolTaskTest(BaseTestCase):
                     "Today's events",
                     "09:15 Test event2\n09:15 Test event3\n",
                     "Tools site <notify@info.mkeda.me>",
-                    ["testadmin <myemail@test.com>"]
+                    ["Bob Smit <myemail@test.com>"]
                 )
