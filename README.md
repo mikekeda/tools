@@ -2,6 +2,25 @@ Tools
 ======================
 
 This is site where you can use different tools.
+Link to the site - https://tools.mkeda.me
+
+Tools description (available without registration)
+------------
+- **Canvas** - Online canvas image drawing tool.
+- **Image to base64** - Covert image to base64 format.
+- **Exif info** - Get exif info from image with geolocation data.
+- **Text manipulation** - Capitalize text, convert text to lowercase or uppercase. Count amount of letters in the text.
+- **Unit convector** - Convert units for temperature, distance, volume, area, mass.
+
+Tools description (registration is needed)
+------------
+- **Calendar** - Add events to your Calendar and get email notifications about upcoming events.
+- **Flights** - Check airline tickets price for specified date to find the best flight deals.
+- **Dictionary** - Online dictionary.
+- **Flashcards** - Add flashcards to memorize something.
+- **Task Board** - Task Board where you can manage your tasks.
+- **Code snippets** - Instantly share code, notes, and snippets.
+- **Read it later** - Save links to read it later.
 
 Installation
 ------------
@@ -25,16 +44,10 @@ Installation
     # Create an admin user
     python manage.py createsuperuser
 
-
-
-
 Running
 -------
     # Locally
     python manage.py runserver
-
-
-
 
 Upgrade python packages
 -------
@@ -43,3 +56,12 @@ Upgrade python packages
     pip install --upgrade --force-reinstall -r requirements.txt
     # Update requirements.txt
     pip freeze > requirements.txt
+
+Useful manage.py commands
+-------
+    # Run tests
+    python manage.py test
+    # Run tests and check code style and coverage
+    python manage.py jenkins --enable-coverage --pep8-exclude migrations --pylint-rcfile .pylintrc
+    # Clearing Silk logged data
+    python manage.py silk_clear_request_log

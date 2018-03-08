@@ -2,7 +2,7 @@
 {% load i18n %}
 
 {% block title %}{% trans "Users" %}{% endblock %}
-{% block description %}{% trans "List of users." %}{% endblock description %}
+{% block description %}{% trans "List of users" %}{% endblock description %}
 
 {% block content %}
   <div class="bg-white mt-5">
@@ -45,6 +45,6 @@
   <script type="text/javascript">
     // Dynamically set page title and description.
     document.title = '{% trans "Users" %}';
-    document.head.querySelector('meta[name=description]').content = '{% trans "List of users." %}';
+    document.head.querySelector('meta[name=description]').content = '{% trans "List of users" %}';
   </script>
 {% endblock content %}

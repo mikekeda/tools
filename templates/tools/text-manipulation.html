@@ -2,7 +2,7 @@
 {% load i18n %}
 
 {% block title %}{% trans "Text manipulation" %}{% endblock %}
-{% block description %}{% trans "Capitalize text, convert text to lowercase or uppercase. Count amount of letters in the text." %}{% endblock description %}
+{% block description %}{% trans "Capitalize text, convert text to lowercase or uppercase. Count amount of letters in the text" %}{% endblock description %}
 
 {% block content %}
   <div class="container-fluid">
@@ -28,7 +28,7 @@
 
 	  // Dynamically set page title and description.
       document.title = '{% trans "Text manipulation" %}';
-      document.head.querySelector('meta[name=description]').content = '{% trans "Capitalize text, convert text to lowercase or uppercase. Count amount of letters in the text." %}';
+      document.head.querySelector('meta[name=description]').content = '{% trans "Capitalize text, convert text to lowercase or uppercase. Count amount of letters in the text" %}';
 
       String.prototype.capitalize = function() {
         return this.toLowerCase().replace(/((?:\S[^\.\?\!]*)[\.\?\!]*)/g, function(m) {

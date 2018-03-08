@@ -1,8 +1,8 @@
 {% extends parent_template %}
 {% load i18n %}
 
-{% block title %}{% trans "base64 image converting" %}{% endblock %}
-{% block description %}{% trans "Covert image to base64 format." %}{% endblock description %}
+{% block title %}{% trans "Image to base64" %}{% endblock %}
+{% block description %}{% trans "Covert image to base64 format" %}{% endblock description %}
 
 {% block content %}
     <h2>{% trans "Convert image to base64" %}</h2>
@@ -24,8 +24,8 @@
         }
 
         // Dynamically set page title and description.
-        document.title = '{% trans "base64 image converting" %}';
-        document.head.querySelector('meta[name=description]').content = '{% trans "Covert image to base64 format." %}';
+        document.title = '{% trans "Convert image to base64" %}';
+        document.head.querySelector('meta[name=description]').content = '{% trans "Covert image to base64 format" %}';
 
         document.getElementById("asd").addEventListener("change", readImage, false);
     </script>

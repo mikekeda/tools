@@ -21,8 +21,8 @@ sitemaps = {
 
 
 urlpatterns = [
-    path('', tool, name='main', kwargs={'slug': 'text'}),
-    path('ajax', tool, name='ajax_main', kwargs={'slug': 'text'}),
+    path('', tool, name='main', kwargs={'slug': 'text-manipulation'}),
+    path('ajax', tool, name='ajax_main', kwargs={'slug': 'text-manipulation'}),
     path('tool/<str:slug>', tool, name='tool'),
     path('ajax/tool/<str:slug>', tool, name='ajax_tool'),
     path('user/<str:username>/tool/<str:slug>', tool, name='user_tool'),

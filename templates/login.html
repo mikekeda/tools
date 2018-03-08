@@ -3,7 +3,7 @@
 {% load widget_tweaks %}
 
 {% block title %}{% trans "Login" %}{% endblock %}
-{% block description %}{% trans "Login or register to get access to all tools." %}{% endblock description %}
+{% block description %}{% trans "Login or register to get access to all tools" %}{% endblock description %}
 
 {% block content %}
   <div class="mt-6">
@@ -37,6 +37,6 @@
     <script type="text/javascript">
       // Dynamically set page title and description.
       document.title = '{% trans "Login" %}';
-      document.head.querySelector('meta[name=description]').content = '{% trans "Login or register to get access to all tools." %}';
+      document.head.querySelector('meta[name=description]').content = '{% trans "Login or register to get access to all tools" %}';
     </script>
 {% endblock content %}

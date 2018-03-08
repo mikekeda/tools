@@ -2,7 +2,7 @@
 {% load i18n %}
 
 {% block title %}{% trans "Unit convector" %}{% endblock %}
-{% block description %}{% trans "Convert units for temperature, distance, volume, area, mass." %}{% endblock description %}
+{% block description %}{% trans "Convert units for temperature, distance, volume, area, mass" %}{% endblock description %}
 
 {% block content %}
   <style>
@@ -219,7 +219,7 @@
 
       // Dynamically set page title and description.
       document.title = '{% trans "Unit convector" %}';
-      document.head.querySelector('meta[name=description]').content = '{% trans "Convert units for temperature, distance, volume, area, mass." %}';
+      document.head.querySelector('meta[name=description]').content = '{% trans "Convert units for temperature, distance, volume, area, mass" %}';
 
       // Temperature.
       $C.on('keyup change', function() {

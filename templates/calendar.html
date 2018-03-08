@@ -4,7 +4,7 @@
 {% load widget_tweaks %}
 
 {% block title %}{% trans "Calendar" %}{% endblock %}
-{% block description %}{% trans "Add events to your Calendar and get email notifications about upcoming events." %}{% endblock description %}
+{% block description %}{% trans "Add events to your Calendar and get email notifications about upcoming events" %}{% endblock description %}
 
 {% block content %}
     <!-- Button trigger modal -->
@@ -33,7 +33,7 @@
 
             // Dynamically set page title and description.
             document.title = '{% trans "Calendar" %}';
-            document.head.querySelector('meta[name=description]').content = '{% trans "Add events to your Calendar and get email notifications about upcoming events." %}';
+            document.head.querySelector('meta[name=description]').content = '{% trans "Add events to your Calendar and get email notifications about upcoming events" %}';
 
             $modal = $('#content').find('.modal');
             $end_recurring_period = $modal.find('#id_end_recurring_period').closest('.form-group');

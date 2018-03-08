@@ -20,7 +20,7 @@ class ToolViewTest(BaseTestCase):
     def test_views_home(self):
         resp = self.client.get(reverse('main'))
         self.assertEqual(resp.status_code, 200)
-        self.assertTemplateUsed(resp, 'text.html')
+        self.assertTemplateUsed(resp, 'text-manipulation.html')
 
     def test_views_about(self):
         resp = self.client.get(reverse('about_page'))
@@ -133,23 +133,21 @@ class ToolViewTest(BaseTestCase):
         self.assertEqual(resp.json(), sample_1)
 
     def test_views_convert_image_tool(self):
-        resp = self.client.get(reverse(
-            'tool',
-            kwargs={'slug': 'convert-image-to-base64'}
-        ))
+        resp = self.client.get(reverse('tool',
+                                       kwargs={'slug': 'image-to-base64'}))
         self.assertEqual(resp.status_code, 200)
-        self.assertTemplateUsed(resp, 'convert-image-to-base64.html')
+        self.assertTemplateUsed(resp, 'image-to-base64.html')
 
     def test_views_image_info_tool(self):
-        resp = self.client.get(reverse('tool',
-                                       kwargs={'slug': 'get-image-exif-info'}))
+        resp = self.client.get(reverse('tool', kwargs={'slug': 'exif-info'}))
         self.assertEqual(resp.status_code, 200)
-        self.assertTemplateUsed(resp, 'get-image-exif-info.html')
+        self.assertTemplateUsed(resp, 'exif-info.html')
 
     def test_views_text_tool(self):
-        resp = self.client.get(reverse('tool', kwargs={'slug': 'text'}))
+        resp = self.client.get(reverse('tool',
+                                       kwargs={'slug': 'text-manipulation'}))
         self.assertEqual(resp.status_code, 200)
-        self.assertTemplateUsed(resp, 'text.html')
+        self.assertTemplateUsed(resp, 'text-manipulation.html')
 
     def test_views_units_converter_tool(self):
         resp = self.client.get(reverse('tool',

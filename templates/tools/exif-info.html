@@ -2,7 +2,7 @@
 {% load i18n %}
 
 {% block title %}{% trans "Exif info" %}{% endblock %}
-{% block description %}{% trans "Get exif info from image with geolocation data." %}{% endblock description %}
+{% block description %}{% trans "Get exif info from image with geolocation data" %}{% endblock description %}
 
 {% block content %}
     <h2>{% trans "Where the photo was taken?" %}</h2>
@@ -29,7 +29,7 @@
 
           // Dynamically set page title and description.
           document.title = '{% trans "Exif info" %}';
-          document.head.querySelector('meta[name=description]').content = '{% trans "Get exif info from image with geolocation data." %}';
+          document.head.querySelector('meta[name=description]').content = '{% trans "Get exif info from image with geolocation data" %}';
 
           $('#asd').change(function(e) {
             if (this.files && this.files[0]) {

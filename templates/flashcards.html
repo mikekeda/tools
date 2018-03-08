@@ -4,7 +4,7 @@
 {% load static from staticfiles %}
 
 {% block title %}{% trans "Flashcards" %}{% endblock %}
-{% block description %}{% trans "Add flashcards to memorize something." %}{% endblock description %}
+{% block description %}{% trans "Add flashcards to memorize something" %}{% endblock description %}
 
 {% block content %}
     <!-- Modal -->
@@ -118,7 +118,7 @@
 
         // Dynamically set page title and description.
         document.title = '{% trans "Flashcards" %}';
-        document.head.querySelector('meta[name=description]').content = '{% trans "Add flashcards to memorize something." %}';
+        document.head.querySelector('meta[name=description]').content = '{% trans "Add flashcards to memorize something" %}';
 
         $('.sortable').sortable({
           placeholderClass: 'col-md-6'

@@ -4,7 +4,7 @@
 {% load tool_tags %}
 
 {% block title %}{% trans "Dictionary" %}{% endblock %}
-{% block description %}{% trans "Online dictionary." %}{% endblock description %}
+{% block description %}{% trans "Online dictionary" %}{% endblock description %}
 
 {% block content %}
     <link rel="stylesheet" type="text/css" href="{% static 'bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css' %}"/>
@@ -85,7 +85,7 @@
 
         // Dynamically set page title and description.
         document.title = '{% trans "Dictionary" %}';
-        document.head.querySelector('meta[name=description]').content = '{% trans "Online dictionary." %}';
+        document.head.querySelector('meta[name=description]').content = '{% trans "Online dictionary" %}';
 
         $.getScript("{% static 'bower_components/datatables.net/js/jquery.dataTables.min.js' %}", function() {
           $.getScript("{% static 'bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js' %}", function() {

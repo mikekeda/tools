@@ -4,7 +4,7 @@
 {% load widget_tweaks %}
 
 {% block title %}{{ page_title }}{% endblock %}
-{% block description %}{% trans "Instantly share code, notes, and snippets." %}{% endblock description %}
+{% block description %}{% trans "Instantly share code, notes, and snippets" %}{% endblock description %}
 
 {% block content %}
     <style>
@@ -80,7 +80,7 @@
     <script type="text/javascript">
         // Dynamically set page title and description.
         document.title = '{{ page_title }}';
-        document.head.querySelector('meta[name=description]').content = '{% trans "Instantly share code, notes, and snippets." %}';
+        document.head.querySelector('meta[name=description]').content = '{% trans "Instantly share code, notes, and snippets" %}';
 
         if("undefined" == typeof jQuery) {
             window.onload = function() {

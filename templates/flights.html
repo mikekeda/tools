@@ -3,7 +3,7 @@
 {% load widget_tweaks %}
 
 {% block title %}{% trans "Flights" %}{% endblock %}
-{% block description %}{% trans "Check tickets price for specified date." %}{% endblock description %}
+{% block description %}{% trans "Check airline tickets price for specified date to find the best flight deals" %}{% endblock description %}
 
 {% block content %}
     <style>
@@ -79,7 +79,7 @@
 
         // Dynamically set page title and description.
         document.title = '{% trans "Flights" %}';
-        document.head.querySelector('meta[name=description]').content = '{% trans "Check tickets price for specified date." %}';
+        document.head.querySelector('meta[name=description]').content = '{% trans "Check airline tickets price for specified date to find the best flight deals" %}';
 
         $('#id_round_trip').change(function() {
           $date_back.toggle(this.checked);

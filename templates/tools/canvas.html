@@ -2,7 +2,7 @@
 {% load i18n %}
 
 {% block title %}{% trans "Canvas" %}{% endblock %}
-{% block description %}{% trans "Online canvas image drawing tool." %}{% endblock description %}
+{% block description %}{% trans "Online canvas image drawing tool" %}{% endblock description %}
 
 {% block content %}
 <style>
@@ -894,7 +894,7 @@
 
             // Dynamically set page title and description.
             document.title = '{% trans "Canvas" %}';
-            document.head.querySelector('meta[name=description]').content = '{% trans "Online canvas image drawing tool." %}';
+            document.head.querySelector('meta[name=description]').content = '{% trans "Online canvas image drawing tool" %}';
 
             if (canv) {
                 $.getJSON("/canvas/" + canv, function(data) {

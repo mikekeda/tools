@@ -17,12 +17,9 @@ class ToolContextProcessorTest(BaseTestCase):
         result = categories()
         self.assertEqual(result, {'tools': [
             {'name': 'Canvas', 'slug': 'canvas'},
-            {
-                'name': 'Convert image to base64',
-                'slug': 'convert-image-to-base64'
-            },
-            {'name': 'Get image exif info', 'slug': 'get-image-exif-info'},
-            {'name': 'Text', 'slug': 'text'},
+            {'name': 'Exif info', 'slug': 'exif-info'},
+            {'name': 'Image to base64', 'slug': 'image-to-base64'},
+            {'name': 'Text manipulation', 'slug': 'text-manipulation'},
             {'name': 'Units converter', 'slug': 'units-converter'}
         ]})
 
