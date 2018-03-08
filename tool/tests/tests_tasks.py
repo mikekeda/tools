@@ -69,6 +69,9 @@ class ToolTaskTest(BaseTestCase):
         self.assertSetEqual(events, {self.test_event1, self.test_event2,
                                      self.test_event3})
 
+        events = get_occurrences(start, start)
+        self.assertSetEqual(events, set([]))
+
         events = get_occurrences(start, end, self.test_user)
         self.assertSetEqual(events, {self.test_event1})
 
