@@ -1,0 +1,107 @@
+from unittest.mock import patch
+from django.utils import timezone
+
+from schedule.models import Calendar, Event
+
+from tool.models import Profile
+from tool.tasks import get_occurrences, send_notification, daily_notification
+from tool.tests import BaseTestCase
+
+
+class ToolTaskTest(BaseTestCase):
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        Profile.objects.create(user=cls.test_user, timezone='UTC')
+        Profile.objects.create(user=cls.test_admin, timezone='Europe/Kiev')
+
+        now = timezone.now()
+        now -= timezone.timedelta(
+            minutes=now.minute % 15,
+            seconds=now.second,
+            microseconds=now.microsecond
+        )
+
+        cal = Calendar.objects.create(name=cls.test_user.username,
+                                      slug=cls.test_user.username)
+        cls.test_event1 = Event(
+            title='Test event1',
+            description='Test description 1',
+            start=now + + timezone.timedelta(minutes=50),
+            end=now + timezone.timedelta(hours=2),
+            color_event='#FFA3F5',
+            creator=cls.test_user,
+            calendar=cal
+        )
+        cls.test_event1.save()
+
+        cal = Calendar.objects.create(name=cls.test_admin.username,
+                                      slug=cls.test_admin.username)
+        cls.test_event2 = Event(
+            title='Test event2',
+            description='Test description 2',
+            start=now + timezone.timedelta(hours=2),
+            end=now + timezone.timedelta(hours=4),
+            color_event='#538F70',
+            creator=cls.test_admin,
+            calendar=cal
+        )
+        cls.test_event2.save()
+
+        cls.test_event3 = Event(
+            title='Test event3',
+            description='Test description 3',
+            start=now + timezone.timedelta(hours=3),
+            end=now + timezone.timedelta(hours=4),
+            color_event='#777777',
+            creator=cls.test_admin,
+            calendar=cal
+        )
+        cls.test_event3.save()
+
+    def test_tasks_get_occurrences(self):
+        start = timezone.now()
+        end = start + timezone.timedelta(days=1)
+
+        events = get_occurrences(start, end)
+        self.assertSetEqual(events, {self.test_event1, self.test_event2,
+                                     self.test_event3})
+
+        events = get_occurrences(start, end, self.test_user)
+        self.assertSetEqual(events, {self.test_event1})
+
+    def test_tasks_send_notification(self):
+        with patch('tool.tasks.send_mail') as send_mail_mock:
+            with patch('tool.tasks.timezone.localtime') as time_mock:
+                time_mock.return_value.strftime.return_value = '10:30'
+                send_notification()
+                send_mail_mock.assert_called_once_with(
+                    "Test event1 will start today at 10:30",
+                    "Test description 1",
+                    "Tools site <notify@info.mkeda.me>",
+                    ["testuser <>"]
+                )
+
+    def test_tasks_daily_notification(self):
+        with patch('tool.tasks.send_mail') as send_mail_mock:
+            with patch('tool.tasks.timezone.localtime') as time_mock:
+                # We are sending emails at 8am, too late - no calls.
+                time_mock.return_value.hour = 9
+                daily_notification()
+                send_mail_mock.assert_not_called()
+
+                # We are sending emails at 8am, it's time to send emails.
+                time_mock.return_value.hour = 8
+                daily_notification()
+                send_mail_mock.assert_any_call(
+                    "Today's events",
+                    "09:15 Test event1\n",
+                    "Tools site <notify@info.mkeda.me>",
+                    ["testuser <>"]
+                )
+                send_mail_mock.assert_any_call(
+                    "Today's events",
+                    "09:15 Test event2\n09:15 Test event3\n",
+                    "Tools site <notify@info.mkeda.me>",
+                    ["testadmin <myemail@test.com>"]
+                )

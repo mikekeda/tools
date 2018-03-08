@@ -74,7 +74,7 @@ class ToolEventAdmin(EventAdmin):
         return db_field.formfield(**kwargs)
 
 
-class TaskAdmin(ImportExportModelAdmin):
+class TaskAdmin(BaseModelAdmin):
     list_filter = ('user__username',)
 
     formfield_overrides = {
@@ -86,12 +86,6 @@ class TaskAdmin(ImportExportModelAdmin):
     class Media:
         js = ('bower_components/ckeditor/ckeditor.js',)
         css = {'all': ('css/admin-fix.css',)}
-
-    def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        if db_field.name == 'user':
-            kwargs['initial'] = request.user.id
-
-        return db_field.formfield(**kwargs)
 
 
 class CanvasAdmin(BaseModelAdmin):

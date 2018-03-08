@@ -58,7 +58,7 @@ def send_notification():
     )
 
     start = now + timezone.timedelta(minutes=before - interval)
-    end = timezone.now() + timezone.timedelta(minutes=before)
+    end = start + timezone.timedelta(minutes=interval)
     events = get_occurrences(start, end)
 
     for event in events:
