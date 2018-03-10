@@ -373,8 +373,9 @@ class Code(models.Model):
 
 class Link(models.Model):
     """ Link model. """
-    link = models.CharField(max_length=60)
+    link = models.CharField(max_length=128)
     color = ColorField(max_length=6, default='000000')
+    weight = models.SmallIntegerField(default=0)
     user = models.ForeignKey(
         User,
         related_name='links',

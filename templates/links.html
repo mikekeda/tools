@@ -33,6 +33,7 @@
     <ul id="links" class="cards row sortable">
       {% for link in links %}
         <li class="link-container item-container" data-difficulty="{{ link.color }}" data-title="{{ link.link }}" data-id="{{ link.id }}" data-json="{{ link|serialize }}">
+          <small class="glyphicon glyphicon-move" aria-hidden="true"></small>
           <a target="_blank" href="{{ link.link }}" style="font-size: 1.2em; color: #{{ link.color }};">{{ link.link }}</a>
           <a href="/admin/tool/link/{{ link.id }}/change/" class="edit">
             <small class="glyphicon glyphicon-pencil" aria-hidden="true"></small>
@@ -52,7 +53,6 @@
       }
 
       function init_app() {
-        var $cards;
         var $cards_container = $('#links');
         var $this;
         var $difficulty_filters = $('.difficulty-filter');
@@ -110,6 +110,24 @@
             });
           }
           return false;
+        });
+
+        $('#links').sortable().on('sortupdate', function(e, ui) {
+          if (!$cards_container.hasClass('disabled')) {
+            order = {};
+            $cards_container.find('.item-container').each(function(index) {
+              order[$(this).data('id')] = index;
+            });
+            $.post("{% url 'link_order' profile_user.username %}", {
+              order: JSON.stringify(order),
+              'csrfmiddlewaretoken': '{{ csrf_token }}'
+            }, function() {
+              $cards_container.addClass('disabled');
+            })
+            .always(function() {
+              $cards_container.removeClass('disabled');
+            });
+          }
         });
 
       }

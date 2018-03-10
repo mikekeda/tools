@@ -432,6 +432,24 @@ def task_order(request, username=None):
 
 
 @login_required
+def link_order(request, username=None):
+    """ Change Links order callback. """
+    if request.is_ajax():
+        user = GetUserMixin().get_user(request, username)
+
+        links = Link.objects.filter(user=user)
+        order = json.loads(request.POST.get('order', ''))
+        with transaction.atomic():
+            for link in links:
+                if str(link.id) in order:
+                    link.weight = order[str(link.id)]
+                    link.save()
+
+        return JsonResponse(ugettext('The order was changed'), safe=False)
+    raise Http404
+
+
+@login_required
 def user_events(request):
     """ Get today's events. """
     if request.is_ajax():
@@ -755,13 +773,14 @@ class LinkView(View, GetUserMixin):
             user = self.get_user(request, username)
         except PermissionDenied:
             return redirect(reverse('login') + '?next=' + request.path)
-        links = Link.objects.filter(user=user).order_by('-id')
+        links = Link.objects.filter(user=user).order_by('weight')
         palette = set((link.color for link in links))
 
         return render(request, "links.html", dict(
             links=links,
             palette=palette,
-            form=LinkForm()
+            form=LinkForm(),
+            profile_user=user,
         ))
 
     def post(self, request, username=None):
@@ -771,11 +790,12 @@ class LinkView(View, GetUserMixin):
         post_object = request.POST.copy()
         link_id = post_object.pop('id', [None])[0]
         if link_id:
-            link = Link.objects.filter(id=link_id, user=user).first()
-            if not link:
-                raise Http404
+            link = get_object_or_404(Link, pk=link_id, user=user)
         else:
             link = Link(user=user)
+            first_link = Link.objects.filter(
+                user=user).order_by('weight').first()
+            link.weight = first_link.weight - 1 if first_link else 0
 
         form = LinkForm(data=request.POST, instance=link)
         if form.is_valid():
@@ -795,13 +815,14 @@ class LinkView(View, GetUserMixin):
             else:
                 return redirect(request.path)
 
-        links = Link.objects.filter(user=user).order_by('-id')
+        links = Link.objects.filter(user=user).order_by('weight')
         palette = set((link.color for link in links))
 
-        return render(request, "dictionary.html", dict(
+        return render(request, "links.html", dict(
             links=links,
             palette=palette,
-            form=form
+            form=form,
+            profile_user=user,
         ))
 
     def delete(self, request, pk, username=None):

@@ -64,4 +64,4 @@ class CodeForm(forms.ModelForm):
 class LinkForm(forms.ModelForm):
     class Meta:
         model = Link
-        exclude = ('user',)
+        exclude = ('user', 'weight')

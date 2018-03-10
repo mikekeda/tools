@@ -1262,6 +1262,30 @@ class ToolViewTest(BaseTestCase):
         ).exists()
         self.assertFalse(test_link_admin_exists)
 
+    def test_views_links_order(self):
+        resp = self.client.post(reverse('link_order',
+                                        kwargs={'username': 'testuser'}),
+                                {'order': '{}'})
+        self.assertRedirects(resp, '/login?next=/user/testuser/link-order')
+
+        self.client.login(username='testuser', password='12345')
+        resp = self.client.post(reverse('link_order',
+                                        kwargs={'username': 'testuser'}),
+                                {'order': '{}'})
+        self.assertEqual(resp.status_code, 404)
+        self.assertTemplateUsed(resp, '404.html')
+
+        resp = self.client.post(
+            reverse('link_order', kwargs={'username': 'testuser'}),
+            {'order': '{}'},
+            HTTP_X_REQUESTED_WITH='XMLHttpRequest'
+        )
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(
+            str(resp.content, encoding='utf8'),
+            '"The order was changed"'
+        )
+
     def test_views_profile(self):
         resp = self.client.get(reverse('user',
                                        kwargs={'username': 'testuser'}))
