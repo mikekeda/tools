@@ -1159,7 +1159,15 @@ class ToolViewTest(BaseTestCase):
             'color': '000000',
         })
         self.assertRedirects(resp, '/links')
+        test_link = Link.objects.get(link='google.com', user=self.test_user)
+        self.assertEqual(test_link.color, '000000')
 
+        # User can't add same link multiple times.
+        resp = self.client.post(reverse('links'), {
+            'link': ' google.com  ',
+            'color': '111111',
+        })
+        self.assertEqual(resp.status_code, 200)
         test_link = Link.objects.get(link='google.com', user=self.test_user)
         self.assertEqual(test_link.color, '000000')
 

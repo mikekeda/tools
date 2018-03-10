@@ -779,11 +779,21 @@ class LinkView(View, GetUserMixin):
 
         form = LinkForm(data=request.POST, instance=link)
         if form.is_valid():
-            link = form.save(commit=False)
-            link.user = user
-            link.save()
-
-            return redirect(request.path)
+            try:
+                link = form.save(commit=False)
+                link.link = link.link.strip()
+                link.user = user
+                with transaction.atomic():
+                    link.save()
+            except IntegrityError:
+                form.add_error(
+                    'link',
+                    'Link "{}" already exists.'.format(
+                        link.link
+                    )
+                )
+            else:
+                return redirect(request.path)
 
         links = Link.objects.filter(user=user).order_by('-id')
         palette = set((link.color for link in links))
