@@ -1,4 +1,5 @@
 from unittest.mock import patch
+import pytz
 from django.utils import timezone
 
 from schedule.models import Calendar, Event, Rule
@@ -27,7 +28,7 @@ class ToolTaskTest(BaseTestCase):
         cls.test_event1 = Event(
             title='Test event1',
             description='Test description 1',
-            start=now + + timezone.timedelta(minutes=50),
+            start=now + timezone.timedelta(minutes=50),
             end=now + timezone.timedelta(hours=2),
             color_event='#FFA3F5',
             creator=cls.test_user,
@@ -61,13 +62,25 @@ class ToolTaskTest(BaseTestCase):
         )
         cls.test_event3.save()
 
+        cls.test_event4 = Event(
+            title='Test event4',
+            description='Test description 4',
+            start=timezone.datetime(2018, 2, 23, 20, 30, tzinfo=pytz.utc),
+            end=timezone.datetime(2018, 2, 23, 22, 30, tzinfo=pytz.utc),
+            color_event='#999999',
+            creator=cls.test_admin,
+            calendar=cal,
+            rule=rule
+        )
+        cls.test_event4.save()
+
     def test_tasks_get_occurrences(self):
         start = timezone.now()
         end = start + timezone.timedelta(days=1)
 
         events = get_occurrences(start, end)
         self.assertSetEqual(events, {self.test_event1, self.test_event2,
-                                     self.test_event3})
+                                     self.test_event3, self.test_event4})
 
         events = get_occurrences(start, start)
         self.assertSetEqual(events, set([]))
@@ -80,12 +93,24 @@ class ToolTaskTest(BaseTestCase):
             with patch('tool.tasks.timezone.localtime') as time_mock:
                 time_mock.return_value.strftime.return_value = '10:30'
                 send_notification()
-                send_mail_mock.assert_called_once_with(
+                send_mail_mock.assert_any_call(
                     "Test event1 will start today at 10:30",
                     "Test description 1",
                     "Tools site <notify@info.mkeda.me>",
                     ["testuser <>"]
                 )
+
+                with patch('tool.tasks.timezone.now') as now_mock:
+                    now_mock.return_value = timezone.datetime(
+                        2018, 7, 23, 19, 30, tzinfo=pytz.utc)
+                    time_mock.return_value.strftime.return_value = '20:30'
+                    send_notification()
+                    send_mail_mock.assert_any_call(
+                        "Test event4 will start today at 20:30",
+                        "Test description 4",
+                        "Tools site <notify@info.mkeda.me>",
+                        ["Bob Smit <myemail@test.com>"]
+                    )
 
     def test_tasks_daily_notification(self):
         with patch('tool.tasks.send_mail') as send_mail_mock:
@@ -107,7 +132,9 @@ class ToolTaskTest(BaseTestCase):
                 )
                 send_mail_mock.assert_any_call(
                     "Today's events",
-                    "09:15 Test event2\n09:15 Test event3\n",
+                    "09:15 Test event2\n" +
+                    "09:15 Test event3\n" +
+                    "09:15 Test event4\n",
                     "Tools site <notify@info.mkeda.me>",
                     ["Bob Smit <myemail@test.com>"]
                 )

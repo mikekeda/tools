@@ -36,7 +36,12 @@ def get_occurrences(start, end, creator=None):
         Q(end_recurring_period__isnull=True)
     ).select_related('creator')
     for event in event_list:
-        occurrences = event.get_occurrences(start, end)
+        # get_occurrences will not include event if event end equal to end,
+        # so lets add 1 microsecond to end as workaround.
+        occurrences = event.get_occurrences(
+            start,
+            end + timezone.timedelta(microseconds=1)
+        )
         if any((start < occurrence.start <= end
                 for occurrence in occurrences)):
             events.add(event)
