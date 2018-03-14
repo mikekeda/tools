@@ -64,7 +64,6 @@ class ToolTaskTest(BaseTestCase):
 
         cls.test_event4 = Event(
             title='Test event4',
-            description='Test description 4',
             start=timezone.datetime(2018, 2, 23, 20, 30, tzinfo=pytz.utc),
             end=timezone.datetime(2018, 2, 23, 22, 30, tzinfo=pytz.utc),
             color_event='#999999',
@@ -107,7 +106,7 @@ class ToolTaskTest(BaseTestCase):
                     send_notification()
                     send_mail_mock.assert_any_call(
                         "Test event4 will start today at 20:30",
-                        "Test description 4",
+                        "No description provided",
                         "Tools site <notify@info.mkeda.me>",
                         ["Bob Smit <myemail@test.com>"]
                     )
