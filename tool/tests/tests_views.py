@@ -1154,12 +1154,21 @@ class ToolViewTest(BaseTestCase):
         self.assertEqual(resp.status_code, 403)
 
         self.client.login(username='testuser', password='12345')
+        # Not valid link.
         resp = self.client.post(reverse('links'), {
             'link': 'google.com',
             'color': '000000',
         })
+        self.assertEqual(resp.status_code, 200)
+
+        self.client.login(username='testuser', password='12345')
+        resp = self.client.post(reverse('links'), {
+            'link': 'https://google.com',
+            'color': '000000',
+        })
         self.assertRedirects(resp, '/links')
-        test_link = Link.objects.get(link='google.com', user=self.test_user)
+        test_link = Link.objects.get(link='https://google.com',
+                                     user=self.test_user)
         self.assertEqual(test_link.color, '000000')
 
         # User can't add same link multiple times.
@@ -1168,17 +1177,19 @@ class ToolViewTest(BaseTestCase):
             'color': '111111',
         })
         self.assertEqual(resp.status_code, 200)
-        test_link = Link.objects.get(link='google.com', user=self.test_user)
+        test_link = Link.objects.get(link='https://google.com',
+                                     user=self.test_user)
         self.assertEqual(test_link.color, '000000')
 
         # Edit link.
         resp = self.client.post(reverse('links'), {
             'id': test_link.pk,
-            'link': 'facebook.com',
+            'link': 'https://facebook.com',
             'color': '777777',
         })
         self.assertRedirects(resp, '/links')
-        test_link = Link.objects.get(link='facebook.com', user=self.test_user)
+        test_link = Link.objects.get(link='https://facebook.com',
+                                     user=self.test_user)
         self.assertEqual(test_link.color, '777777')
 
         # Admin can create a link for any user.
@@ -1186,12 +1197,13 @@ class ToolViewTest(BaseTestCase):
         resp = self.client.post(
             reverse('user_links', kwargs={'username': 'testuser'}),
             {
-                'link': 'youtube.com',
+                'link': 'https://youtube.com',
                 'color': '333333',
             }
         )
         self.assertRedirects(resp, '/user/testuser/links')
-        test_link = Link.objects.get(link='youtube.com', user=self.test_user)
+        test_link = Link.objects.get(link='https://youtube.com',
+                                     user=self.test_user)
         self.assertEqual(test_link.color, '333333')
 
         # Admin can edit any user's link.
@@ -1199,7 +1211,7 @@ class ToolViewTest(BaseTestCase):
             reverse('user_links', kwargs={'username': 'testuser'}),
             {
                 'id': test_link.pk,
-                'link': 'codeguida.com',
+                'link': 'https://codeguida.com',
                 'color': '444444',
             }
         )
@@ -1209,19 +1221,21 @@ class ToolViewTest(BaseTestCase):
 
     def test_views_links_delete(self):
         test_link = Link(
-            link='google.com',
+            link='https://google.com',
             color='111111',
             user=self.test_user,
         )
         test_link.save()
-        self.assertEqual(str(test_link), 'testuser: google.com')
+        self.assertEqual(str(test_link),
+                         'testuser: https://google.com')
         test_link_admin = Link(
-            link='facebook.com',
+            link='https://facebook.com',
             color='222222',
             user=self.test_user,
         )
         test_link_admin.save()
-        self.assertEqual(str(test_link_admin), 'testuser: facebook.com')
+        self.assertEqual(str(test_link_admin),
+                         'testuser: https://facebook.com')
 
         # Delete link.
         resp = self.client.delete(

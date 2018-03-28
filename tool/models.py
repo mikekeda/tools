@@ -3,15 +3,19 @@ from collections import namedtuple
 import datetime
 import random
 import string
+import textwrap
+import requests
 import pytz
 
+from bs4 import BeautifulSoup
 from cryptography.fernet import Fernet
 
 from django.db import models
 from django.contrib.auth.models import User
 from django.conf import settings
 from django.core.cache import cache
-from django.core.validators import MaxValueValidator, MinValueValidator
+from django.core.validators import (MaxValueValidator, MinValueValidator,
+                                    URLValidator)
 from django.urls import reverse
 from django.utils.html import format_html
 from django.utils.translation import ugettext
@@ -373,7 +377,10 @@ class Code(models.Model):
 
 class Link(models.Model):
     """ Link model. """
-    link = models.CharField(max_length=128)
+    link = models.CharField(max_length=128,
+                            validators=[URLValidator(['http', 'https'])])
+    title = models.CharField(max_length=64, blank=True, null=True)
+    description = models.CharField(max_length=128, blank=True, null=True)
     color = ColorField(max_length=6, default='000000')
     weight = models.SmallIntegerField(default=0)
     user = models.ForeignKey(
@@ -385,6 +392,27 @@ class Link(models.Model):
 
     class Meta:
         unique_together = (('link', 'user'),)
+
+    def save(self, force_insert=False, force_update=False, using=None,
+             update_fields=None):
+        """ Set link title and description. """
+        if not self.title:
+            res = requests.get(self.link)
+            if res.status_code == 200:
+                soup = BeautifulSoup(res.text, "html.parser")
+                if soup.title:
+                    self.title = textwrap.shorten(soup.title.string, width=64,
+                                                  placeholder="...")
+
+                description = soup.find('meta', attrs={"name": "description"})
+                if description:
+                    self.description = textwrap.shorten(
+                        description.attrs.get('content', ''),
+                        width=128,
+                        placeholder="..."
+                    )
+
+        super().save(force_insert, force_update, using, update_fields)
 
     def __str__(self):
         return "{}: {}".format(get_username_by_uid(self), self.link)
