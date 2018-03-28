@@ -396,21 +396,25 @@ class Link(models.Model):
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):
         """ Set link title and description. """
-        if not self.title:
+        try:
             res = requests.get(self.link)
-            if res.status_code == 200:
-                soup = BeautifulSoup(res.text, "html.parser")
-                if soup.title:
-                    self.title = textwrap.shorten(soup.title.string, width=64,
-                                                  placeholder="...")
+        except requests.exceptions.ConnectionError:
+            res = namedtuple('DummyResponse',
+                             ('status_code',))("Connection refused")
 
-                description = soup.find('meta', attrs={"name": "description"})
-                if description:
-                    self.description = textwrap.shorten(
-                        description.attrs.get('content', ''),
-                        width=128,
-                        placeholder="..."
-                    )
+        if res.status_code == 200:
+            soup = BeautifulSoup(res.text, "html.parser")
+            if soup.title:
+                self.title = textwrap.shorten(soup.title.string, width=64,
+                                              placeholder="...")
+
+            description = soup.find('meta', attrs={"name": "description"})
+            if description:
+                self.description = textwrap.shorten(
+                    description.attrs.get('content', ''),
+                    width=128,
+                    placeholder="..."
+                )
 
         super().save(force_insert, force_update, using, update_fields)
 
