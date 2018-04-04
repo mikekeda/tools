@@ -73,7 +73,6 @@ INSTALLED_APPS = [
     'easy_select2',
     'django_jenkins',
     'import_export',
-    'silk',
 
     'tool',
 ]
@@ -92,7 +91,6 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 
     'social_django.middleware.SocialAuthExceptionMiddleware',
-    'silk.middleware.SilkyMiddleware',
 ]
 
 if DEBUG:
@@ -238,12 +236,6 @@ JENKINS_TASKS = ('django_jenkins.tasks.run_pylint',
 PROJECT_APPS = ['tool', 'toolssite']
 
 PYLINT_LOAD_PLUGIN = ['pylint_django']
-
-SILKY_AUTHENTICATION = True  # User must login
-SILKY_AUTHORISATION = True  # User must have permissions
-# SILKY_PYTHON_PROFILER = True
-# SILKY_PYTHON_PROFILER_BINARY = True
-SILKY_INTERCEPT_PERCENT = 100
 
 if not DEBUG:
     # Use Google bucket for production.
