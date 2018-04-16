@@ -69,11 +69,6 @@
                 </li>
               {% endif %}
             </ul>
-            {% if user.is_superuser %}
-            <div class="date pull-left">
-              {{ arrival_date|timeuntil:today }} {% trans "left" %}
-            </div>
-            {% endif %}
           </div><!--/.nav-collapse -->
         </div><!--/.container-fluid -->
       </nav>
