@@ -5,7 +5,6 @@ from django.urls import reverse
 from tool.context_processors import (
     categories,
     select_parent_template,
-    arrival_date,
     user_profile
 )
 from tool.models import Profile
@@ -37,13 +36,6 @@ class ToolContextProcessorTest(BaseTestCase):
         request = resp.wsgi_request
         result = select_parent_template(request)
         self.assertEqual(result, {'parent_template': 'dummy_parent.html'})
-
-    def test_context_processor_arrival_date(self):
-        result = arrival_date()
-        self.assertEqual(
-            result,
-            {'today': date.today(), 'arrival_date': date(2018, 4, 1)}
-        )
 
     def test_context_processor_user_profile(self):
         # Anonymous user.

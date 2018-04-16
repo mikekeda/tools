@@ -115,7 +115,6 @@ TEMPLATES = [
 
                 'tool.context_processors.categories',
                 'tool.context_processors.select_parent_template',
-                'tool.context_processors.arrival_date',
                 'tool.context_processors.user_profile',
 
                 'social_django.context_processors.backends',

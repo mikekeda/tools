@@ -36,11 +36,6 @@ def select_parent_template(request):
     return {'parent_template': parent_template}
 
 
-def arrival_date(request=None):
-    """ Arrival date. """
-    return {'today': date.today(), 'arrival_date': date(2018, 4, 1)}
-
-
 def user_profile(request):
     """ User profile. """
     profile = None
