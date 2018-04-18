@@ -15,7 +15,6 @@ Tools description (available without registration)
 Tools description (registration is needed)
 ------------
 - **Calendar** - Add events to your Calendar and get email notifications about upcoming events.
-- **Flights** - Check airline tickets price for specified date to find the best flight deals.
 - **Dictionary** - Online dictionary.
 - **Flashcards** - Add flashcards to memorize something.
 - **Task Board** - Task Board where you can manage your tasks.

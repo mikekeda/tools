@@ -86,11 +86,6 @@
                         <span class="glyphicon glyphicon-calendar"></span> {% trans "Calendar" %}
                       </a>
                     </li>
-                    <li class="{% if active_page == 'flights' %}active{% endif %}">
-                      <a href="{% url 'flights' %}" data-annyang="flights" class="ajax-link">
-                        <span class="glyphicon glyphicon-plane"></span> {% trans "Flights" %}
-                      </a>
-                    </li>
                     <li class="{% if active_page == 'dictionary' %}active{% endif %}">
                       <a href="{% url 'dictionary' %}" data-annyang="dictionary" class="ajax-link">
                         <span class="glyphicon glyphicon-book"></span> {% trans "Dictionary" %}

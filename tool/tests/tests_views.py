@@ -464,34 +464,6 @@ class ToolViewTest(BaseTestCase):
         ).exists()
         self.assertFalse(test_event2_exists)
 
-    def test_views_flights(self):
-        resp = self.client.get(reverse('flights'))
-        self.assertRedirects(resp, '/login?next=/flights')
-
-        self.client.login(username='testuser', password='12345')
-        resp = self.client.get(reverse('flights'))
-        self.assertEqual(resp.status_code, 200)
-        self.assertTemplateUsed(resp, 'flights.html')
-
-        resp = self.client.post(reverse('flights'), {
-            'destination': 'LWO',
-            'round_trip': 'on',
-            'date_start': '2017-12-16',
-            'date_back': '2017-12-23',
-        })
-        self.assertEqual(resp.status_code, 200)
-        self.assertFormError(resp, 'form', 'origin',
-                             'This field is required.')
-
-        resp = self.client.post(reverse('flights'), {
-            'origin': 'AUS',
-            'destination': 'LWO',
-            'round_trip': 'on',
-            'date_start': '2017-12-16',
-            'date_back': '2017-12-23',
-        })
-        self.assertEqual(resp.status_code, 200)
-
     def test_views_dictionary_get(self):
         resp = self.client.get(reverse('dictionary'))
         self.assertRedirects(resp, '/login?next=/dictionary')

@@ -27,8 +27,8 @@ from django.views import View
 
 from .models import (TIMEZONES, Card, Word, Profile, Task, Canvas, Code, Link,
                      Label, default_palette_colors)
-from .forms import (WordForm, EventForm, CardForm, AvatarForm, FlightsForm,
-                    TaskForm, CodeForm, LinkForm)
+from .forms import (WordForm, EventForm, CardForm, AvatarForm, TaskForm,
+                    CodeForm, LinkForm)
 from .tasks import get_occurrences
 
 User = get_user_model()
@@ -531,86 +531,6 @@ class DictionaryView(View, GetUserMixin):
             safe=False,
             status=403
         )
-
-
-class FlightsView(LoginRequiredMixin, View):
-    def get(self, request):
-        """ Get form. """
-        return render(request, 'flights.html', {'form': FlightsForm()})
-
-    def post(self, request):
-        """ Form submit. """
-        form = FlightsForm(data=request.POST)
-
-        if form.is_valid():
-            params = {
-                'request': {
-                    'slice': [
-                        {
-                            'origin': form.cleaned_data['origin'],
-                            'destination': form.cleaned_data['destination'],
-                            'date': str(form.cleaned_data['date_start'])
-                        }
-                    ],
-                    'passengers': {
-                        'adultCount': 1,
-                        'infantInLapCount': 0,
-                        'infantInSeatCount': 0,
-                        'childCount': 0,
-                        'seniorCount': 0
-                    },
-                    'solutions': 10,
-                    'refundable': False
-                }
-            }
-
-            if form.cleaned_data['round_trip']:
-                date_back = form.cleaned_data['date_back']
-
-                params['request']['slice'].append({
-                    'origin': form.cleaned_data['destination'],
-                    'destination': form.cleaned_data['origin'],
-                    'date': str(date_back)
-                })
-
-            response = requests.post(
-                settings.QPXEXPRESS_URL + settings.QPXEXPRESS_API_KEY,
-                data=json.dumps(params),
-                headers={'content-type': 'application/json'}
-            )
-            data = response.json()
-
-            # Handle an error.
-            if response.status_code != 200:
-                return JsonResponse({
-                    'status': response.status_code,
-                    'statusText': data['error']['message']
-                }, safe=False)
-
-            result = []
-            for fly in data['trips'].get('tripOption', []):
-                slice_data = []
-                for item in fly['slice']:
-                    route = item['segment'][0]['leg'][0]['origin']
-                    for seg in item['segment']:
-                        route += '->' + seg['leg'][0]['destination']
-
-                    slice_data.append({
-                        'stops': len(item['segment']) - 1,
-                        'slice': route,
-                        'duration': str(timedelta(
-                            minutes=item['duration']
-                        ))[:-3]
-                    })
-
-                result.append({
-                    'price': float(re.sub(r'[^0-9.]', '', fly['saleTotal'])),
-                    'slice': slice_data
-                })
-
-            return JsonResponse(result, safe=False)
-
-        return render(request, 'flights.html', {'form': form})
 
 
 def log_in(request):
