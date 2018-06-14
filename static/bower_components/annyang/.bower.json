@@ -23,15 +23,14 @@
     "sites"
   ],
   "homepage": "https://github.com/TalAter/annyang",
-  "version": "2.6.0",
-  "_release": "2.6.0",
+  "version": "2.6.1",
+  "_release": "2.6.1",
   "_resolution": {
     "type": "version",
-    "tag": "v2.6.0",
-    "commit": "d171739f60e5df2db4881d9c3cbdfc0916dc04da"
+    "tag": "v2.6.1",
+    "commit": "eb02ae3f4c0f58f1b452a7e0ecf5cf6c71bfc735"
   },
   "_source": "https://github.com/TalAter/annyang.git",
   "_target": "^2.6.0",
-  "_originalSource": "annyang",
-  "_direct": true
+  "_originalSource": "annyang"
 }
