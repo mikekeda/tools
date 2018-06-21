@@ -168,7 +168,8 @@ AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
 )
 
-CSRF_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = not DEBUG  # True for prod
+SESSION_COOKIE_SECURE = not DEBUG  # True for prod
 
 SOCIAL_AUTH_LOGIN_REDIRECT_URL = 'main'
 SOCIAL_AUTH_REDIRECT_IS_HTTPS = True
