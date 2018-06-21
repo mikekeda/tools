@@ -1,5 +1,3 @@
-import datetime
-
 from django import forms
 from schedule.models import Event
 from easy_select2 import apply_select2, select2_modelform

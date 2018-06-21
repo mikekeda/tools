@@ -1,5 +1,4 @@
 import os
-from datetime import date
 
 from django.conf import settings
 

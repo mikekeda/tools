@@ -1,8 +1,6 @@
 import re
 import json
 from collections import OrderedDict
-from datetime import timedelta
-import requests
 import pytz
 
 from schedule.models import Calendar, Event
