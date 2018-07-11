@@ -50,7 +50,8 @@ class ToolStorage(GoogleCloudStorage):
         except NotFound:
             return name
 
-    def _compress_content(self, content):
+    @staticmethod
+    def _compress_content(content):
         """ Gzip a given string content. """
         content.seek(0)
         zbuf = BytesIO()
