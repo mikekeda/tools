@@ -104,7 +104,7 @@
 
     <script type="text/javascript" src="{% static 'bower_components/ckeditor/ckeditor.js' %}"></script>
     <script type="text/javascript" defer>
-      if("undefined" == typeof jQuery) {
+      if("undefined" === typeof jQuery) {
         window.onload = function() {
           init_app();
         };
@@ -121,6 +121,8 @@
         var $card_search = $('#card-search');
         var substring;
         var order;
+        var result;
+        var pk;
 
         function change_tasks_order($cards, card) {
           if (!$cards.hasClass('disabled')) {
@@ -167,7 +169,7 @@
           change_tasks_order(ui.item.parent(), ui.item[0]);
         }).on('sortconnect', function(e, ui) {
           $cards = ui.item.parent();
-          if (!$cards.hasClass('disabled') && ui.item.index() == 0) {
+          if (!$cards.hasClass('disabled') && ui.item.index() === 0) {
             change_tasks_order($cards, ui.item[0]);
           }
         });
@@ -185,7 +187,7 @@
 
           $cards_container.find('.card-container:not(.difficulty-hidden)').each(function(index) {
             $this = $(this);
-            if ($this.data('title') == substring || $this.data('title').toString().indexOf(substring) !== -1) {
+            if ($this.data('title') === substring || $this.data('title').toString().indexOf(substring) !== -1) {
               $this.show();
             }
             else {

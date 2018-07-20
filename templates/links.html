@@ -45,7 +45,7 @@
     </ul>
 
     <script type="text/javascript" defer>
-      if("undefined" == typeof jQuery) {
+      if("undefined" === typeof jQuery) {
         window.onload = function() {
           init_app();
         };
@@ -61,6 +61,8 @@
         var $card_search = $('#card-search');
         var substring;
         var order;
+        var result;
+        var pk;
 
         // Dynamically set page title and description.
         document.title = '{% trans "Read it later" %}';
@@ -89,7 +91,7 @@
 
           $cards_container.find('.link-container:not(.difficulty-hidden)').each(function(index) {
             $this = $(this);
-            if ($this.data('title') == substring || $this.data('title').toString().indexOf(substring) !== -1) {
+            if ($this.data('title') === substring || $this.data('title').toString().indexOf(substring) !== -1) {
               $this.show();
             }
             else {
@@ -116,7 +118,7 @@
           return false;
         });
 
-        $('#links').sortable().on('sortupdate', function(e, ui) {
+        $cards_container.sortable().on('sortupdate', function(e, ui) {
           if (!$cards_container.hasClass('disabled')) {
             order = {};
             $cards_container.find('.item-container').each(function(index) {

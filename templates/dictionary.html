@@ -70,7 +70,7 @@
         </tbody>
     </table>
     <script type="text/javascript" defer>
-      if("undefined" == typeof jQuery) {
+      if("undefined" === typeof jQuery) {
         window.onload = function() {
           init_app();
         };
@@ -110,7 +110,7 @@
           msg = new SpeechSynthesisUtterance(msg);
           msg.lang = this.getAttribute('lang');
           window.speechSynthesis.cancel();
-          if (msg.lang == 'uk') {
+          if (msg.lang === 'uk') {
             msg = new Audio();
             msg.onerror = function() {
               alert("{% trans "Audio file for this word doesn't exists" %}");

@@ -202,7 +202,7 @@
   </div>
 
   <script type="text/javascript">
-    if("undefined" == typeof jQuery) {
+    if("undefined" === typeof jQuery) {
       window.onload = function() {
         init_app();
       };
@@ -223,19 +223,19 @@
 
       // Temperature.
       $C.on('keyup change', function() {
-        var value = parseFloat($(this).val(), 10);
+        var value = parseFloat($(this).val());
         $F.val(parseFloat((value * 1.8 + 32).toFixed(2)));
       });
       $F.on('keyup change', function() {
-        var value = parseFloat($(this).val(), 10);
+        var value = parseFloat($(this).val());
         $C.val(parseFloat(((value - 32) / 1.8).toFixed(2)));
       });
 
       // Another units.
       $('.conversion').on('keyup change', function() {
-        $this = $(this)
-        value = parseFloat($this.val(), 10);
-        cc = parseFloat($this.data('cc'), 10);
+        $this = $(this);
+        value = parseFloat($this.val());
+        cc = parseFloat($this.data('cc'));
         $this.closest('.conversion-container').siblings().find('.conversion').each(function() {
           this.value = parseFloat((value / cc * this.getAttribute('data-cc')).toFixed(2));
         });

@@ -17,7 +17,7 @@
 
     <div id="calendar"></div>
     <script type="text/javascript">
-        if("undefined" == typeof jQuery) {
+        if("undefined" === typeof jQuery) {
             window.onload = function() {
                 init_app();
             };
@@ -26,10 +26,10 @@
             init_app();
         }
         function init_app() {
-            var $field;
+            var $end_recurring_period;
             var $modal;
-            var start;
-            var end;
+            var result;
+            var pk;
 
             // Dynamically set page title and description.
             document.title = '{% trans "Calendar" %}';
@@ -99,7 +99,6 @@
             // Hide end of recurring period field.
             $(document).on('hidden.bs.modal', '.modal', function() {
                 $end_recurring_period.hide();
-
             });
 
             $modal.find("#id_rule").change(function() {

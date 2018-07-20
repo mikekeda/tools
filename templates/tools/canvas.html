@@ -6,24 +6,6 @@
 
 {% block content %}
 <style>
-  div#div2 {
-    position: fixed;
-    bottom: 0px;
-    padding: 1%;
-  }
-
-  div#div3 {
-    position: relative;
-    background-color: #fff;
-    border: 2px solid black;
-    max-height: 400px;
-    max-width: 300px;
-    overflow: auto;
-    word-wrap: break-word;
-    display: none;
-    border-radius: 5px;
-  }
-
   .hide {
     display: none;
   }
@@ -85,10 +67,6 @@
   input, select {
     font-size: 14px;
     margin: 2px;
-  }
-
-  input#send_mes {
-    float: right;
   }
 
   input#canv_width, #alfa {
@@ -155,8 +133,7 @@
     float: right;
   }
 
-  #files,
-  #sound {
+  #files {
     position: absolute;
     opacity: 0;
     z-index: 1;
@@ -265,21 +242,21 @@
                 case 'canv_width':
                     ctx.lineWidth = settings[setting].value;
                     document.getElementById("spcanv_width").innerHTML = ctx.lineWidth;
-                    break
+                    break;
                 case 'alfa':
                     ctx.globalAlpha = settings[setting].value / 100;
                     document.getElementById("spalfa").innerHTML = ctx.globalAlpha.toFixed(3);
-                    break
+                    break;
                 case 'color':
                     ctx.strokeStyle = settings[setting].value;
-                    break
+                    break;
                 default:
                     for (var key in settings) {
                         change_settings[key];
                     }
-                    if (tool == 'elastic') {
+                    if (tool === 'elastic') {
                         ctx.globalCompositeOperation = 'destination-out'
-                    };
+                    }
                     break;
             }
         }
@@ -329,7 +306,7 @@
         }
 
         function canv_forward() {
-            if (stackF[activ_canv].length == 0) {
+            if (stackF[activ_canv].length === 0) {
                 return true;
             }
             ctx.beginPath();
@@ -410,7 +387,7 @@
             num.parentNode.removeChild(num);
             stack.splice(dc, 1);
             stackF.splice(dc, 1);
-            if (activ_canv == num_canv) {
+            if (activ_canv === num_canv) {
                 activ_canv = activ_canv - 1;
             }
             num_canv -= 1;
@@ -451,23 +428,13 @@
                     img.src = e.target.result;
                     ctx.drawImage(img, 0, 0);
                     stack[activ_canv].push(canv.toDataURL());
-                    if (stack[1].length < 3 && num_canv == 1) {
+                    if (stack[1].length < 3 && num_canv === 1) {
                         resize_canv(img.width, img.height);
                     }
                     change_settings('alfa');
                 };
             })(f);
             reader.readAsDataURL(f);
-        }
-
-        function paste() {
-            var items = document.clipboardData.items;
-            var blob = items[0].getAsFile();
-            var reader = new FileReader();
-            reader.onload = function(event) {
-                console.log(event.target.result);  // data url!
-            }
-            reader.readAsDataURL(blob);
         }
 
         function change_tool(active_tool) {
@@ -479,60 +446,60 @@
                     canv.onmousedown = pencil_draw_begin;
                     canv.onmousemove = pencil_draw_go;
                     canv.onmouseup = pencil_draw_end;
-                    break
+                    break;
                 case 'elastic':
                     ctx.globalCompositeOperation = 'destination-out';
                     canv.onmousedown = pencil_draw_begin;
                     canv.onmousemove = pencil_draw_go;
                     canv.onmouseup = pencil_draw_end;
-                    break
+                    break;
                 case 'line':
                     canv.onmousedown = get_point;
                     canv.onmousemove = line_draw;
                     canv.onmouseup = draw_end;
-                    break
+                    break;
                 case 'polyline':
                     draw = true;
                     ctx.beginPath();
                     canv.onmousedown = polyline;
                     canv.onmousemove = null;
                     canv.onmouseup = null;
-                    break
+                    break;
                 case 'rectangle':
                     canv.onmousedown = get_point;
                     canv.onmousemove = rect_draw;
                     canv.onmouseup = draw_end;
-                    break
+                    break;
                 case 'circle':
                     canv.onmousedown = get_point;
                     canv.onmousemove = circle_draw;
                     canv.onmouseup = draw_end;
-                    break
+                    break;
                 case 'pipette':
                     canv.onmousedown = pipette;
                     canv.onmousemove = null;
                     canv.onmouseup = null;
-                    break
+                    break;
                 case 'fill':
                     canv.onmousedown = filled;
                     canv.onmousemove = null;
                     canv.onmouseup = null;
-                    break
+                    break;
                 case 'pan':
                     canv.onmousedown = get_point;
                     canv.onmousemove = pan;
                     canv.onmouseup = pan_end;
-                    break
+                    break;
                 case 'crop':
                     canv.onmousedown = get_point;
                     canv.onmousemove = null;
                     canv.onmouseup = crop;
-                    break
+                    break;
                 case 'scale':
                     canv.onmousedown = get_point;
                     canv.onmousemove = scale_go;
                     canv.onmouseup = scale_end;
-                    break
+                    break;
                 default:
                     change_tool (tool);
                     break;
@@ -551,7 +518,9 @@
         }
 
         function pencil_draw_go(event) {
-            if (!draw) {return true;};
+            if (!draw) {
+                return true;
+            }
             ctx.lineTo((event.offsetX || (event.layerX - canv.offsetLeft)),(event.offsetY || (event.layerY - canv.offsetTop)));
             ctx.stroke();
             ctx.save();
@@ -559,7 +528,9 @@
         }
 
         function pencil_draw_end(event) {
-            if (!draw) {return true;};
+            if (!draw) {
+                return true;
+            }
             ctx.lineTo((event.offsetX || (event.layerX - canv.offsetLeft)),(event.offsetY || (event.layerY - canv.offsetTop)));
             ctx.stroke();
             ctx.save();
@@ -568,7 +539,9 @@
         }
 
         function line_draw(event) {
-            if (!draw) {return true;};
+            if (!draw) {
+                return true;
+            }
             ctx.beginPath();
             ctx.moveTo(x1, y1);
             ctx.lineTo((event.offsetX || (event.layerX - canv.offsetLeft)),(event.offsetY || (event.layerY - canv.offsetTop)));
@@ -586,8 +559,8 @@
 
         function get_point(event) {
             stackF[activ_canv] = [];
-            x1=(event.offsetX || (event.layerX - canv.offsetLeft));
-            y1=(event.offsetY || (event.layerY - canv.offsetTop));
+            x1 = (event.offsetX || (event.layerX - canv.offsetLeft));
+            y1 = (event.offsetY || (event.layerY - canv.offsetTop));
             draw = true;
             switch (tool) {
                 case 'line':
@@ -596,17 +569,17 @@
                     stack[activ_canv].push(canv.toDataURL());
                     canv_img.src = stack[activ_canv].pop();
                     ctx.globalCompositeOperation = "copy";
-                    break
+                    break;
                 case 'scale':
                     ctx.save();
                     ctx.globalAlpha = 1;
                     ctx.translate(x1, y1);
                     ctx.globalCompositeOperation = "copy";
-                    break
+                    break;
                 case 'pan':
                     ctx.globalAlpha = 1;
                     ctx.globalCompositeOperation = "copy";
-                    break
+                    break;
                 default:
         //          ctx.beginPath();;
                     break;
@@ -627,20 +600,24 @@
                 canv_img.src = '';
                 stack[activ_canv].push(canv.toDataURL());
                 change_tool ();
-            }
+            };
             draw = false;
             ctx.save();
         }
 
         function rect_draw(event) {
-            if (!draw) {return true;};
+            if (!draw) {
+                return true;
+            }
             var x2 = (event.offsetX || (event.layerX - canv.offsetLeft));
             var y2 = (event.offsetY || (event.layerY - canv.offsetTop));
             ctx.strokeRect(x1, y1, x2 - x1, y2 - y1);
         }
 
         function circle_draw(event) {
-            if (!draw) {return true;};
+            if (!draw) {
+                return true;
+            }
             ctx.beginPath();
             var x2=(event.offsetX || (event.layerX - canv.offsetLeft));
             var y2=(event.offsetY || (event.layerY - canv.offsetTop));
@@ -657,13 +634,15 @@
             var str=decColor.toString(16);
             while (str.length < 6) {
                 str = '0' + str;
-            };
+            }
             settings['color'].value = '#' + str;
             ctx.strokeStyle = '#' + str;
         }
 
         function pan(event) {
-            if (!draw) {return true;};
+            if (!draw) {
+                return true;
+            }
             var x2 = event.offsetX || (event.layerX - canv.offsetLeft);
             var y2 = event.offsetY || (event.layerY - canv.offsetTop);
             var img = new Image();
@@ -680,7 +659,9 @@
         }
 
         function crop(event) {
-            if (!draw) {return true;};
+            if (!draw) {
+                return true;
+            }
             stackF[activ_canv] = [];
             var x2 = event.offsetX || (event.layerX - canv.offsetLeft);
             var y2 = event.offsetY || (event.layerY - canv.offsetTop);
@@ -747,7 +728,7 @@
 
         function filled(event) {
             stackF[activ_canv] = [];
-            d0 = new Date();
+            var d0 = new Date();
             var x = (event.offsetX || (event.layerX - canv.offsetLeft));
             var y = (event.offsetY || (event.layerY - canv.offsetTop));
             old_pix = ctx.getImageData(x, y, 1, 1);
@@ -755,7 +736,7 @@
                 new_pix.data[0] = parseInt(ctx.strokeStyle.substring(1, 3), 16);
                 new_pix.data[1] = parseInt(ctx.strokeStyle.substring(3, 5), 16);
                 new_pix.data[2] = parseInt(ctx.strokeStyle.substring(5, 7), 16);
-                new_pix.data[3] = parseInt(ctx.globalAlpha*255);
+                new_pix.data[3] = parseInt(ctx.globalAlpha * 255);
             ctx.beginPath();
             fillPixel(x, y);
 
@@ -763,14 +744,14 @@
 
             while(stack_pix.length > 0) {
                 i++;
-                toFill = stack_pix.pop();
+                var toFill = stack_pix.pop();
                 fillPixel(toFill[0], toFill[1]);
                 ctx.stroke();
             }
 
             ctx.stroke();
             stack[activ_canv].push(canv.toDataURL());
-            d1 = new Date();
+            var d1 = new Date();
             alert('Filling took: ' + (d1 - d0) / 1000 + ' s');
         }
 
@@ -831,17 +812,17 @@
         stack_pix = [];
 
         tools = {
-            'pencil'            :   document.getElementById("pencil"),
-            'elastic'           :   document.getElementById("elastic"),
-            'line'              :   document.getElementById("line"),
-            'polyline'          :   document.getElementById("polyline"),
-            'rectangle'         :   document.getElementById("rectangle"),
-            'circle'            :   document.getElementById("circle"),
-            'pipette'           :   document.getElementById("pipette"),
-            'fill'              :   document.getElementById("fill"),
-            'pan'               :   document.getElementById("pan"),
-            'crop'              :   document.getElementById("crop"),
-            'scale'             :   document.getElementById("scale"),
+            'pencil': document.getElementById("pencil"),
+            'elastic': document.getElementById("elastic"),
+            'line': document.getElementById("line"),
+            'polyline': document.getElementById("polyline"),
+            'rectangle': document.getElementById("rectangle"),
+            'circle': document.getElementById("circle"),
+            'pipette': document.getElementById("pipette"),
+            'fill': document.getElementById("fill"),
+            'pan': document.getElementById("pan"),
+            'crop': document.getElementById("crop"),
+            'scale': document.getElementById("scale")
         //      "rotate"    :   document.getElementById("rotate")
         };
 
@@ -856,9 +837,9 @@
         change_tool('pencil');
 
         settings = {
-            'canv_width'        : document.getElementById("canv_width"),
-            'alfa'              : document.getElementById("alfa"),
-            'color'             : document.getElementById("color"),
+            'canv_width': document.getElementById("canv_width"),
+            'alfa': document.getElementById("alfa"),
+            'color': document.getElementById("color")
         };
 
         for (var key in settings) {
@@ -904,13 +885,13 @@
             }
 
             {% if user.is_authenticated %}
-            $.getJSON("{% url 'canvases' profile_user.username %}", function(data) {
-                update_list_of_canvases(data);
-            });
+                $.getJSON("{% url 'canvases' profile_user.username %}", function(data) {
+                    update_list_of_canvases(data);
+                });
             {% endif %}
         }
 
-        if ("undefined" == typeof jQuery) {
+        if ("undefined" === typeof jQuery) {
             window.onload = function() {
                 init_app();
             };

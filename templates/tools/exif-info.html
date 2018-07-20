@@ -14,7 +14,7 @@
     <a href="#" id="googlemap" target="_blank" style="display: none;">{% trans "Show on a map" %}</a>
     <script type="text/javascript">
 
-        if("undefined" == typeof jQuery) {
+        if("undefined" === typeof jQuery) {
           window.onload = function() {
             init_app();
           };
@@ -34,14 +34,18 @@
           $('#asd').change(function(e) {
             if (this.files && this.files[0]) {
               var reader = new FileReader();
+              var $img = $('#img');
+              var $base = $("#base");
+              var $googlemap = $("#googlemap");
+
               reader.onload = function(e) {
-                $('#img').attr('src', e.target.result);
-                $("#img").show();
-              }
+                $img.attr('src', e.target.result);
+                $img.show();
+              };
               reader.readAsDataURL(this.files[0]);
               EXIF.getData(this.files[0], function() {
-                $("#base")[0].innerHTML = '';
-                $("#googlemap").hide();
+                $base[0].innerHTML = '';
+                $googlemap.hide();
                 var exif = EXIF.getAllTags(this);
                 if (Object.keys(exif).length !== 0) {
                   var rawLatitude = EXIF.getTag(this, "GPSLatitude");
@@ -51,27 +55,27 @@
 
                   if (rawLatitude && rawLatitudeRef && rawLongitude && rawLongitudeRef) {
                     var Latitude = (rawLatitude[0].numerator / rawLatitude[0].denominator + rawLatitude[1].numerator / 60 / rawLatitude[1].denominator + rawLatitude[2].numerator / 3600 / rawLatitude[2].denominator);
-                    Latitude = (rawLatitudeRef == "N") ? Latitude : -Latitude;
+                    Latitude = (rawLatitudeRef === "N") ? Latitude : -Latitude;
                     var Longitude = rawLongitude[0].numerator / rawLongitude[0].denominator + rawLongitude[1].numerator / 60 / rawLongitude[1].denominator + rawLongitude[2].numerator / 3600 / rawLongitude[2].denominator;
-                    Longitude = (rawLongitudeRef != "W") ? Longitude : '-' + Longitude;
+                    Longitude = (rawLongitudeRef !== "W") ? Longitude : '-' + Longitude;
 
-                    $("#googlemap").attr("href", 'https://www.google.com/maps/place/' + Latitude + ',' + Longitude);
-                    $("#googlemap").show();
+                    $googlemap.attr("href", 'https://www.google.com/maps/place/' + Latitude + ',' + Longitude);
+                    $googlemap.show();
 
                     var url = 'https://maps.googleapis.com/maps/api/geocode/json?latlng=' + Latitude + ',' + Longitude + '&key=AIzaSyBY_KN4CZEW9RHt8_ArriXN1FBbzUzw_58';
                     $.getJSON(url, function(json, textStatus) {
-                      if (json.status == "OK") {
-                        $("#base")[0].innerHTML = json.results[0]['formatted_address'];
-                      };
+                      if (json.status === "OK") {
+                        $base[0].innerHTML = json.results[0]['formatted_address'];
+                      }
                     });
                   }
                   else {
-                    $("#base")[0].innerHTML = 'No GPS data';
+                    $base[0].innerHTML = 'No GPS data';
                   }
 
                 }
                 else {
-                  $("#base")[0].innerHTML = 'No EXIF data';
+                  $base[0].innerHTML = 'No EXIF data';
                 }
               });
             }

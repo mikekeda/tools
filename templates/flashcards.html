@@ -97,7 +97,7 @@
     </div>
 
     <script type="text/javascript" defer>
-      if("undefined" == typeof jQuery) {
+      if("undefined" === typeof jQuery) {
         window.onload = function() {
           init_app();
         };
@@ -151,9 +151,9 @@
         $card_search.on('input',function(e) {
           substring = this.value;
 
-          $cards.find('.card-container:not(.difficulty-hidden)').each(function(index) {
+          $cards.children('.card-container:not(.difficulty-hidden)').each(function(index) {
             $this = $(this);
-            if ($this.data('word').indexOf(substring) !== -1) {
+            if ($this.data('word') === substring || $this.data('word').toString().indexOf(substring) !== -1) {
               $this.show();
             }
             else {

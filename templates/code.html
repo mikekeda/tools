@@ -82,7 +82,7 @@
         document.title = '{{ page_title }}';
         document.head.querySelector('meta[name=description]').content = '{% trans "Instantly share code, notes, and snippets" %}';
 
-        if("undefined" == typeof jQuery) {
+        if("undefined" === typeof jQuery) {
             window.onload = function() {
                 init_app();
             };
