@@ -151,6 +151,9 @@ CACHES = {
     }
 }
 
+SESSION_ENGINE = "django.contrib.sessions.backends.cache"
+SESSION_CACHE_ALIAS = "default"
+
 # CELERY STUFF
 CELERY_BROKER_URL = 'redis://localhost:6379/3'
 CELERY_RESULT_BACKEND = 'redis://localhost:6379/3'
