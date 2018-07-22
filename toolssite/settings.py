@@ -5,7 +5,6 @@ Django settings for tools site project.
 import os
 import requests
 from google.auth._default import _load_credentials_from_file
-from django.utils.log import DEFAULT_LOGGING as LOGGING
 from django.utils.translation import ugettext_lazy as _
 
 SITE_ENV_PREFIX = 'TOOLS'
@@ -258,8 +257,3 @@ if not DEBUG:
     GS_BUCKET_NAME = 'cdn.mkeda.me'
     GS_CREDENTIALS, GS_PROJECT_ID = _load_credentials_from_file(
         get_env_var('GOOGLE_CREDENTIALS'))
-
-LOGGING['formatters']['django.server'] = {
-    '()': 'toolssite.utils.ToolsFormatter',
-    'format': '["%(server_time)s", "%(levelname)s", "%(message)s"]',
-}
