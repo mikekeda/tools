@@ -199,6 +199,7 @@ class Label(models.Model):
     """ Label model. """
     CATEGORIES = (
         ('programing', 'Programing'),
+        ('links', 'Links'),
     )
 
     title = models.CharField(max_length=60)
@@ -383,6 +384,13 @@ class Link(models.Model):
     description = models.CharField(max_length=128, blank=True, null=True)
     color = ColorField(max_length=6, default='000000')
     weight = models.SmallIntegerField(default=0)
+    category = models.ForeignKey(
+        Label,
+        related_name='links',
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True
+    )
     user = models.ForeignKey(
         User,
         related_name='links',

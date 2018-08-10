@@ -30,17 +30,21 @@
       </div>
     </div>
 
-    <ul id="links" class="cards row sortable">
-      {% for link in links %}
-        <li class="link-container item-container" data-difficulty="{{ link.color }}" data-title="{{ link.link }}" data-id="{{ link.id }}" data-json="{{ link|serialize }}">
-          <small class="glyphicon glyphicon-move" aria-hidden="true"></small>
-          <a target="_blank" href="{{ link.link }}" class="link" style="font-size: 1.2em; color: #{{ link.color }};" data-toggle="tooltip" data-html="true" title="{% if link.title != None %}<b>{{ link.title }}</b>{% endif %}{% if link.description != None %}<p>{{ link.description }}</p>{% endif %}">
-              {{ link.link }}
-          </a>
-          <a href="/admin/tool/link/{{ link.id }}/change/" class="edit">
-            <small class="glyphicon glyphicon-pencil" aria-hidden="true"></small>
-          </a>
-        </li>
+    <ul id="links" class="cards row sortable list-group">
+      {% for category, links in categorized_links %}
+        <div class="links list-group-item"><h4>{{ category }}</h4>
+          {% for link in links %}
+            <li class="link-container item-container" data-difficulty="{{ link.color }}" data-title="{{ link.link }}" data-id="{{ link.id }}" data-json="{{ link|serialize }}">
+              <small class="glyphicon glyphicon-move" aria-hidden="true"></small>
+              <a target="_blank" href="{{ link.link }}" class="link" style="font-size: 1.2em; color: #{{ link.color }};" data-toggle="tooltip" data-html="true" title="{% if link.title != None %}<b>{{ link.title }}</b>{% endif %}{% if link.description != None %}<p>{{ link.description }}</p>{% endif %}">
+                {{ link.link }}
+              </a>
+              <a href="/admin/tool/link/{{ link.id }}/change/" class="edit">
+                <small class="glyphicon glyphicon-pencil" aria-hidden="true"></small>
+              </a>
+            </li>
+          {% endfor %}
+        </div>
       {% endfor %}
     </ul>
 
@@ -55,7 +59,7 @@
       }
 
       function init_app() {
-        var $cards_container = $('#links');
+        var $cards_container = $('.links');
         var $this;
         var $difficulty_filters = $('.difficulty-filter');
         var $card_search = $('#card-search');

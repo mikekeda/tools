@@ -2,7 +2,7 @@ from django import forms
 from schedule.models import Event
 from easy_select2 import apply_select2, select2_modelform
 
-from .models import Profile, Word, Card, Task, Code, Link
+from .models import Profile, Word, Card, Task, Code, Link, Label
 
 task_form = select2_modelform(Task)
 
@@ -44,12 +44,22 @@ class TaskForm(forms.ModelForm):
 
 
 class CodeForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['labels'].queryset = Label.objects.filter(
+            category='programing')
+
     class Meta:
         model = Code
         exclude = ('user', 'slug')
 
 
 class LinkForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['category'].queryset = Label.objects.filter(
+            category='links')
+
     class Meta:
         model = Link
         exclude = ('user', 'weight', 'title', 'description')

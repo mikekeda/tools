@@ -1,6 +1,6 @@
 import re
 import json
-from collections import OrderedDict
+from collections import OrderedDict, defaultdict
 import pytz
 
 from schedule.models import Calendar, Event
@@ -694,8 +694,13 @@ class LinkView(View, GetUserMixin):
         links = Link.objects.filter(user=user).order_by('weight')
         palette = set((link.color for link in links))
 
+        categorized_links = defaultdict(list)
+        for link in links:
+            categorized_links[link.category or ''].append(link)
+        categorized_links = categorized_links.items()
+
         return render(request, "links.html", dict(
-            links=links,
+            categorized_links=categorized_links,
             palette=palette,
             form=LinkForm(),
             profile_user=user,
