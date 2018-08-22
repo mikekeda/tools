@@ -100,7 +100,7 @@ class Profile(models.Model):
     )
     avatar = models.ImageField(
         upload_to='avatars/',
-        default='avatars/no-avatar.png'
+        default='/media/avatars/no-avatar.png'
     )
     email = models.EmailField(
         max_length=64,
