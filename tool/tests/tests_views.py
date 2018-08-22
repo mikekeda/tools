@@ -1143,6 +1143,16 @@ class ToolViewTest(BaseTestCase):
                                      user=self.test_user)
         self.assertEqual(test_link.color, '000000')
 
+        # Site dosen't exist.
+        self.client.login(username='testuser', password='12345')
+        resp = self.client.post(reverse('links'), {
+            'link': 'https://not-exists.com',
+            'color': '000000',
+        })
+        self.assertRedirects(resp, '/links')
+        test_link = Link.objects.get(link='https://not-exists.com',
+                                     user=self.test_user)
+
         # User can't add same link multiple times.
         resp = self.client.post(reverse('links'), {
             'link': ' google.com  ',
