@@ -55,10 +55,14 @@ class CodeForm(forms.ModelForm):
 
 
 class LinkForm(forms.ModelForm):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, user=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['category'].queryset = Label.objects.filter(
             category='links')
+
+        if user:
+            self.fields['category'].queryset = self.fields[
+                'category'].queryset.filter(user=user)
 
     class Meta:
         model = Link

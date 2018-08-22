@@ -33,7 +33,8 @@ User = get_user_model()
 
 
 class GetUserMixin:
-    def get_user(self, request, username: str):
+    @staticmethod
+    def get_user(request, username: str):
         """ Get user by username and check access. """
         if not request.user.is_authenticated or (
                 not request.user.is_superuser and
@@ -546,7 +547,8 @@ def log_in(request):
 
 
 class CanvasView(View, GetUserMixin):
-    def get(self, request, slug):
+    # noinspection PyMethodMayBeStatic
+    def get(self, _, slug):
         """ Get canvas by slug. """
         canvas = get_object_or_404(Canvas.objects.values_list(
             'canvas', flat=True), slug=slug)
@@ -555,7 +557,8 @@ class CanvasView(View, GetUserMixin):
 
 
 class CanvasesView(View, GetUserMixin):
-    def get(self, request, username=None):
+    # noinspection PyMethodMayBeStatic
+    def get(self, _, username=None):
         """ Get list of user canvases. """
         user = get_object_or_404(User, username=username)
         canvases = Canvas.objects.filter(user=user).order_by('-pk')\
@@ -691,6 +694,7 @@ class LinkView(View, GetUserMixin):
             user = self.get_user(request, username)
         except PermissionDenied:
             return redirect(reverse('login') + '?next=' + request.path)
+
         links = Link.objects.filter(user=user).order_by('weight')
         palette = set((link.color for link in links))
 
@@ -702,7 +706,7 @@ class LinkView(View, GetUserMixin):
         return render(request, "links.html", dict(
             categorized_links=categorized_links,
             palette=palette,
-            form=LinkForm(),
+            form=LinkForm(user=user),
             profile_user=user,
         ))
 
@@ -720,7 +724,7 @@ class LinkView(View, GetUserMixin):
                 user=user).order_by('weight').first()
             link.weight = first_link.weight - 1 if first_link else 0
 
-        form = LinkForm(data=request.POST, instance=link)
+        form = LinkForm(data=request.POST, instance=link, user=user)
         if form.is_valid():
             try:
                 link = form.save(commit=False)

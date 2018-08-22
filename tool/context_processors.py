@@ -5,7 +5,7 @@ from django.conf import settings
 from .models import Profile
 
 
-def categories(request=None):
+def categories(_=None):
     """ Get all tools. """
     tools = []
     folders = settings.TEMPLATES[0]['DIRS']
