@@ -94,7 +94,6 @@ class Profile(models.Model):
     )
     timezone = models.CharField(
         max_length=64,
-        choices=TIMEZONES,
         blank=True,
         null=True
     )
