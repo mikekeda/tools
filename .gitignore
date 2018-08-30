@@ -9,7 +9,6 @@ reports/
 *.rdb
 *.pid
 
-mydatabase
 celerybeat-schedule
 .DS_Store
 .coafile
