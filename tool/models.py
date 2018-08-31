@@ -1,4 +1,3 @@
-import base64
 from collections import namedtuple
 import datetime
 import random
@@ -8,7 +7,6 @@ import requests
 import pytz
 
 from bs4 import BeautifulSoup
-from cryptography.fernet import Fernet
 
 from django.db import models
 from django.contrib.auth.models import User
@@ -101,35 +99,6 @@ class Profile(models.Model):
         upload_to='avatars/',
         default='/media/avatars/no-avatar.png'
     )
-    email = models.EmailField(
-        max_length=64,
-        blank=True,
-        null=True
-    )
-    email_password = models.CharField(
-        max_length=256,
-        blank=True,
-        null=True
-    )
-
-    def save(self, force_insert=False, force_update=False, using=None,
-             update_fields=None):
-        """ Encrypt password on save in case if it was changed. """
-        if self.email_password:
-            origin = None
-            if self.pk:
-                origin = type(self).objects.get(pk=self.pk)
-            # Check if password was changed.
-            if not origin or origin.email_password != self.email_password:
-                # Encrypt password.
-                key = base64.urlsafe_b64encode(
-                    settings.SECRET_KEY[:32].encode('utf-8')
-                )
-                self.email_password = Fernet(key).encrypt(
-                    self.email_password.encode('utf-8')
-                ).decode('utf-8')
-
-        super().save(force_insert, force_update, using, update_fields)
 
     def __str__(self):
         return get_username_by_uid(self)

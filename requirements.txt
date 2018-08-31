@@ -33,7 +33,6 @@ django-redis==4.9.0
 django-scheduler==0.8.8
 django-widget-tweaks==1.4.2
 et-xmlfile==1.0.1
-googleapis-common-protos==1.5.3
 gunicorn==19.9.0
 hiredis==0.2.0
 hyperlink==18.0.0

@@ -44,8 +44,8 @@ class TaskForm(forms.ModelForm):
 
 
 class CodeForm(forms.ModelForm):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
         self.fields['labels'].queryset = Label.objects.filter(
             category='programing')
 
@@ -55,8 +55,8 @@ class CodeForm(forms.ModelForm):
 
 
 class LinkForm(forms.ModelForm):
-    def __init__(self, user=None, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, user=None, **kwargs):
+        super().__init__(**kwargs)
         self.fields['category'].queryset = Label.objects.filter(
             category='links')
 
