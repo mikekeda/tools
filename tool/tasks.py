@@ -1,8 +1,9 @@
 import pytz
 
 from django.conf import settings
-from django.core.mail import send_mail
+from django.core.mail import EmailMultiAlternatives
 from django.db.models import Q
+from django.template.loader import render_to_string
 from django.utils import timezone
 from schedule.models import Event
 
@@ -83,12 +84,19 @@ def send_notification():
             pytz.timezone(event.creator.profile.timezone)
         ).strftime('%H:%M')
 
-        send_mail(
-            '{} will start today at {}'.format(event.title, event_time),
+        subject = f"{event.title} will start today at {event_time}"
+        html_content = render_to_string('alert-email.html', {
+            'subject': subject,
+            'text': text,
+        })
+        msg = EmailMultiAlternatives(
+            subject,
             text,
-            'Tools site <notify@{}>'.format(settings.MAILGUN_SERVER_NAME),
-            ['{} <{}>'.format(name, event.creator.email)],
+            f"Tools site <notify@{settings.MAILGUN_SERVER_NAME}>",
+            [f"{name} <{event.creator.email}>"],
         )
+        msg.attach_alternative(html_content, "text/html")
+        msg.send()
 
 
 @app.task
@@ -130,9 +138,16 @@ def daily_notification():
 
             text += '{} {}\n'.format(local_time, event.title)
 
-        send_mail(
-            "Today's events",
+        subject = "Today's events"
+        html_content = render_to_string('alert-email.html', {
+            'subject': subject,
+            'text': text,
+        })
+        msg = EmailMultiAlternatives(
+            subject,
             text,
-            'Tools site <notify@{}>'.format(settings.MAILGUN_SERVER_NAME),
-            ['{} <{}>'.format(name, user_events[username][0].creator.email)],
+            f"Tools site <notify@{settings.MAILGUN_SERVER_NAME}>",
+            [f"{name} <{user_events[username][0].creator.email}>"],
         )
+        msg.attach_alternative(html_content, "text/html")
+        msg.send()

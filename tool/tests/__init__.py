@@ -5,6 +5,9 @@ User = get_user_model()
 
 
 class BaseTestCase(TestCase):
+    test_user = None
+    test_admin = None
+
     @classmethod
     def setUpClass(cls):
         super().setUpClass()

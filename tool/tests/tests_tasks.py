@@ -88,31 +88,21 @@ class ToolTaskTest(BaseTestCase):
         self.assertSetEqual(events, {self.test_event1})
 
     def test_tasks_send_notification(self):
-        with patch('tool.tasks.send_mail') as send_mail_mock:
+        with patch('tool.tasks.EmailMultiAlternatives.send') as send_mail_mock:
             with patch('tool.tasks.timezone.localtime') as time_mock:
                 time_mock.return_value.strftime.return_value = '10:30'
                 send_notification()
-                send_mail_mock.assert_any_call(
-                    "Test event1 will start today at 10:30",
-                    "Test description 1",
-                    "Tools site <notify@info.mkeda.me>",
-                    ["testuser <>"]
-                )
+                send_mail_mock.assert_called_once()
 
                 with patch('tool.tasks.timezone.now') as now_mock:
                     now_mock.return_value = timezone.datetime(
                         2018, 7, 23, 19, 30, tzinfo=pytz.utc)
                     time_mock.return_value.strftime.return_value = '20:30'
                     send_notification()
-                    send_mail_mock.assert_any_call(
-                        "Test event4 will start today at 20:30",
-                        "No description provided",
-                        "Tools site <notify@info.mkeda.me>",
-                        ["Bob Smit <myemail@test.com>"]
-                    )
+                    self.assertEqual(send_mail_mock.call_count, 2)
 
     def test_tasks_daily_notification(self):
-        with patch('tool.tasks.send_mail') as send_mail_mock:
+        with patch('tool.tasks.EmailMultiAlternatives.send') as send_mail_mock:
             with patch('tool.tasks.timezone.localtime') as time_mock:
                 time_mock.return_value.strftime.return_value = '09:15'
                 # We are sending emails at 8am, too late - no calls.
@@ -123,17 +113,4 @@ class ToolTaskTest(BaseTestCase):
                 # We are sending emails at 8am, it's time to send emails.
                 time_mock.return_value.hour = 8
                 daily_notification()
-                send_mail_mock.assert_any_call(
-                    "Today's events",
-                    "09:15 Test event1\n",
-                    "Tools site <notify@info.mkeda.me>",
-                    ["testuser <>"]
-                )
-                send_mail_mock.assert_any_call(
-                    "Today's events",
-                    "09:15 Test event2\n" +
-                    "09:15 Test event3\n" +
-                    "09:15 Test event4\n",
-                    "Tools site <notify@info.mkeda.me>",
-                    ["Bob Smit <myemail@test.com>"]
-                )
+                self.assertEqual(send_mail_mock.call_count, 2)
