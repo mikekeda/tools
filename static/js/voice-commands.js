@@ -79,8 +79,7 @@ $(document).ready(function() {
       'cancel':               cancel_modal,
       'today\'s events':      annyang_events,
       'what time is it':      annyang_time,
-//      'play me something':    annyang_paly,
-      'goodbye':              annyang_stop,
+      'goodbye':              annyang_stop
     };
     // OPTIONAL: activate debug mode for detailed logging in the console
     annyang.debug();

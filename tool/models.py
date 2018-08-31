@@ -153,7 +153,7 @@ class Word(models.Model):
     changed = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return self.en or '-'
+        return getattr(self, 'en', '-')
 
 
 for lang in settings.LANGUAGES:

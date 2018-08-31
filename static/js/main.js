@@ -16,10 +16,10 @@ $(document).ready(function() {
   function page_init() {
     // Initialize datetimepicker.
     $content.find('.datetimepicker').datetimepicker({
-      format: 'YYYY-MM-DD HH:mm',
+      format: 'YYYY-MM-DD HH:mm'
     });
     $content.find('.datetimepicker-date').datetimepicker({
-      format: 'YYYY-MM-DD',
+      format: 'YYYY-MM-DD'
     });
 
     // Initialize jscolor.
@@ -32,8 +32,8 @@ $(document).ready(function() {
     if (!$(this).parent('li').hasClass("active")) {
       var $link = $(this);
       $.ajax({
-        url: $link.attr("href") != '/' ? '/ajax' + $link.attr("href") : '/ajax',
-        dataType: 'html',
+        url: $link.attr("href") !== '/' ? '/ajax' + $link.attr("href") : '/ajax',
+        dataType: 'html'
       })
       .done(function(data) {
         $('#content').html(data);

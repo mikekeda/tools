@@ -1,7 +1,7 @@
 $(document).ready(function() {
   "use strict";
 
-  if("undefined" == typeof jQuery) {
+  if("undefined" === typeof jQuery) {
     window.onload = function() {
       init_app();
     };
