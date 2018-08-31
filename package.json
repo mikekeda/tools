@@ -7,7 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "devDependencies": {
-    "browser-sync": "*",
+    "browser-sync": "^2.24.7",
     "gulp": "*",
     "gulp-autoprefixer": "^3.1.1",
     "gulp-cached": "^1.1.1",
@@ -19,7 +19,7 @@
     "gulp-sass": "*",
     "gulp-scss-lint": "^0.4.0",
     "gulp-uncss": "^1.0.6",
-    "jshint": "^2.9.4",
+    "jshint": "^2.9.6",
     "node-neat": "^2.0.0-beta.0"
   },
   "author": "Mike",
