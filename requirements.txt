@@ -28,7 +28,7 @@ Django==2.2.1
 django-annoying==0.10.4
 django-debug-toolbar==1.11
 django-easy-select2==1.5.5
-django-import-export==1.2.1.dev0
+git+https://github.com/django-import-export/django-import-export.git#egg=django-import-export
 django-jenkins==0.110.0
 django-redis==4.10.0
 django-scheduler==0.8.8
