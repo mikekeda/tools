@@ -26,7 +26,7 @@ cryptography==2.6.1
 daphne==2.3.0
 defusedxml==0.6.0
 diff-match-patch==20181111
-Django==2.2.1
+Django==2.2.4
 django-annoying==0.10.4
 django-debug-toolbar==1.11
 django-easy-select2==1.5.5
