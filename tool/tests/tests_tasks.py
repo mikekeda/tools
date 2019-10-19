@@ -5,7 +5,7 @@ from django.utils import timezone
 from schedule.models import Calendar, Event, Rule
 
 from tool.models import Profile
-from tool.tasks import get_occurrences, send_notification, daily_notification
+from tool.tasks import get_occurrences, send_email_notifications, daily_notification
 from tool.tests import BaseTestCase
 
 
@@ -87,18 +87,18 @@ class ToolTaskTest(BaseTestCase):
         events = get_occurrences(start, end, self.test_user)
         self.assertSetEqual(events, {self.test_event1})
 
-    def test_tasks_send_notification(self):
+    def test_tasks_send_email_notifications(self):
         with patch('tool.tasks.EmailMultiAlternatives.send') as send_mail_mock:
             with patch('tool.tasks.timezone.localtime') as time_mock:
                 time_mock.return_value.strftime.return_value = '10:30'
-                send_notification()
+                send_email_notifications()
                 send_mail_mock.assert_called_once()
 
                 with patch('tool.tasks.timezone.now') as now_mock:
                     now_mock.return_value = timezone.datetime(
                         2018, 7, 23, 19, 30, tzinfo=pytz.utc)
                     time_mock.return_value.strftime.return_value = '20:30'
-                    send_notification()
+                    send_email_notifications()
                     self.assertEqual(send_mail_mock.call_count, 2)
 
     def test_tasks_daily_notification(self):

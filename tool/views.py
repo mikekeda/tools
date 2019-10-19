@@ -338,9 +338,12 @@ class ProfileView(LoginRequiredMixin, View, GetUserMixin):
                     safe=False,
                     status=403
                 )
-            elif field in ['first_name', 'last_name', 'email'] \
-                    or field.startswith('palette_color_'):
-                if field.startswith('palette_color_'):
+            elif any([
+                field in ['first_name', 'last_name', 'email', 'phone_number'],
+                field.startswith('palette_color_')
+            ]):
+                if field == 'phone_number' or\
+                        field.startswith('palette_color_'):
                     current_obj = profile
                 else:
                     current_obj = user

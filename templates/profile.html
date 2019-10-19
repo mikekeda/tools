@@ -88,12 +88,22 @@
                                 </div>
                             </div>
                             <div class="form-group row">
+                                <div class="col-md-4 float-left"><label for="email">{% trans "Phone Number" %}</label></div>
+                                <div class="col-md-8 float-right">
+                                    {% if is_current_user %}
+                                        <a href="#" id="phone_number" class="editable" data-type="tel" data-pk="phone_number" data-url="{% url 'user' profile_user.username %}" data-placeholder="{% trans 'Enter phone number' %}" data-params="{csrfmiddlewaretoken:'{{csrf_token}}'}">{{ profile.phone_number }}</a>
+                                    {% else %}
+                                        {{ profile.phone_number }}
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="form-group row">
                                 <div class="col-md-4 float-left"><label for="timezone">{% trans "Timezone" %}</label></div>
                                 <div class="col-md-8 float-right">
                                     {% if is_current_user %}
                                         <a href="#" id="timezone" class="editable" data-type="select" data-value="{{ profile.timezone }}" data-source="{{ timezones }}" data-pk="timezone" data-url="{% url 'user' profile_user.username %}" data-placeholder="{% trans 'Enter email' %}" data-params="{csrfmiddlewaretoken:'{{csrf_token}}'}">{{ profile.timezone }}</a>
                                     {% else %}
-                                        {{ profile_user.profile.timezone }}
+                                        {{ profile.timezone }}
                                     {% endif %}
                                 </div>
                             </div>

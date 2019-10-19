@@ -6,10 +6,12 @@ from django.db.models import Q
 from django.template.loader import render_to_string
 from django.utils import timezone
 from schedule.models import Event
+from twilio.rest import Client
 
 from celery import Celery
 
 app = Celery('tool')
+client = Client(settings.TWILIO_ACCOUNT_SID, settings.TWILIO_AUTH_TOKEN)
 
 
 def get_occurrences(start, end, creator=None):
@@ -51,7 +53,38 @@ def get_occurrences(start, end, creator=None):
 
 
 @app.task
-def send_notification():
+def send_sms_notifications():
+    """ Send sms notification about upcoming events. """
+    interval = 5
+    before = 6
+
+    now = timezone.now()
+    now -= timezone.timedelta(
+        minutes=now.minute % interval,
+        seconds=now.second,
+        microseconds=now.microsecond
+    )
+
+    start = now + timezone.timedelta(minutes=before - interval)
+    end = start + timezone.timedelta(minutes=interval)
+    events = get_occurrences(start, end)
+
+    for event in events:
+        if event.creator.profile.phone_number:
+            event_time = timezone.localtime(
+                event.start,
+                pytz.timezone(event.creator.profile.timezone)
+            ).strftime('%H:%M')
+
+            client.messages.create(
+                body=f"{event.title} will start today at {event_time}",
+                from_=settings.TWILIO_PHONE_NUMBER,
+                to=event.creator.profile.phone_number
+            )
+
+
+@app.task
+def send_email_notifications():
     """ Send email notification about upcoming events. """
     interval = 15
     before = 60

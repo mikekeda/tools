@@ -18,7 +18,9 @@ from django.urls import reverse
 from django.utils.html import format_html
 from django.utils.translation import ugettext
 
-from .widgets import ColorWidget
+from phonenumber_field.modelfields import PhoneNumberField
+
+from tool.widgets import ColorWidget
 
 TIMEZONES = sorted([
     (tz, tz + ' ' + datetime.datetime.now(pytz.timezone(tz)).strftime('%z'))
@@ -99,6 +101,7 @@ class Profile(models.Model):
         upload_to='avatars/',
         default='/media/avatars/no-avatar.png'
     )
+    phone_number = PhoneNumberField(blank=True)
 
     def __str__(self):
         return get_username_by_uid(self)
