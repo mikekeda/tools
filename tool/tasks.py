@@ -79,7 +79,7 @@ def send_sms_notifications():
             client.messages.create(
                 body=f"{event.title} will start today at {event_time}",
                 from_=settings.TWILIO_PHONE_NUMBER,
-                to=event.creator.profile.phone_number
+                to=event.creator.profile.phone_number.as_e164
             )
 
 
