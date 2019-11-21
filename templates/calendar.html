@@ -43,7 +43,6 @@
                 events: '/schedule/api/occurrences?calendar_slug={{ profile_user.username }}&timezone={{ profile.timezone }}',
                 ignoreTimezone: false,
                 timeFormat: 'H:mm',
-                defaultView: 'agendaWeek',
                 eventClick: function(calEvent, jsEvent, view) {
                     // Show modal, remove errors and set hidden id field.
                     $modal.modal();
