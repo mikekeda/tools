@@ -216,7 +216,7 @@ class Task(models.Model):
     description = models.TextField(blank=True, null=True)
     status = models.CharField(max_length=10, choices=STATUSES, default='todo')
     resolution = models.CharField(
-        max_length=16,
+        max_length=20,
         choices=RESOLUTIONS,
         blank=True,
         null=True
