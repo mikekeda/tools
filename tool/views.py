@@ -342,7 +342,7 @@ class ProfileView(LoginRequiredMixin, View, GetUserMixin):
                 field in ['first_name', 'last_name', 'email', 'phone_number'],
                 field.startswith('palette_color_')
             ]):
-                if field == 'phone_number' or\
+                if field == 'phone_number' or \
                         field.startswith('palette_color_'):
                     current_obj = profile
                 else:
@@ -698,7 +698,8 @@ class LinkView(View, GetUserMixin):
         except PermissionDenied:
             return redirect(reverse('login') + '?next=' + request.path)
 
-        links = Link.objects.filter(user=user).order_by('weight')
+        links = Link.objects.select_related('category').filter(
+            user=user).order_by('category__title', 'weight')
         palette = set((link.color for link in links))
 
         categorized_links = defaultdict(list)

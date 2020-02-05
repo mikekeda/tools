@@ -30,9 +30,10 @@
       </div>
     </div>
 
-    <ul id="links" class="cards row sortable list-group">
+    <ul id="links" class="cards sortable list-group">
       {% for category, links in categorized_links %}
-        <div class="links list-group-item"><h4>{{ category }}</h4>
+        {% trans "No category" as no_category %}
+        <div class="links list-group-item"><h4>{{ category|default:no_category }}</h4>
           {% for link in links %}
             <li class="link-container item-container" data-difficulty="{{ link.color }}" data-title="{{ link.link }}" data-id="{{ link.id }}" data-json="{{ link|serialize }}">
               <small class="glyphicon glyphicon-move" aria-hidden="true"></small>
@@ -59,14 +60,14 @@
       }
 
       function init_app() {
-        var $cards_container = $('.links');
-        var $this;
-        var $difficulty_filters = $('.difficulty-filter');
-        var $card_search = $('#card-search');
-        var substring;
-        var order;
-        var result;
-        var pk;
+        let $cards_container = $('.links');
+        let $this;
+        let $difficulty_filters = $('.difficulty-filter');
+        let $card_search = $('#card-search');
+        let substring;
+        let order;
+        let result;
+        let pk;
 
         // Dynamically set page title and description.
         document.title = '{% trans "Read it later" %}';
@@ -90,10 +91,10 @@
           return false;
         });
 
-        $card_search.on('input', function(e) {
+        $card_search.on('input', function(_) {
           substring = this.value;
 
-          $cards_container.find('.link-container:not(.difficulty-hidden)').each(function(index) {
+          $cards_container.find('.link-container:not(.difficulty-hidden)').each(function(_) {
             $this = $(this);
             if ($this.data('title') === substring || $this.data('title').toString().indexOf(substring) !== -1) {
               $this.show();
@@ -122,7 +123,7 @@
           return false;
         });
 
-        $cards_container.sortable().on('sortupdate', function(e, ui) {
+        $cards_container.sortable().on('sortupdate', function(_, __) {
           if (!$cards_container.hasClass('disabled')) {
             order = {};
             $cards_container.find('.item-container').each(function(index) {
