@@ -1,5 +1,5 @@
 {
-  "name": "JessBlog",
+  "name": "Tools",
   "version": "0.0.7",
   "description": "We use gulp to compile sass to css.",
   "main": "Gulpfile.js",
@@ -23,5 +23,8 @@
     "node-neat": "^2.0.0-beta.0"
   },
   "author": "Mike",
-  "license": "BSD-2-Clause"
+  "license": "BSD-2-Clause",
+  "dependencies": {
+    "natives": "^1.1.6"
+  }
 }

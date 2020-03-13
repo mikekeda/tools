@@ -1,13 +1,15 @@
-import re
-import json
 from collections import OrderedDict, defaultdict
+import json
+import re
 import pytz
 
+from geoip2.errors import AddressNotFoundError
 from schedule.models import Calendar, Event
 
 from django.core.serializers import serialize
 from django.core.exceptions import PermissionDenied, ValidationError
 from django.conf import settings
+from django.contrib.gis.geoip2 import GeoIP2
 from django.db import transaction
 from django.db.utils import IntegrityError
 from django.http import Http404, JsonResponse, HttpResponseRedirect
@@ -23,11 +25,11 @@ from django.utils.translation import ugettext
 from django.utils import timezone
 from django.views import View
 
-from .models import (TIMEZONES, Card, Word, Profile, Task, Canvas, Code, Link,
-                     Label, default_palette_colors)
-from .forms import (WordForm, EventForm, CardForm, AvatarForm, TaskForm,
-                    CodeForm, LinkForm)
-from .tasks import get_occurrences
+from tool.models import (TIMEZONES, Card, Word, Profile, Task, Canvas, Code,
+                         Link, Label, default_palette_colors)
+from tool.forms import (WordForm, EventForm, CardForm, AvatarForm, TaskForm,
+                        CodeForm, LinkForm)
+from tool.tasks import get_occurrences
 
 User = get_user_model()
 
@@ -159,8 +161,7 @@ class TasksView(LoginRequiredMixin, View, GetUserMixin):
         for task in tasks:
             tasks_dict[task.status].append(task)
 
-        form.fields['color'].widget.choices = [(i, k) for i, k in
-                                               palette.items()]
+        form.fields['color'].widget.choices = list(palette.items())
 
         return render(request, "tasks.html", dict(
             tasks_dict=tasks_dict.items(),
@@ -589,6 +590,41 @@ class CanvasesView(View, GetUserMixin):
             .values_list('slug', 'canvas')
 
         return JsonResponse(dict(canvases), safe=False)
+
+
+class TracerouteView(LoginRequiredMixin, View):
+    # noinspection PyMethodMayBeStatic
+    def get(self, request):
+        """ Get list of user code snippets or user snippet. """
+        return render(request, 'traceroute.html', {})
+
+    # noinspection PyMethodMayBeStatic
+    def post(self, request):
+        result = defaultdict(int)
+        g = GeoIP2()
+        traceroute = request.POST.get('traceroute', '')
+        traceroute = traceroute.splitlines()
+        s = [row.split() for row in traceroute if row]
+        for i, row in enumerate(s):
+            try:
+                if row[1][0] == '(' and row[1][-1] == ')':
+                    ip = row[1][1:-1]
+                else:
+                    ip = row[2][1:-1]
+
+                lon, lat = g.lon_lat(ip)
+            except (AddressNotFoundError, TypeError, OSError, IndexError):
+                continue  # skip invalid ip
+
+            result[(lon, lat)] = i + 1
+
+            traceroute[i].rstrip()
+            traceroute[i] += f" ({lat}, {lon})"
+
+        return render(request, 'traceroute.html', {
+            'traceroute': '\n'.join(traceroute),
+            'result': [(lat, lon, t) for (lon, lat), t in result.items()]
+        })
 
 
 class CodeView(View, GetUserMixin):

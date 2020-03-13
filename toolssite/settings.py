@@ -85,7 +85,6 @@ INSTALLED_APPS = [
     'widget_tweaks',
     'schedule',
     'easy_select2',
-    'django_jenkins',
     'import_export',
     'phonenumber_field',
 
@@ -93,7 +92,7 @@ INSTALLED_APPS = [
 ]
 
 if DEBUG:
-    INSTALLED_APPS += ['debug_toolbar']
+    INSTALLED_APPS += ['debug_toolbar', 'django_jenkins']
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -268,3 +267,5 @@ PYLINT_LOAD_PLUGIN = ['pylint_django']
 TWILIO_ACCOUNT_SID = get_env_var('TWILIO_ACCOUNT_SID')
 TWILIO_AUTH_TOKEN = get_env_var('TWILIO_AUTH_TOKEN')
 TWILIO_PHONE_NUMBER = get_env_var('TWILIO_PHONE_NUMBER')
+
+GEOIP_PATH = 'geo/'

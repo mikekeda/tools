@@ -12,7 +12,7 @@ from tool.views import (tool, CalendarView, DictionaryView, FlashcardsView,
                         users_list, ProfileView, user_events, card_order,
                         task_order, link_order, TasksView, CanvasView,
                         CanvasesView, CodeView, LinkView, log_in, log_out,
-                        about_page)
+                        about_page, TracerouteView)
 from tool.sitemaps import StaticViewSitemap
 
 sitemaps = {
@@ -55,6 +55,8 @@ urlpatterns = [
     path('canvas/<str:slug>', CanvasView.as_view(), name='canvas'),
     path('code', CodeView.as_view(), name='code'),
     path('ajax/code', CodeView.as_view(), name='ajax_code'),
+    path('traceroute', TracerouteView.as_view(), name='traceroute'),
+    path('ajax/traceroute', TracerouteView.as_view(), name='ajax_traceroute'),
     path('user/<str:username>/code', CodeView.as_view(), name='user_code'),
     path('ajax/user/<str:username>/code', CodeView.as_view(), name='ajax_user_code'),
     path('code/<str:slug>', CodeView.as_view(), name='code_slug'),
