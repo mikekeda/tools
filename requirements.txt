@@ -10,11 +10,11 @@ django-redis==4.11.0
 django-scheduler==0.9.3
 django-widget-tweaks==1.4.8
 geoip2==3.0.0
-Pillow==7.1.1
-phonenumbers==8.12.1
+Pillow==7.1.2
+phonenumbers==8.12.2
 psycopg2-binary==2.8.5
 pytz==2019.3
 requests==2.23.0
 social-auth-app-django==3.1.0
 social-auth-core==3.3.3
-twilio==6.38.0
+twilio==6.38.1
