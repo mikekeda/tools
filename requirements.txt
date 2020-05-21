@@ -1,4 +1,4 @@
-beautifulsoup4==4.9.0
+beautifulsoup4==4.9.1
 celery==4.4.2
 channels==2.4.0
 channels-redis==2.4.2
@@ -12,7 +12,7 @@ django-widget-tweaks==1.4.8
 geoip2==3.0.0
 gunicorn==20.0.4
 Pillow==7.1.2
-phonenumbers==8.12.2
+phonenumbers==8.12.3
 psycopg2-binary==2.8.5
 pytz==2020.1
 requests==2.23.0
