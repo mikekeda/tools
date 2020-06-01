@@ -27,10 +27,12 @@ except ImportError:
 SITE_ENV_PREFIX = 'TOOLS'
 
 
-def get_env_var(name, default=''):
+def get_env_var(name, default='', env_prefix=SITE_ENV_PREFIX):
     """ Get all sensitive data from google vm custom metadata. """
     try:
-        name = '_'.join([SITE_ENV_PREFIX, name])
+        if env_prefix:
+            name = '_'.join([SITE_ENV_PREFIX, name])
+
         res = os.environ.get(name)
         if res:
             # Check env variable (Jenkins build).
@@ -45,6 +47,7 @@ def get_env_var(name, default=''):
                 return res.text
     except requests.exceptions.ConnectionError:
         return default
+
     return default
 
 

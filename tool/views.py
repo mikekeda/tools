@@ -30,6 +30,7 @@ from tool.models import (TIMEZONES, Card, Word, Profile, Task, Canvas, Code,
 from tool.forms import (WordForm, EventForm, CardForm, AvatarForm, TaskForm,
                         CodeForm, LinkForm)
 from tool.tasks import get_occurrences
+from tool.utils import check_news
 
 User = get_user_model()
 
@@ -799,6 +800,38 @@ class LinkView(View, GetUserMixin):
         link.delete()
 
         return JsonResponse({'redirect': reverse('links'), 'success': True})
+
+
+class FakeCheckView(View, GetUserMixin):
+    """ Tool to check if the news are fake or real. """
+
+    def get(self, request):
+        return render(request, "fake_check.html", {'page_title': "Fake News Check"})
+
+    def post(self, request):
+        title = request.POST.get('title', '')
+        text = request.POST.get('text', '')
+        label = None
+        probability = None
+
+        if title and text:
+            probability = check_news(title, text)
+
+            if probability is not None:
+                probability = round(probability * 100, 2)
+                label = "fake"
+
+                if probability <= 50:
+                    label = "truth"
+                    probability = 100 - probability
+
+        return render(request, "fake_check.html", {
+            'title': title,
+            'text': text,
+            'label': label,
+            'probability': probability,
+            'page_title': "Fake News Check"
+        })
 
 
 @login_required

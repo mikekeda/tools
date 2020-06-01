@@ -1,0 +1,30 @@
+{% extends parent_template %}
+{% load static %}
+{% load i18n %}
+{% load widget_tweaks %}
+
+{% block title %}{{ page_title }}{% endblock %}
+{% block description %}{% trans "Check if news are real or fake" %}{% endblock description %}
+
+{% block content %}
+    <h2>{% trans "Check if news are real or fake" %}</h2>
+
+    <form method="post" class="clearfix">
+        {% csrf_token %}
+        <div class="form-group">
+            <label class="control-label" for="title">Title</label>
+            <input id="title" type="text" class="form-control" required value="{{ title }}" name="title">
+        </div>
+        <div class="form-group">
+            <label class="control-label" for="text">Text</label>
+            <textarea rows="12" class="col-sm-12" id="text" name="text" required>{{ text }}</textarea>
+        </div>
+        <button type="submit" class="btn btn-primary btn-md pull-right mt-3">{% trans "Check" %}</button>
+    </form>
+
+    {% if probability %}
+        <h3>{% trans "Results" %}:</h3>
+        <h4><u>{{ label|capfirst }}</u> - {{ probability }}% probability</h4>
+    {% endif %}
+
+{% endblock %}
