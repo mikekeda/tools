@@ -111,17 +111,17 @@
                         <span class="glyphicon glyphicon-eye-open"></span> {% trans "Traceroute" %}
                       </a>
                     </li>
-                    <li class="{% if active_page == 'news-check' %}active{% endif %}">
-                      <a href="{% url 'news_check' %}" data-annyang="news check" class="ajax-link">
-                        <span class="glyphicon glyphicon-check"></span> {% trans "News check" %}
-                      </a>
-                    </li>
                     <li class="{% if active_page == 'links' %}active{% endif %}">
                       <a href="{% url 'links' %}" data-annyang="links" class="ajax-link">
                         <span class="glyphicon glyphicon-link"></span> {% trans "Read it later" %}
                       </a>
                     </li>
                   {% endif %}
+                  <li class="{% if active_page == 'news-check' %}active{% endif %}">
+                    <a href="{% url 'news_check' %}" data-annyang="news check" class="ajax-link">
+                      <span class="glyphicon glyphicon-check"></span> {% trans "News check" %}
+                    </a>
+                  </li>
                   {% for tool in tools %}
                     <li class="{% if active_page == tool.slug %}active{% endif %}">
                       <a href="{% url 'tool' tool.slug %}" data-annyang="{{ tool.name|lower }}" class="ajax-link">{{ tool.name }}</a>
