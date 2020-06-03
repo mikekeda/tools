@@ -4,6 +4,8 @@ Django settings for tools site project.
 
 import os
 import requests
+import sys
+
 from django.utils.translation import ugettext_lazy as _
 
 try:
@@ -275,3 +277,17 @@ TWILIO_AUTH_TOKEN = get_env_var('TWILIO_AUTH_TOKEN')
 TWILIO_PHONE_NUMBER = get_env_var('TWILIO_PHONE_NUMBER')
 
 GEOIP_PATH = 'geo/'
+
+LOGGING = {
+    'version': 1,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'stream': sys.stdout,
+        }
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'INFO'
+    }
+}
