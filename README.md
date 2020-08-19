@@ -1,6 +1,8 @@
 Tools
 ======================
 
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/b6e6d3bc93504b86bef179a500978a19)](https://app.codacy.com/manual/mikekeda/tools?utm_source=github.com&utm_medium=referral&utm_content=mikekeda/tools&utm_campaign=Badge_Grade_Settings)
+
 This is site where you can use different tools.
 Link to the site - https://tools.mkeda.me
 
