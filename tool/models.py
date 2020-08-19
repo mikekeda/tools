@@ -3,10 +3,10 @@ import datetime
 import random
 import string
 import textwrap
-import requests
 import pytz
 
 from bs4 import BeautifulSoup
+import requests
 
 from django.db import models
 from django.contrib.auth.models import User

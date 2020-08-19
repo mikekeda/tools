@@ -15,7 +15,7 @@ ul {
 }
 
 .mt-1 {
-  margin-top: .6rem !important;
+  margin-top: 0.6rem !important;
 }
 
 .mt-2 {
@@ -117,7 +117,7 @@ ul {
   }
 
   &.flipped {
-    transform: rotatey(-180deg);
+    transform: rotateY(-180deg);
   }
 
   .face {
@@ -152,7 +152,7 @@ ul {
     justify-content: center;
     margin-bottom: 20px;
     transform-style: preserve-3d;
-    transition: .5s;
+    transition: 0.5s;
 
     &.task {
       height: 200px;
@@ -172,6 +172,7 @@ ul {
       position: absolute;
       width: 100%;
       z-index: 1;
+
       &.task {
         flex-direction: column;
         justify-content: normal;
@@ -181,7 +182,7 @@ ul {
     }
 
     .back {
-      transform: rotatey(-180deg);
+      transform: rotateY(-180deg);
     }
 
     &.easy .face {
@@ -240,8 +241,9 @@ ul {
   display: block;
   float: left;
   height: 20px;
-  opacity: .3;
+  opacity: 0.3;
   width: 50px;
+
   &.color-filter {
     width: 40px;
   }
@@ -259,6 +261,7 @@ ul {
     label {
       float: right;
     }
+
     input {
       -webkit-appearance: textfield;
     }
@@ -287,9 +290,11 @@ ul {
 .btn-spinning:not(:disabled) .spinning {
   display: none;
 }
+
 .btn-spinning .glyphicon.spinning {
   animation: spin 1s infinite linear;
 }
+
 @keyframes spin {
   from { transform: scale(1) rotate(0deg); }
   to { transform: scale(1) rotate(360deg); }
@@ -298,6 +303,7 @@ ul {
 #skitt-ui {
   overflow: hidden;
   z-index: 1050;
+
   a:hover {
     text-decoration: none;
   }
@@ -307,10 +313,12 @@ ul {
   .palette-item {
     padding: 0 5px;
   }
+
   .editable-container {
     position: relative;
     z-index: 2;
   }
+
   .palette-color {
     border-bottom: none;
     display: block;

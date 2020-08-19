@@ -3,8 +3,9 @@ Django settings for tools site project.
 """
 
 import os
-import requests
 import sys
+
+import requests
 
 from django.utils.translation import ugettext_lazy as _
 
