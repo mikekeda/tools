@@ -1,15 +1,14 @@
 {
   "name": "jscolor-picker",
   "homepage": "https://github.com/EastDesire/jscolor",
-  "version": "2.0.4",
-  "_release": "2.0.4",
+  "version": "2.3.3",
+  "_release": "2.3.3",
   "_resolution": {
     "type": "version",
-    "tag": "2.0.4",
-    "commit": "29ddce0a38b9bed078f039b191f33b9c8cf2dc5d"
+    "tag": "2.3.3",
+    "commit": "f500c8c7a52012a27d4e35f9712de5d925ef024d"
   },
   "_source": "https://github.com/EastDesire/jscolor.git",
   "_target": "^2.0.4",
-  "_originalSource": "jscolor-picker",
-  "_direct": true
+  "_originalSource": "jscolor-picker"
 }
