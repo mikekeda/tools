@@ -341,8 +341,8 @@ class ProfileView(LoginRequiredMixin, View, GetUserMixin):
                     status=403
                 )
             elif any([
-                field in ['first_name', 'last_name', 'email', 'phone_number'],
-                field.startswith('palette_color_')
+                    field in ['first_name', 'last_name', 'email', 'phone_number'],
+                    field.startswith('palette_color_')
             ]):
                 if field == 'phone_number' or \
                         field.startswith('palette_color_'):

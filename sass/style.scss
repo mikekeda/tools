@@ -131,10 +131,6 @@ ul {
   padding-bottom: 100px;
 }
 
-#cards > .done .card-container + .card-container {
-  margin-top: -150px;
-}
-
 .card-container {
   perspective: 800px;
   position: relative;
@@ -333,4 +329,8 @@ ul {
 
 .dataTables_wrapper .row:first-child div:first-child {
   padding-left: 65px;
+}
+
+#cards > .done .card-container + .card-container {
+  margin-top: -150px;
 }
