@@ -1,5 +1,5 @@
 {
-  "name": "Tools",
+  "name": "tools",
   "version": "0.0.7",
   "description": "We use gulp to compile sass to css.",
   "main": "Gulpfile.js",
