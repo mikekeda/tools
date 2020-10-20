@@ -9,7 +9,7 @@ from bs4 import BeautifulSoup
 import requests
 
 from django.db import models
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from django.conf import settings
 from django.core.cache import cache
 from django.core.validators import (MaxValueValidator, MinValueValidator,
@@ -21,6 +21,8 @@ from django.utils.translation import ugettext
 from phonenumber_field.modelfields import PhoneNumberField
 
 from tool.widgets import ColorWidget
+
+User = get_user_model()
 
 TIMEZONES = sorted([
     (tz, tz + ' ' + datetime.datetime.now(pytz.timezone(tz)).strftime('%z'))
@@ -82,7 +84,7 @@ class ColorField(models.CharField):
 
     def formfield(self, **kwargs):
         kwargs['widget'] = ColorWidget
-        return super(ColorField, self).formfield(**kwargs)
+        return super().formfield(**kwargs)
 
 
 class Profile(models.Model):

@@ -61,8 +61,8 @@ def tool(request, slug, username=None):
             active_page=slug,
             profile_user=user
         ))
-    except Exception:
-        raise Http404
+    except Exception as e:
+        raise Http404 from e
 
 
 def about_page(request):
@@ -325,42 +325,43 @@ class ProfileView(LoginRequiredMixin, View, GetUserMixin):
             if form.is_valid():
                 form.save()
             return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
-        else:
-            field = request.POST.get('name', '')
-            value = request.POST.get('value', '')
 
-            if field == 'timezone':
-                if value in [t for t, _ in TIMEZONES]:
-                    profile.timezone = value
-                    profile.save()
-                    return JsonResponse({'success': True})
+        field = request.POST.get('name', '')
+        value = request.POST.get('value', '')
 
+        if field == 'timezone':
+            if value in [t for t, _ in TIMEZONES]:
+                profile.timezone = value
+                profile.save()
+                return JsonResponse({'success': True})
+
+            return JsonResponse(
+                ugettext("This value not allowed"),
+                safe=False,
+                status=403
+            )
+
+        if any([
+                field in ['first_name', 'last_name', 'email', 'phone_number'],
+                field.startswith('palette_color_')
+        ]):
+            if field == 'phone_number' or \
+                    field.startswith('palette_color_'):
+                current_obj = profile
+            else:
+                current_obj = user
+
+            setattr(current_obj, field, value)
+            try:
+                current_obj.clean_fields()
+                current_obj.save()
+                return JsonResponse({'success': True})
+            except ValidationError as e:
                 return JsonResponse(
-                    ugettext("This value not allowed"),
+                    ', '.join(e.message_dict[field]),
                     safe=False,
-                    status=403
+                    status=422
                 )
-            elif any([
-                    field in ['first_name', 'last_name', 'email', 'phone_number'],
-                    field.startswith('palette_color_')
-            ]):
-                if field == 'phone_number' or \
-                        field.startswith('palette_color_'):
-                    current_obj = profile
-                else:
-                    current_obj = user
-
-                setattr(current_obj, field, value)
-                try:
-                    current_obj.clean_fields()
-                    current_obj.save()
-                    return JsonResponse({'success': True})
-                except ValidationError as e:
-                    return JsonResponse(
-                        ', '.join(e.message_dict[field]),
-                        safe=False,
-                        status=422
-                    )
 
         return JsonResponse(
             ugettext("You can't change this field"),

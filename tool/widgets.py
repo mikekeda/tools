@@ -11,8 +11,8 @@ class ColorWidget(forms.TextInput):
 
     def __init__(self, language=None, attrs=None):
         self.language = language or settings.LANGUAGE_CODE[:2]
-        super(ColorWidget, self).__init__(attrs=attrs)
+        super().__init__(attrs=attrs)
 
     def render(self, name, value, attrs=None, renderer=None):
         self.attrs = {'class': 'jscolor'}
-        return super(ColorWidget, self).render(name, value, attrs, renderer)
+        return super().render(name, value, attrs, renderer)
