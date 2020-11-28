@@ -1,6 +1,6 @@
 beautifulsoup4==4.9.3
 celery==5.0.2
-channels==3.0.0
+channels==3.0.2
 channels-redis==3.2.0
 django-easy-select2==1.5.7
 django-import-export==2.4.0
@@ -13,10 +13,10 @@ geoip2==4.1.0
 google-cloud-automl==2.1.0
 gunicorn==20.0.4
 Pillow==8.0.1
-phonenumbers==8.12.12
+phonenumbers==8.12.13
 psycopg2-binary==2.8.6
 pytz==2020.4
-requests==2.24.0
+requests==2.25.0
 social-auth-app-django==4.0.0
 social-auth-core==3.3.3
-twilio==6.46.0
+twilio==6.48.0
