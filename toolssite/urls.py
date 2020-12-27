@@ -1,19 +1,19 @@
 """
 Tools site URL Configuration
 """
+from django.conf import settings
 from django.conf.urls import include
 from django.contrib import admin
-from django.conf import settings
 from django.contrib.sitemaps.views import sitemap
 from django.urls import path
 from django.utils.translation import ugettext_lazy as _
 
-from tool.views import (tool, CalendarView, DictionaryView, FlashcardsView,
-                        users_list, ProfileView, user_events, card_order,
-                        task_order, link_order, TasksView, CanvasView,
-                        CanvasesView, CodeView, LinkView, log_in, log_out,
-                        about_page, TracerouteView, FakeCheckView)
 from tool.sitemaps import StaticViewSitemap
+from tool.views import (CalendarView, CanvasesView, CanvasView, CodeView,
+                        DictionaryView, FakeCheckView, FlashcardsView,
+                        LinkView, ProfileView, TasksView, TracerouteView,
+                        about_page, card_order, link_order, log_in, log_out,
+                        task_order, tool, user_events, users_list)
 
 sitemaps = {
     'static': StaticViewSitemap,
@@ -92,8 +92,8 @@ urlpatterns = [
 admin.site.site_header = _('Tools administration')
 
 if settings.DEBUG:
-    from django.conf.urls.static import static
     import debug_toolbar
+    from django.conf.urls.static import static
 
     urlpatterns += static(
         settings.MEDIA_URL,

@@ -6,7 +6,6 @@ import os
 import sys
 
 import requests
-
 from django.utils.translation import ugettext_lazy as _
 
 try:

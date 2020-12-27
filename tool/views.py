@@ -1,34 +1,32 @@
-from collections import OrderedDict, defaultdict
 import json
 import re
-import pytz
+from collections import OrderedDict, defaultdict
 
+import pytz
+from django.conf import settings
+from django.contrib.admin.views.decorators import staff_member_required
+from django.contrib.auth import get_user_model, login, logout
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.gis.geoip2 import GeoIP2
+from django.core.exceptions import PermissionDenied, ValidationError
+from django.core.serializers import serialize
+from django.db import transaction
+from django.db.utils import IntegrityError
+from django.http import Http404, HttpResponseRedirect, JsonResponse, QueryDict
+from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse
+from django.utils import timezone
+from django.utils.translation import ugettext
+from django.views import View
 from geoip2.errors import AddressNotFoundError
 from schedule.models import Calendar, Event
 
-from django.core.serializers import serialize
-from django.core.exceptions import PermissionDenied, ValidationError
-from django.conf import settings
-from django.contrib.gis.geoip2 import GeoIP2
-from django.db import transaction
-from django.db.utils import IntegrityError
-from django.http import Http404, JsonResponse, HttpResponseRedirect
-from django.contrib.admin.views.decorators import staff_member_required
-from django.contrib.auth import get_user_model, login, logout
-from django.contrib.auth.forms import AuthenticationForm
-from django.contrib.auth.decorators import login_required
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import QueryDict
-from django.shortcuts import render, redirect, get_object_or_404
-from django.urls import reverse
-from django.utils.translation import ugettext
-from django.utils import timezone
-from django.views import View
-
-from tool.models import (TIMEZONES, Card, Word, Profile, Task, Canvas, Code,
-                         Link, Label, default_palette_colors)
-from tool.forms import (WordForm, EventForm, CardForm, AvatarForm, TaskForm,
-                        CodeForm, LinkForm)
+from tool.forms import (AvatarForm, CardForm, CodeForm, EventForm, LinkForm,
+                        TaskForm, WordForm)
+from tool.models import (TIMEZONES, Canvas, Card, Code, Label, Link, Profile,
+                         Task, Word, default_palette_colors)
 from tool.tasks import get_occurrences
 from tool.utils import check_news
 

@@ -1,5 +1,5 @@
 import pytz
-
+from celery import Celery
 from django.conf import settings
 from django.core.mail import EmailMultiAlternatives
 from django.db.models import Q
@@ -7,8 +7,6 @@ from django.template.loader import render_to_string
 from django.utils import timezone
 from schedule.models import Event
 from twilio.rest import Client
-
-from celery import Celery
 
 app = Celery('tool')
 client = Client(settings.TWILIO_ACCOUNT_SID, settings.TWILIO_AUTH_TOKEN)

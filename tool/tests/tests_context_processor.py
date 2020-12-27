@@ -1,10 +1,7 @@
 from django.urls import reverse
 
-from tool.context_processors import (
-    categories,
-    select_parent_template,
-    user_profile
-)
+from tool.context_processors import (categories, select_parent_template,
+                                     user_profile)
 from tool.models import Profile
 from tool.tests import BaseTestCase
 

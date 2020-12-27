@@ -1,8 +1,8 @@
 from django import forms
-from schedule.models import Event
 from easy_select2 import apply_select2, select2_modelform
+from schedule.models import Event
 
-from .models import Profile, Word, Card, Task, Code, Link, Label
+from tool.models import Card, Code, Label, Link, Profile, Task, Word
 
 task_form = select2_modelform(Task)
 

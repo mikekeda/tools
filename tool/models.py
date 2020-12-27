@@ -1,23 +1,21 @@
-from collections import namedtuple
 import datetime
 import random
 import string
 import textwrap
+from collections import namedtuple
+
 import pytz
-
-from bs4 import BeautifulSoup
 import requests
-
-from django.db import models
-from django.contrib.auth import get_user_model
+from bs4 import BeautifulSoup
 from django.conf import settings
+from django.contrib.auth import get_user_model
 from django.core.cache import cache
 from django.core.validators import (MaxValueValidator, MinValueValidator,
                                     URLValidator)
+from django.db import models
 from django.urls import reverse
 from django.utils.html import format_html
 from django.utils.translation import ugettext
-
 from phonenumber_field.modelfields import PhoneNumberField
 
 from tool.widgets import ColorWidget

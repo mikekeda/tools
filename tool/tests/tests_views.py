@@ -1,15 +1,14 @@
 import datetime
 from urllib.parse import urlencode
-import pytz
 
+import pytz
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.urls import reverse
 from django.utils import timezone
-
 from schedule.models import Calendar, Event
 
-from tool.models import Profile, Card, Task, Canvas, Code, Word, Link
+from tool.models import Canvas, Card, Code, Link, Profile, Task, Word
 from tool.tests import BaseTestCase
 
 User = get_user_model()

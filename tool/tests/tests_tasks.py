@@ -1,11 +1,12 @@
 from unittest.mock import patch
+
 import pytz
 from django.utils import timezone
-
 from schedule.models import Calendar, Event, Rule
 
 from tool.models import Profile
-from tool.tasks import get_occurrences, send_email_notifications, daily_notification
+from tool.tasks import (daily_notification, get_occurrences,
+                        send_email_notifications)
 from tool.tests import BaseTestCase
 
 

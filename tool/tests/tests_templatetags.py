@@ -1,5 +1,5 @@
+from tool.models import Card, Task
 from tool.templatetags.tool_tags import get_item, serialize
-from tool.models import Task, Card
 from tool.tests import BaseTestCase
 
 

@@ -1,17 +1,16 @@
 from django import forms
+from django.conf import settings
 from django.contrib import admin
 from django.contrib.auth import get_user_model
-from django.conf import settings
-from django.core.cache import cache
 from django.contrib.auth.admin import UserAdmin
+from django.core.cache import cache
 from django.db import models
-
 from easy_select2 import select2_modelform
-from schedule.models import Event, Calendar
-from schedule.admin import EventAdmin
 from import_export.admin import ImportExportModelAdmin
+from schedule.admin import EventAdmin
+from schedule.models import Calendar, Event
 
-from .models import Profile, Card, Word, Task, Canvas, Code, Label, Link
+from tool.models import Canvas, Card, Code, Label, Link, Profile, Task, Word
 
 User = get_user_model()
 ProfileForm = select2_modelform(Profile)

@@ -2,7 +2,7 @@ import os
 
 from django.conf import settings
 
-from .models import Profile
+from tool.models import Profile
 
 
 def categories(_=None):

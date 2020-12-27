@@ -1,6 +1,6 @@
 from collections import namedtuple
-from tool.models import (number_to_chars, get_username_by_uid, Code,
-                         Label)
+
+from tool.models import Code, Label, get_username_by_uid, number_to_chars
 from tool.tests import BaseTestCase
 
 

@@ -24,7 +24,7 @@
       init_app();
     }
     function init_app() {
-      var $textarea = $('#content #text-content').first();
+      let $textarea = $('#content #text-content').first();
 
 	  // Dynamically set page title and description.
       document.title = '{% trans "Text manipulation" %}';
@@ -38,13 +38,13 @@
       $textarea.bind('input propertychange', function() {
         $('#content #count-characters').text($textarea[0].textLength);
       });
-      $('#content #lower').click(function(event) {
+      $('#content #lower').click(function() {
         $textarea.val($textarea.val().toLowerCase());
       });
-      $('#content #upper').click(function(event) {
+      $('#content #upper').click(function() {
         $textarea.val($textarea.val().toUpperCase());
       });
-      $('#content #capitalized').click(function(event) {
+      $('#content #capitalized').click(function() {
         $textarea.val($textarea.val().capitalize());
       });
     }
