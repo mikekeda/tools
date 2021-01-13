@@ -18,5 +18,5 @@ psycopg2-binary==2.8.6
 pytz==2020.5
 requests==2.25.1
 social-auth-app-django==4.0.0
-social-auth-core==4.0.2
+social-auth-core==4.0.3
 twilio==6.50.1
