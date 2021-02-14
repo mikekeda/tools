@@ -13,7 +13,8 @@ from tool.views import (CalendarView, CanvasesView, CanvasView, CodeView,
                         DictionaryView, FakeCheckView, FlashcardsView,
                         LinkView, ProfileView, TasksView, TracerouteView,
                         about_page, card_order, link_order, log_in, log_out,
-                        task_order, tool, user_events, users_list)
+                        task_order, tool, user_events, users_list,
+                        ShoppingListsView, ShoppingListView)
 
 sitemaps = {
     'static': StaticViewSitemap,
@@ -63,6 +64,10 @@ urlpatterns = [
     path('ajax/user/<str:username>/code', CodeView.as_view(), name='ajax_user_code'),
     path('code/<str:slug>', CodeView.as_view(), name='code_slug'),
     path('ajax/code/<str:slug>', CodeView.as_view(), name='ajax_code_slug'),
+    path('shopping_lists', ShoppingListsView.as_view(), name='shopping_lists'),
+    path('shopping_lists/<int:pk>', ShoppingListView.as_view(), name='shopping_list'),
+    path('ajax/shopping_lists', ShoppingListsView.as_view(), name='ajax_shopping_lists'),
+    path('ajax/shopping_lists/<int:pk>', ShoppingListView.as_view(), name='ajax_shopping_list'),
     path('links', LinkView.as_view(), name='links'),
     path('ajax/links', LinkView.as_view(), name='ajax_links'),
     path('links/<int:pk>', LinkView.as_view(), name='links_pk'),

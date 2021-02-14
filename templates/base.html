@@ -116,6 +116,11 @@
                         <span class="glyphicon glyphicon-link"></span> {% trans "Read it later" %}
                       </a>
                     </li>
+                    <li class="{% if active_page == 'shopping_lists' %}active{% endif %}">
+                      <a href="{% url 'shopping_lists' %}" data-annyang="shopping" class="ajax-link">
+                        <span class="glyphicon glyphicon-shopping-cart"></span> {% trans "Shopping lists" %}
+                      </a>
+                    </li>
                   {% endif %}
                   <li class="{% if active_page == 'news-check' %}active{% endif %}">
                     <a href="{% url 'news_check' %}" data-annyang="news check" class="ajax-link">

@@ -23,10 +23,28 @@ from django.views import View
 from geoip2.errors import AddressNotFoundError
 from schedule.models import Calendar, Event
 
-from tool.forms import (AvatarForm, CardForm, CodeForm, EventForm, LinkForm,
-                        TaskForm, WordForm)
-from tool.models import (TIMEZONES, Canvas, Card, Code, Label, Link, Profile,
-                         Task, Word, default_palette_colors)
+from tool.forms import (
+    AvatarForm,
+    CardForm,
+    CodeForm,
+    EventForm,
+    LinkForm,
+    TaskForm,
+    WordForm,
+)
+from tool.models import (
+    TIMEZONES,
+    Canvas,
+    Card,
+    Code,
+    Label,
+    Link,
+    Profile,
+    Task,
+    Word,
+    default_palette_colors,
+    ShoppingList,
+)
 from tool.tasks import get_occurrences
 from tool.utils import check_news
 
@@ -838,3 +856,46 @@ def log_out(request):
     """ User logout callback. """
     logout(request)
     return redirect(reverse('login'))
+
+
+class ShoppingListsView(View, GetUserMixin):
+    def get(self, request, username=None):
+        """ Lists page. """
+        try:
+            user = self.get_user(request, username)
+        except PermissionDenied:
+            return redirect(reverse("login") + "?next=" + request.path)
+
+        lists = ShoppingList.objects.all()
+
+        return render(
+            request,
+            "shopping_lists.html",
+            dict(
+                page_title="Shopping lists",
+                active_page="shopping_lists",
+                lists=lists,
+            ),
+        )
+
+
+class ShoppingListView(View, GetUserMixin):
+    def get(self, request, pk: int, username=None):
+        """ List page. """
+        try:
+            self.get_user(request, username)
+        except PermissionDenied:
+            return redirect(reverse("login") + "?next=" + request.path)
+
+        shopping_list = get_object_or_404(ShoppingList.objects.prefetch_related(
+            "shoppinglistitem_set", "shoppinglistitem_set__item"
+        ), pk=pk)
+
+        return render(
+            request,
+            "shopping_list.html",
+            dict(
+                page_title="Shopping lists",
+                list=shopping_list,
+            ),
+        )

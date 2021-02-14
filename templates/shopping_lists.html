@@ -1,0 +1,29 @@
+{% extends parent_template %}
+{% load static %}
+{% load i18n %}
+{% load widget_tweaks %}
+
+{% block title %}{{ page_title }}{% endblock %}
+{% block description %}{% trans "My shopping lists" %}{% endblock description %}
+
+{% block content %}
+    <h2>{{ page_title }}</h2>
+
+    <table id="codes" class="table table-striped table-bordered" cellspacing="0" width="100%">
+        <thead>
+            <tr>
+                <th>{% trans "Name" %}</th>
+                <th>{% trans "Date" %}</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for list in lists %}
+                <tr>
+                    <td><a href="{% url 'shopping_list' list.id %}">{{ list.name }}</a></td>
+                    <td>{{ list.date }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+{% endblock %}

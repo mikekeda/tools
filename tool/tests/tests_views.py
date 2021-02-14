@@ -8,7 +8,8 @@ from django.urls import reverse
 from django.utils import timezone
 from schedule.models import Calendar, Event
 
-from tool.models import Canvas, Card, Code, Link, Profile, Task, Word
+from tool.models import (Canvas, Card, Code, Link, Profile, Task, Word,
+                         ShoppingList)
 from tool.tests import BaseTestCase
 
 User = get_user_model()
@@ -1439,3 +1440,29 @@ class ToolViewTest(BaseTestCase):
         )
         user = User.objects.get(username='testuser')
         self.assertEqual(user.first_name, 'test name2')
+
+    def test_views_shopping_lists_get(self):
+        # Get shopping lists.
+        resp = self.client.get(reverse('shopping_lists'))
+        self.assertRedirects(resp, '/login?next=/shopping_lists')
+
+        self.client.login(username='testuser', password='12345')
+        resp = self.client.get(reverse('shopping_lists'))
+        self.assertEqual(resp.status_code, 200)
+        self.assertTemplateUsed(resp, 'shopping_lists.html')
+
+    def test_views_shopping_list_get(self):
+        # Get shopping lists.
+        resp = self.client.get(reverse('shopping_list', kwargs={'pk': '1'}))
+        self.assertRedirects(resp, '/login?next=/shopping_lists/1')
+
+        self.client.login(username='testuser', password='12345')
+        resp = self.client.get(reverse('shopping_list', kwargs={'pk': '1'}))
+        self.assertEqual(resp.status_code, 404)
+
+        cal = ShoppingList.objects.create(name="Test list", user=self.test_user)
+
+        self.client.login(username='testuser', password='12345')
+        resp = self.client.get(reverse('shopping_list', kwargs={'pk': '1'}))
+        self.assertEqual(resp.status_code, 200)
+        self.assertTemplateUsed(resp, 'shopping_list.html')

@@ -10,8 +10,7 @@ from bs4 import BeautifulSoup
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.cache import cache
-from django.core.validators import (MaxValueValidator, MinValueValidator,
-                                    URLValidator)
+from django.core.validators import MaxValueValidator, MinValueValidator, URLValidator
 from django.db import models
 from django.urls import reverse
 from django.utils.html import format_html
@@ -399,3 +398,45 @@ class Link(models.Model):
 
     def __str__(self):
         return "{}: {}".format(get_username_by_uid(self), self.link)
+
+
+class ShoppingItem(models.Model):
+    """Model for a single shopping item in a list."""
+
+    name = models.CharField(ugettext("item_name"), max_length=32, null=False)
+    price = models.DecimalField(
+        ugettext("purchase_price"), max_digits=7, decimal_places=2, default=0.00
+    )
+    date_created = models.DateTimeField(auto_now_add=True)
+    date_updated = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ("name",)
+
+    def __str__(self):
+        return self.name
+
+
+class ShoppingList(models.Model):
+    """Model for a single shopping list."""
+
+    name = models.CharField(ugettext("list name"), max_length=32, null=False)
+    user = models.ForeignKey(
+        User, related_name="shopping_lists", on_delete=models.CASCADE
+    )
+    date = models.DateField(default=datetime.date.today)
+    items = models.ManyToManyField(ShoppingItem, through="ShoppingListItem")
+
+    def __str__(self):
+        return self.name
+
+
+class ShoppingListItem(models.Model):
+    """Model for items of shopping list."""
+
+    list = models.ForeignKey(ShoppingList, on_delete=models.CASCADE)
+    item = models.ForeignKey(ShoppingItem, on_delete=models.CASCADE)
+    completed = models.BooleanField(default=False)
+    quantity = models.PositiveSmallIntegerField(ugettext("item_quantity"), default=1)
+    date_created = models.DateTimeField(auto_now_add=True)
+    date_updated = models.DateTimeField(auto_now=True)
