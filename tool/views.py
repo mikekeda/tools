@@ -862,7 +862,7 @@ class ShoppingListsView(View, GetUserMixin):
     def get(self, request, username=None):
         """ Lists page. """
         try:
-            user = self.get_user(request, username)
+            self.get_user(request, username)
         except PermissionDenied:
             return redirect(reverse("login") + "?next=" + request.path)
 
