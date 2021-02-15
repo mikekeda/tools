@@ -2,6 +2,7 @@
 {% load static %}
 {% load i18n %}
 {% load widget_tweaks %}
+{% load tool_tags %}
 
 {% block title %}{{ list.name }}{% endblock %}
 {% block description %}{% trans "My shopping lists" %}{% endblock description %}
@@ -10,10 +11,17 @@
     <h2>{{ list.name }}</h2>
     <p>{{ list.date }}</p>
 
-    <ul>
+    <form>
         {% for item in list.shoppinglistitem_set.all %}
-            <li>{{ item.quantity }} {{ item.item.name }}</li>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" value="" id="item-{{ item.id }}">
+              <label class="form-check-label" for="item-{{ item.id }}">
+                {{ item.quantity }} {{ item.item.name }} ({{ item.quantity | multiply:item.item.price  }})
+              </label>
+            </div>
         {% endfor %}
-    </ul>
+    </form>
+
+    <h4>Total: {{ total }}</h4>
 
 {% endblock %}

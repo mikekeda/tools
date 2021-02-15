@@ -131,6 +131,7 @@ class LinkAdmin(BaseModelAdmin):
 
 class ShoppingListItemInline(admin.StackedInline):
     model = ShoppingListItem
+    form = select2_modelform(ShoppingListItem)
     extra = 1
 
 

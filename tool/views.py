@@ -887,9 +887,17 @@ class ShoppingListView(View, GetUserMixin):
         except PermissionDenied:
             return redirect(reverse("login") + "?next=" + request.path)
 
-        shopping_list = get_object_or_404(ShoppingList.objects.prefetch_related(
-            "shoppinglistitem_set", "shoppinglistitem_set__item"
-        ), pk=pk)
+        shopping_list = get_object_or_404(
+            ShoppingList.objects.prefetch_related(
+                "shoppinglistitem_set", "shoppinglistitem_set__item"
+            ),
+            pk=pk,
+        )
+
+        total = sum(
+            item.quantity * item.item.price
+            for item in shopping_list.shoppinglistitem_set.all()
+        )
 
         return render(
             request,
@@ -897,5 +905,6 @@ class ShoppingListView(View, GetUserMixin):
             dict(
                 page_title="Shopping lists",
                 list=shopping_list,
+                total=total,
             ),
         )

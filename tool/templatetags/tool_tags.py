@@ -13,3 +13,8 @@ def get_item(obj: object, k: str):
 @register.filter
 def serialize(obj: object):
     return serializers.serialize('json', [obj])[1:-1]
+
+
+@register.filter
+def multiply(value: float, arg: float) -> float:
+    return value * arg
