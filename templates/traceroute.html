@@ -11,7 +11,7 @@
 
     <form method="post" class="add-form clearfix form-horizontal">
         {% csrf_token %}
-        <textarea rows="12" class="col-sm-12" id="traceroute" name="traceroute" placeholder="traceroute">{{ traceroute }}</textarea>
+        <textarea rows="12" class="col-xs-12" id="traceroute" name="traceroute" placeholder="traceroute">{{ traceroute }}</textarea>
         <button type="submit" class="btn btn-primary btn-md pull-right mt-3">{% trans "traceroute" %}</button>
     </form>
 
