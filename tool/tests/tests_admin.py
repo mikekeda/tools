@@ -3,7 +3,7 @@ from tool.tests import BaseTestCase
 
 class ToolAdminTest(BaseTestCase):
     def test_admin_event(self):
-        self.client.login(username="testadmin", password="12345")
+        self.client.login(username="testadmin", password=self.password)
         resp = self.client.get("/admin/schedule/event/")
         self.assertEqual(resp.status_code, 200)
         self.assertTemplateUsed(resp, "admin/base.html")
@@ -13,7 +13,7 @@ class ToolAdminTest(BaseTestCase):
         self.assertTemplateUsed(resp, "admin/change_form.html")
 
     def test_admin_canvas(self):
-        self.client.login(username="testadmin", password="12345")
+        self.client.login(username="testadmin", password=self.password)
         resp = self.client.get("/admin/tool/canvas/")
         self.assertEqual(resp.status_code, 200)
         self.assertTemplateUsed(resp, "admin/base.html")
@@ -23,7 +23,7 @@ class ToolAdminTest(BaseTestCase):
         self.assertTemplateUsed(resp, "admin/change_form.html")
 
     def test_admin_card(self):
-        self.client.login(username="testadmin", password="12345")
+        self.client.login(username="testadmin", password=self.password)
         resp = self.client.get("/admin/tool/card/")
         self.assertEqual(resp.status_code, 200)
         self.assertTemplateUsed(resp, "admin/base.html")
@@ -33,7 +33,7 @@ class ToolAdminTest(BaseTestCase):
         self.assertTemplateUsed(resp, "admin/change_form.html")
 
     def test_admin_code(self):
-        self.client.login(username="testadmin", password="12345")
+        self.client.login(username="testadmin", password=self.password)
         resp = self.client.get("/admin/tool/code/")
         self.assertEqual(resp.status_code, 200)
         self.assertTemplateUsed(resp, "admin/base.html")
@@ -43,7 +43,7 @@ class ToolAdminTest(BaseTestCase):
         self.assertTemplateUsed(resp, "admin/change_form.html")
 
     def test_admin_task(self):
-        self.client.login(username="testadmin", password="12345")
+        self.client.login(username="testadmin", password=self.password)
         resp = self.client.get("/admin/tool/task/")
         self.assertEqual(resp.status_code, 200)
         self.assertTemplateUsed(resp, "admin/base.html")
@@ -53,7 +53,7 @@ class ToolAdminTest(BaseTestCase):
         self.assertTemplateUsed(resp, "admin/change_form.html")
 
     def test_admin_word(self):
-        self.client.login(username="testadmin", password="12345")
+        self.client.login(username="testadmin", password=self.password)
         resp = self.client.get("/admin/tool/word/")
         self.assertEqual(resp.status_code, 200)
 
@@ -62,7 +62,7 @@ class ToolAdminTest(BaseTestCase):
         self.assertTemplateUsed(resp, "admin/change_form.html")
 
     def test_admin_label(self):
-        self.client.login(username="testadmin", password="12345")
+        self.client.login(username="testadmin", password=self.password)
         resp = self.client.get("/admin/tool/label/")
         self.assertEqual(resp.status_code, 200)
 
@@ -71,7 +71,7 @@ class ToolAdminTest(BaseTestCase):
         self.assertTemplateUsed(resp, "admin/change_form.html")
 
     def test_admin_link(self):
-        self.client.login(username="testadmin", password="12345")
+        self.client.login(username="testadmin", password=self.password)
         resp = self.client.get("/admin/tool/link/")
         self.assertEqual(resp.status_code, 200)
 

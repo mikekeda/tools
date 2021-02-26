@@ -41,7 +41,7 @@ class ToolContextProcessorTest(BaseTestCase):
         self.assertEqual(result, {"profile": None})
 
         # Registered user.
-        self.client.login(username="testuser", password="12345")
+        self.client.login(username="testuser", password=self.password)
         resp = self.client.get(reverse("main"))
         request = resp.wsgi_request
         result = user_profile(request)
