@@ -12,16 +12,15 @@ class BaseTestCase(TestCase):
     def setUpClass(cls):
         super().setUpClass()
         # Create usual user.
-        cls.test_user = User.objects.create_user(username='testuser',
-                                                 password='12345')
+        cls.test_user = User.objects.create_user(username="testuser", password="12345")
         cls.test_user.save()
 
         # Create admin user.
         cls.test_admin = User.objects.create_superuser(
-            username='testadmin',
-            email='myemail@test.com',
-            password='12345',
-            first_name='Bob',
-            last_name='Smit'
+            username="testadmin",
+            email="myemail@test.com",
+            password="12345",
+            first_name="Bob",
+            last_name="Smit",
         )
         cls.test_admin.save()

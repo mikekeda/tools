@@ -13,4 +13,5 @@ reports/
 celerybeat-schedule
 .DS_Store
 .coafile
+.coverage
 package-lock.json
