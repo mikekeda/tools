@@ -10,7 +10,7 @@ django-redis==4.12.1
 django-scheduler==0.9.3
 django-widget-tweaks==1.4.8
 geoip2==4.1.0
-google-cloud-automl==2.1.0
+google-cloud-automl==2.2.0
 gunicorn==20.0.4
 Pillow==8.1.1
 phonenumbers==8.12.19
