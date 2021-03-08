@@ -146,8 +146,7 @@ class ShoppingListAdmin(BaseModelAdmin):
     list_display = ("name", "date")
     actions = ["clone"]
 
-    @staticmethod
-    def clone(_, queryset):
+    def clone(self, _, queryset):
         for shopping_list in queryset.prefetch_related("shoppinglistitem_set"):
             shoppinglistitems = shopping_list.shoppinglistitem_set.all()
 
