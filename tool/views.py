@@ -1,6 +1,7 @@
 import json
 import re
 from collections import OrderedDict, defaultdict
+from datetime import date
 
 import pytz
 from django.conf import settings
@@ -909,7 +910,7 @@ class ShoppingListsView(View, GetUserMixin):
         except PermissionDenied:
             return redirect(reverse("login") + "?next=" + request.path)
 
-        lists = ShoppingList.objects.all()
+        lists = ShoppingList.objects.filter(date__gte=date.today()).all()
 
         return render(
             request,

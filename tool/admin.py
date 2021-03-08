@@ -1,3 +1,5 @@
+from datetime import date
+
 from django import forms
 from django.conf import settings
 from django.contrib import admin
@@ -129,6 +131,10 @@ class LinkAdmin(BaseModelAdmin):
     list_filter = ("user__username",)
 
 
+class ShoppingItemAdmin(ImportExportModelAdmin):
+    form = select2_modelform(ShoppingItem)
+
+
 class ShoppingListItemInline(admin.StackedInline):
     model = ShoppingListItem
     form = select2_modelform(ShoppingListItem)
@@ -137,6 +143,22 @@ class ShoppingListItemInline(admin.StackedInline):
 
 class ShoppingListAdmin(BaseModelAdmin):
     inlines = (ShoppingListItemInline,)
+    list_display = ("name", "date")
+    actions = ["clone"]
+
+    @staticmethod
+    def clone(_, queryset):
+        for shopping_list in queryset.prefetch_related("shoppinglistitem_set"):
+            shoppinglistitems = shopping_list.shoppinglistitem_set.all()
+
+            shopping_list.id = None
+            shopping_list.date = date.today()
+            shopping_list.save()
+
+            for shoppinglistitem in shoppinglistitems:
+                shoppinglistitem.id = None
+                shoppinglistitem.save()
+                shopping_list.shoppinglistitem_set.add(shoppinglistitem)
 
 
 admin.site.register(Card, CardAdmin)
@@ -151,4 +173,4 @@ admin.site.register(User, AuthUserAdmin)
 admin.site.register(Label, LabelAdmin)
 admin.site.register(Link, LinkAdmin)
 admin.site.register(ShoppingList, ShoppingListAdmin)
-admin.site.register(ShoppingItem)
+admin.site.register(ShoppingItem, ShoppingItemAdmin)

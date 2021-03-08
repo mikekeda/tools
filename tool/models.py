@@ -1,8 +1,8 @@
-import datetime
 import random
 import string
 import textwrap
 from collections import namedtuple
+from datetime import datetime, date
 
 import pytz
 import requests
@@ -23,7 +23,7 @@ User = get_user_model()
 
 TIMEZONES = sorted(
     [
-        (tz, tz + " " + datetime.datetime.now(pytz.timezone(tz)).strftime("%z"))
+        (tz, tz + " " + datetime.now(pytz.timezone(tz)).strftime("%z"))
         for tz in pytz.common_timezones
     ]
 )
@@ -364,10 +364,23 @@ class Link(models.Model):
 class ShoppingItem(models.Model):
     """Model for a single shopping item in a list."""
 
+    CATEGORIES = (
+        ("fruit-veg", "Fruit & vegetables"),
+        ("meat-fish", "Meat & fish"),
+        ("food-cupboard", "Food cupboard"),
+        ("household", "Household"),
+        ("bakery", "Bakery"),
+        ("health-beauty", "Toiletries & health"),
+        ("dairy-eggs-and-chilled", "Dairy, eggs & chilled"),
+        ("frozen", "Frozen"),
+    )
+
     name = models.CharField(ugettext("item_name"), max_length=32, null=False)
+    category = models.CharField(max_length=32, choices=CATEGORIES, default="fruit-veg")
     price = models.DecimalField(
         ugettext("purchase_price"), max_digits=7, decimal_places=2, default=0.00
     )
+    url = models.URLField(null=True)
     date_created = models.DateTimeField(auto_now_add=True)
     date_updated = models.DateTimeField(auto_now=True)
 
@@ -385,7 +398,7 @@ class ShoppingList(models.Model):
     user = models.ForeignKey(
         User, related_name="shopping_lists", on_delete=models.CASCADE
     )
-    date = models.DateField(default=datetime.date.today)
+    date = models.DateField(default=date.today)
     items = models.ManyToManyField(ShoppingItem, through="ShoppingListItem")
 
     def __str__(self):
