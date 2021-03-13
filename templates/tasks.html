@@ -102,8 +102,8 @@
         {% endfor %}
     </div>
 
-    <script type="text/javascript" src="{% static 'bower_components/ckeditor/ckeditor.js' %}"></script>
-    <script type="text/javascript" defer>
+    <script src="{% static 'bower_components/ckeditor/ckeditor.js' %}"></script>
+    <script defer>
       if("undefined" === typeof jQuery) {
         window.onload = function() {
           init_app();

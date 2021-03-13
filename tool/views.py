@@ -41,10 +41,10 @@ from tool.models import (
     Label,
     Link,
     Profile,
+    ShoppingList,
     Task,
     Word,
     default_palette_colors,
-    ShoppingList,
 )
 from tool.tasks import get_occurrences
 from tool.utils import check_news

@@ -77,7 +77,7 @@
     </form>
 
 
-    <script type="text/javascript">
+    <script>
         // Dynamically set page title and description.
         document.title = '{{ page_title }}';
         document.head.querySelector('meta[name=description]').content = '{% trans "Instantly share code, notes, and snippets" %}';
@@ -97,7 +97,7 @@
             });
         }
     </script>
-    <script type="text/javascript" src="{% static 'bower_components/ckeditor/ckeditor.js' %}"></script>
-    <script type="text/javascript" src="{% static 'js/code.js' %}" defer></script>
+    <script src="{% static 'bower_components/ckeditor/ckeditor.js' %}"></script>
+    <script src="{% static 'js/code.js' %}" defer></script>
 
 {% endblock %}

@@ -30,7 +30,7 @@ def get_env_var(name, default: str = "", env_prefix: str = SITE_ENV_PREFIX) -> s
             if res.status_code == 200:
                 return res.text
     except requests.exceptions.ConnectionError:
-        return default
+        pass
 
     return default
 
