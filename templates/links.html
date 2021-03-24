@@ -37,7 +37,7 @@
           {% for link in links %}
             <li class="link-container item-container" data-difficulty="{{ link.color }}" data-title="{{ link.link }}" data-id="{{ link.id }}" data-json="{{ link|serialize }}">
               <small class="glyphicon glyphicon-move" aria-hidden="true"></small>
-              <a target="_blank" href="{{ link.link }}" class="link" style="font-size: 1.2em; color: #{{ link.color }};" data-toggle="tooltip" data-html="true" title="{% if link.title != None %}<b>{{ link.title }}</b>{% endif %}{% if link.description != None %}<p>{{ link.description }}</p>{% endif %}">
+              <a target="_blank" rel="noopener nofollow" href="{{ link.link }}" class="link" style="font-size: 1.2em; color: #{{ link.color }};" data-toggle="tooltip" data-html="true" title="{% if link.title != None %}<b>{{ link.title }}</b>{% endif %}{% if link.description != None %}<p>{{ link.description }}</p>{% endif %}">
                 {{ link.link }}
               </a>
               <a href="/admin/tool/link/{{ link.id }}/change/" class="edit">
