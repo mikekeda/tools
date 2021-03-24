@@ -243,10 +243,6 @@ PROJECT_APPS = ["tool", "toolssite"]
 
 PYLINT_LOAD_PLUGIN = ["pylint_django"]
 
-TWILIO_ACCOUNT_SID = get_env_var("TWILIO_ACCOUNT_SID")
-TWILIO_AUTH_TOKEN = get_env_var("TWILIO_AUTH_TOKEN")
-TWILIO_PHONE_NUMBER = get_env_var("TWILIO_PHONE_NUMBER")
-
 GEOIP_PATH = "geo/"
 
 LOGGING = {
