@@ -232,6 +232,7 @@ if not DEBUG:
     STATIC_URL = "https://storage.googleapis.com/cdn.mkeda.me/tools/"
 
 STATICFILES_DIRS = (("", os.path.join(BASE_DIR, "static")),)
+DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
 
 JENKINS_TASKS = (
     "django_jenkins.tasks.run_pylint",

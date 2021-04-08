@@ -280,10 +280,8 @@ class Code(models.Model):
         code_snippets = cls.objects.filter(user=user)
         if label:
             code_snippets = code_snippets.filter(labels__title=label)
-        code_snippets = (
-            code_snippets.prefetch_related("labels")
-            .order_by("-pk")
-            .values_list("title", "slug", "labels__title", named=True)
+        code_snippets = code_snippets.order_by("-pk").values_list(
+            "title", "slug", "labels__title", named=True
         )
 
         code_snippets_dict = {}
