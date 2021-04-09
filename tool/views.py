@@ -15,7 +15,7 @@ from django.core.exceptions import PermissionDenied, ValidationError
 from django.core.serializers import serialize
 from django.db import transaction
 from django.db.utils import IntegrityError
-from django.http import Http404, HttpResponseRedirect, JsonResponse, QueryDict
+from django.http import Http404, JsonResponse, QueryDict
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils import timezone
@@ -352,7 +352,7 @@ class ProfileView(LoginRequiredMixin, View, GetUserMixin):
             form = AvatarForm(request.POST, request.FILES, instance=profile)
             if form.is_valid():
                 form.save()
-            return HttpResponseRedirect(request.META.get("HTTP_REFERER"))
+            return redirect(request.path)
 
         field = request.POST.get("name", "")
         value = request.POST.get("value", "")

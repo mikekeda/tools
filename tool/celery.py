@@ -18,11 +18,6 @@ app.config_from_object("django.conf:settings", namespace="CELERY")
 app.autodiscover_tasks()
 
 app.conf.beat_schedule = {
-    "every-5-minutes": {
-        "task": "tool.tasks.send_sms_notifications",
-        "schedule": crontab(minute="*/5"),
-        "args": (),
-    },
     "every-15-minutes": {
         "task": "tool.tasks.send_email_notifications",
         "schedule": crontab(minute="*/15"),
