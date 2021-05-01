@@ -32,7 +32,7 @@ ProfileForm = select2_modelform(Profile)
 
 class BaseModelAdmin(ImportExportModelAdmin):
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        """ Prepopulate current user. """
+        """Prepopulate current user."""
         if db_field.name == "user":
             kwargs["initial"] = request.user.id
         return db_field.formfield(**kwargs)

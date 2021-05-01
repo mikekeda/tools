@@ -61,7 +61,7 @@ def save_and_add_slug(
 
 
 def get_username_by_uid(obj):
-    """ Helper function to get user username by user id. """
+    """Helper function to get user username by user id."""
     # Try to get username from the cache to avoid unneeded queries,
     # pattern is 'username_by_id_<user_id>'
     username = cache.get("username_by_id_{}".format(obj.user_id))
@@ -78,7 +78,7 @@ def get_username_by_uid(obj):
 
 
 class ColorField(models.CharField):
-    """ Color field. """
+    """Color field."""
 
     def formfield(self, **kwargs):
         kwargs["widget"] = ColorWidget
@@ -86,7 +86,7 @@ class ColorField(models.CharField):
 
 
 class Profile(models.Model):
-    """ Profile model. """
+    """Profile model."""
 
     user = models.OneToOneField(
         settings.AUTH_USER_MODEL, related_name="profile", on_delete=models.CASCADE
@@ -108,7 +108,7 @@ for i, default_color in enumerate(default_palette_colors, 1):
 
 
 class Card(models.Model):
-    """ Flashcard model. """
+    """Flashcard model."""
 
     DIFFICULTIES = (
         ("easy", "Easy"),
@@ -134,7 +134,7 @@ class Card(models.Model):
 
 
 class Word(models.Model):
-    """ Word model. """
+    """Word model."""
 
     user = models.ForeignKey(User, related_name="words", on_delete=models.CASCADE)
     created = models.DateTimeField(auto_now_add=True)
@@ -149,7 +149,7 @@ for lang in settings.LANGUAGES:
 
 
 class Label(models.Model):
-    """ Label model. """
+    """Label model."""
 
     CATEGORIES = (
         ("programing", "Programing"),
@@ -169,7 +169,7 @@ class Label(models.Model):
 
 
 class Task(models.Model):
-    """ Task model. """
+    """Task model."""
 
     STATUSES = (
         ("todo", "TODO"),
@@ -216,7 +216,7 @@ class Task(models.Model):
 
 
 class Canvas(models.Model):
-    """ Canvas model. """
+    """Canvas model."""
 
     user = models.ForeignKey(User, related_name="canvases", on_delete=models.CASCADE)
     canvas = models.TextField(blank=True, null=True)
@@ -240,7 +240,7 @@ class Canvas(models.Model):
 
 
 class Code(models.Model):
-    """ Code model. """
+    """Code model."""
 
     title = models.CharField(max_length=60)
     text = models.TextField(
@@ -276,7 +276,7 @@ class Code(models.Model):
 
     @classmethod
     def get_code_snippets_with_labels(cls, user, label=None):
-        """ Get code snippets with labels. """
+        """Get code snippets with labels."""
         code_snippets = cls.objects.filter(user=user)
         if label:
             code_snippets = code_snippets.filter(labels__title=label)
@@ -313,7 +313,7 @@ class Code(models.Model):
 
 
 class Link(models.Model):
-    """ Link model. """
+    """Link model."""
 
     link = models.CharField(
         max_length=128, validators=[URLValidator(["http", "https"])]
@@ -334,7 +334,7 @@ class Link(models.Model):
     def save(
         self, force_insert=False, force_update=False, using=None, update_fields=None
     ):
-        """ Set link title and description. """
+        """Set link title and description."""
         try:
             res = requests.get(self.link)
         except requests.exceptions.ConnectionError:

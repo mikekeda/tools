@@ -12,7 +12,7 @@ SITE_ENV_PREFIX = "TOOLS"
 
 
 def get_env_var(name, default: str = "", env_prefix: str = SITE_ENV_PREFIX) -> str:
-    """ Get all sensitive data from google vm custom metadata. """
+    """Get all sensitive data from google vm custom metadata."""
     try:
         if env_prefix:
             name = "_".join([SITE_ENV_PREFIX, name])

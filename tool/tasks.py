@@ -11,7 +11,7 @@ app = Celery("tool")
 
 
 def get_occurrences(start, end, creator=None):
-    """ Helper function to get events in provided period. """
+    """Helper function to get events in provided period."""
     # Get events without a rule.
     query = Event.objects.filter(start__gt=start, start__lte=end, rule__isnull=True)
     if creator:
@@ -40,7 +40,7 @@ def get_occurrences(start, end, creator=None):
 
 @app.task
 def send_email_notifications():
-    """ Send email notification about upcoming events. """
+    """Send email notification about upcoming events."""
     interval = 15
     before = 60
 
@@ -86,7 +86,7 @@ def send_email_notifications():
 
 @app.task
 def daily_notification():
-    """ Send daily email notification about upcoming events. """
+    """Send daily email notification about upcoming events."""
     sending_hour = 8
 
     start = timezone.now()
