@@ -392,7 +392,9 @@ class ShoppingItem(models.Model):
 class ShoppingList(models.Model):
     """Model for a single shopping list."""
 
-    name = models.CharField(ugettext("list name"), max_length=32, null=False)
+    name = models.CharField(
+        ugettext("list name"), max_length=32, null=False, default="Groceries"
+    )
     user = models.ForeignKey(
         User, related_name="shopping_lists", on_delete=models.CASCADE
     )
