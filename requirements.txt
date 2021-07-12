@@ -1,6 +1,6 @@
 beautifulsoup4==4.9.3
 celery==5.1.2
-channels==3.0.3
+channels==3.0.4
 channels-redis==3.3.0
 django-easy-select2==1.5.7
 django-import-export==2.5.0
