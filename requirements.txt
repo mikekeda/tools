@@ -9,7 +9,7 @@ django-phonenumber-field==5.2.0
 django-redis==5.0.0
 django-scheduler==0.9.5
 django-widget-tweaks==1.4.8
-geoip2==4.2.0
+geoip2==4.3.0
 google-cloud-automl==2.4.2
 gunicorn==20.1.0
 Pillow==8.3.2
