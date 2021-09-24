@@ -1,12 +1,7 @@
 coverage==5.5
-cython==0.29.24
-line_profiler==3.3.0
 django-debug-toolbar==3.2.2
-django-debug-toolbar-line-profiling==0.7.1
-django-debug-toolbar-request-history==0.1.3
 -e git://github.com/mikekeda/django-jenkins.git#egg=django-jenkins
 pep8==1.7.1
 pyflakes==2.3.1
 pylint==2.11.1
 pylint-django==2.4.4
-pylint-plugin-utils==0.6
