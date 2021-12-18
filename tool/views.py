@@ -1,8 +1,7 @@
-from datetime import datetime
 import json
 import re
 from collections import OrderedDict, defaultdict
-from datetime import date
+from datetime import date, datetime
 
 import pytz
 from django.conf import settings
@@ -138,7 +137,7 @@ class FlashcardsView(LoginRequiredMixin, View, GetUserMixin):
                 return redirect(form_action)
             except IntegrityError:
                 form.add_error(
-                    "word", 'Card with word "{}" already exists.'.format(flashcard.word)
+                    "word", f'Card with word "{flashcard.word}" already exists.'
                 )
 
         return render(
@@ -272,7 +271,7 @@ class CalendarView(LoginRequiredMixin, View, GetUserMixin):
 
         calendar_obj, _ = Calendar.objects.get_or_create(
             slug=user.username,
-            defaults={"name": "{} Calendar".format(user.username)},
+            defaults={"name": f"{user.username} Calendar"},
         )
 
         post_object = request.POST.copy()
@@ -674,7 +673,7 @@ class CodeView(View, GetUserMixin):
         if slug:
             # Show single code snippet and edit form.
             code_snippet = get_object_or_404(Code, slug=slug)
-            active_page = "code/{}".format(code_snippet.title)
+            active_page = f"code/{code_snippet.title}"
             page_title = code_snippet.title
             try:
                 self.get_user(request, username)
@@ -713,7 +712,7 @@ class CodeView(View, GetUserMixin):
         page_title = _("Code snippets")
         if slug:
             code_snippet = get_object_or_404(Code, slug=slug)
-            active_page = "code/{}".format(code_snippet.title)
+            active_page = f"code/{code_snippet.title}"
             page_title = code_snippet.title
 
         form = CodeForm(data=request.POST, instance=code_snippet)
@@ -747,7 +746,7 @@ class CodeView(View, GetUserMixin):
             except IntegrityError:
                 form.add_error(
                     "title",
-                    'Code snippet with title "{}" already exists.'.format(code.title),
+                    f'Code snippet with title "{code.title}" already exists.',
                 )
             else:
                 return redirect(reverse("code"))
@@ -827,7 +826,7 @@ class LinkView(View, GetUserMixin):
                 with transaction.atomic():
                     link.save()
             except IntegrityError:
-                form.add_error("link", 'Link "{}" already exists.'.format(link.link))
+                form.add_error("link", f'Link "{link.link}" already exists.')
             else:
                 return redirect(request.path)
 

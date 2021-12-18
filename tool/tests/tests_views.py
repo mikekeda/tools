@@ -197,7 +197,7 @@ class ToolViewTest(BaseTestCase):
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(
             str(resp.content, encoding="utf8"),
-            '"{} Test event"'.format(start.strftime("%H:%M")),
+            f'"{start.strftime("%H:%M")} Test event"',
         )
 
         # Set user timezone (event should be aware of user's timezone).
@@ -211,7 +211,7 @@ class ToolViewTest(BaseTestCase):
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(
             str(resp.content, encoding="utf8"),
-            '"{} Test event"'.format(local_start.strftime("%H:%M")),
+            f'"{local_start.strftime("%H:%M")} Test event"',
         )
 
     def test_views_calendar_get(self):

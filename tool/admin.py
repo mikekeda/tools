@@ -48,10 +48,7 @@ class BaseModelAdmin(ImportExportModelAdmin):
         uids = {instance.user_id for instance in changelist.result_list}
         elements = User.objects.filter(pk__in=uids).values_list("pk", "username")
         cache.set_many(
-            {
-                "username_by_id_{}".format(element[0]): element[1]
-                for element in elements
-            },
+            {f"username_by_id_{element[0]}": element[1] for element in elements},
             settings.USER_ONLINE_TIMEOUT,
         )
 

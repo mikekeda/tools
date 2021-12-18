@@ -57,7 +57,7 @@ def send_email_notifications():
     for event in events:
         name = event.creator.username
         if event.creator.first_name:
-            name = "{} {}".format(event.creator.first_name, event.creator.last_name)
+            name = f"{event.creator.first_name} {event.creator.last_name}"
 
         text = "No description provided"
         if event.description:
@@ -106,21 +106,18 @@ def daily_notification():
             else:
                 user_events[event.creator.username] = [event]
 
-    for username in user_events:
+    for username, events in user_events.items():
         text = ""
         name = username
-        if user_events[username][0].creator.first_name:
-            name = "{} {}".format(
-                user_events[username][0].creator.first_name,
-                user_events[username][0].creator.last_name,
-            )
+        if events[0].creator.first_name:
+            name = f"{events[0].creator.first_name} {events[0].creator.last_name}"
 
-        for event in user_events[username]:
+        for event in events:
             local_time = timezone.localtime(
                 event.start, pytz.timezone(event.creator.profile.timezone)
             ).strftime("%H:%M")
 
-            text += "{} {}\n".format(local_time, event.title)
+            text += f"{local_time} {event.title}\n"
 
         subject = "Today's events"
         html_content = render_to_string(
@@ -134,7 +131,7 @@ def daily_notification():
             subject,
             text,
             f"Tools site <notify@{settings.MAILGUN_SERVER_NAME}>",
-            [f"{name} <{user_events[username][0].creator.email}>"],
+            [f"{name} <{events[0].creator.email}>"],
         )
         msg.attach_alternative(html_content, "text/html")
         msg.send()

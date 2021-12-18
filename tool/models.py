@@ -64,12 +64,12 @@ def get_username_by_uid(obj):
     """Helper function to get user username by user id."""
     # Try to get username from the cache to avoid unneeded queries,
     # pattern is 'username_by_id_<user_id>'
-    username = cache.get("username_by_id_{}".format(obj.user_id))
+    username = cache.get(f"username_by_id_{obj.user_id}")
     if not username:
         # We don't have the username - get username and set it to the cache.
         username = obj.user.username
         cache.set(
-            "username_by_id_{}".format(obj.user_id),
+            f"username_by_id_{obj.user_id}",
             username,
             settings.USER_ONLINE_TIMEOUT,
         )
@@ -236,7 +236,7 @@ class Canvas(models.Model):
     preview.allow_tags = True
 
     def __str__(self):
-        return "{}: {}".format(get_username_by_uid(self), self.pk)
+        return f"{get_username_by_uid(self)}: {self.pk}"
 
 
 class Code(models.Model):
@@ -307,7 +307,7 @@ class Code(models.Model):
         save_and_add_slug(self, force_insert, force_update, using, update_fields)
 
     def __str__(self):
-        return "{}: {}".format(get_username_by_uid(self), self.title)
+        return f"{get_username_by_uid(self)}: {self.title}"
 
 
 class Link(models.Model):
@@ -354,7 +354,7 @@ class Link(models.Model):
         super().save(force_insert, force_update, using, update_fields)
 
     def __str__(self):
-        return "{}: {}".format(get_username_by_uid(self), self.link)
+        return f"{get_username_by_uid(self)}: {self.link}"
 
 
 class ShoppingItem(models.Model):

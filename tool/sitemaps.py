@@ -14,7 +14,7 @@ class StaticViewSitemap(sitemaps.Sitemap):
             "news_check",
         ]
 
-    def location(self, obj):
-        if obj in {"about_page", "news_check"}:
-            return reverse(obj)
-        return reverse("tool", kwargs={"slug": obj})
+    def location(self, item):
+        if item in {"about_page", "news_check"}:
+            return reverse(item)
+        return reverse("tool", kwargs={"slug": item})
