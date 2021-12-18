@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime
 from urllib.parse import urlencode
 
 import pytz
@@ -179,7 +179,7 @@ class ToolViewTest(BaseTestCase):
 
         # Create an event.
         cal = Calendar.objects.create(name="testuser")
-        start = timezone.now() + timezone.timedelta(hours=2)
+        start = datetime.now(tz=pytz.utc) + timezone.timedelta(hours=2)
         test_event1 = Event(
             title="Test event",
             description="Test description 3",
@@ -401,19 +401,17 @@ class ToolViewTest(BaseTestCase):
         self.assertEqual(test_event.description, "Test description admin 3")
         self.assertEqual(test_event.color_event, "#FFC677")
         self.assertEqual(
-            test_event.start, datetime.datetime(2022, 2, 20, 9, 27, tzinfo=pytz.utc)
+            test_event.start, datetime(2022, 2, 20, 9, 27, tzinfo=pytz.utc)
         )
-        self.assertEqual(
-            test_event.end, datetime.datetime(2022, 2, 21, 9, 28, tzinfo=pytz.utc)
-        )
+        self.assertEqual(test_event.end, datetime(2022, 2, 21, 9, 28, tzinfo=pytz.utc))
 
     def test_views_calendar_delete(self):
         cal = Calendar.objects.create(name="testuser")
         test_event1 = Event(
             title="Test title 3",
             description="Test description 3",
-            start=datetime.datetime(2018, 1, 5, 8, 0, tzinfo=pytz.utc),
-            end=datetime.datetime(2018, 1, 5, 9, 0, tzinfo=pytz.utc),
+            start=datetime(2018, 1, 5, 8, 0, tzinfo=pytz.utc),
+            end=datetime(2018, 1, 5, 9, 0, tzinfo=pytz.utc),
             color_event="#FFA3F5",
             creator=self.test_user,
             calendar=cal,
@@ -423,8 +421,8 @@ class ToolViewTest(BaseTestCase):
         test_event2 = Event(
             title="Test title 3 admin",
             description="Test description 3 admin",
-            start=datetime.datetime(2018, 1, 4, 8, 0, tzinfo=pytz.utc),
-            end=datetime.datetime(2018, 1, 4, 10, 0, tzinfo=pytz.utc),
+            start=datetime(2018, 1, 4, 8, 0, tzinfo=pytz.utc),
+            end=datetime(2018, 1, 4, 10, 0, tzinfo=pytz.utc),
             color_event="#A3E2FF",
             creator=self.test_user,
             calendar=cal,

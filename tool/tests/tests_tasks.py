@@ -1,3 +1,4 @@
+from datetime import datetime
 from unittest.mock import patch
 
 import pytz
@@ -16,7 +17,7 @@ class ToolTaskTest(BaseTestCase):
         Profile.objects.create(user=cls.test_user, timezone="UTC")
         Profile.objects.create(user=cls.test_admin, timezone="Europe/Kiev")
 
-        now = timezone.now()
+        now = datetime.now(tz=pytz.utc)
         now -= timezone.timedelta(
             minutes=now.minute % 15, seconds=now.second, microseconds=now.microsecond
         )
@@ -74,7 +75,7 @@ class ToolTaskTest(BaseTestCase):
         cls.test_event4.save()
 
     def test_tasks_get_occurrences(self):
-        start = timezone.now()
+        start = datetime.now(tz=pytz.utc)
         end = start + timezone.timedelta(days=1)
 
         events = get_occurrences(start, end)

@@ -1,3 +1,4 @@
+from datetime import datetime
 import pytz
 from celery import Celery
 from django.conf import settings
@@ -44,7 +45,7 @@ def send_email_notifications():
     interval = 15
     before = 60
 
-    now = timezone.now()
+    now = datetime.now(tz=pytz.utc)
     now -= timezone.timedelta(
         minutes=now.minute % interval, seconds=now.second, microseconds=now.microsecond
     )
@@ -89,7 +90,7 @@ def daily_notification():
     """Send daily email notification about upcoming events."""
     sending_hour = 8
 
-    start = timezone.now()
+    start = datetime.now(tz=pytz.utc)
     end = start + timezone.timedelta(days=1)
     events = get_occurrences(start, end)
 

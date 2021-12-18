@@ -14,7 +14,7 @@ from django.core.validators import MaxValueValidator, MinValueValidator, URLVali
 from django.db import models
 from django.urls import reverse
 from django.utils.html import format_html
-from django.utils.translation import ugettext
+from django.utils.translation import gettext as _
 from phonenumber_field.modelfields import PhoneNumberField
 
 from tool.widgets import ColorWidget
@@ -243,9 +243,7 @@ class Code(models.Model):
     """Code model."""
 
     title = models.CharField(max_length=60)
-    text = models.TextField(
-        help_text=ugettext("Double click on code block to copy or edit.")
-    )
+    text = models.TextField(help_text=_("Double click on code block to copy or edit."))
     user = models.ForeignKey(
         User, related_name="code_fragments", on_delete=models.CASCADE
     )
@@ -253,7 +251,7 @@ class Code(models.Model):
     labels = models.ManyToManyField(
         Label,
         blank=True,
-        help_text=ugettext(
+        help_text=_(
             "Used programming languages will be automatically" " saved as labels."
         ),
     )
@@ -373,10 +371,10 @@ class ShoppingItem(models.Model):
         ("frozen", "Frozen"),
     )
 
-    name = models.CharField(ugettext("item_name"), max_length=32, null=False)
+    name = models.CharField(_("item_name"), max_length=32, null=False)
     category = models.CharField(max_length=32, choices=CATEGORIES, default="fruit-veg")
     price = models.DecimalField(
-        ugettext("purchase_price"), max_digits=7, decimal_places=2, default=0.00
+        _("purchase_price"), max_digits=7, decimal_places=2, default=0.00
     )
     url = models.URLField(null=True)
     date_created = models.DateTimeField(auto_now_add=True)
@@ -393,7 +391,7 @@ class ShoppingList(models.Model):
     """Model for a single shopping list."""
 
     name = models.CharField(
-        ugettext("list name"), max_length=32, null=False, default="Groceries"
+        _("list name"), max_length=32, null=False, default="Groceries"
     )
     user = models.ForeignKey(
         User, related_name="shopping_lists", on_delete=models.CASCADE
@@ -411,6 +409,6 @@ class ShoppingListItem(models.Model):
     list = models.ForeignKey(ShoppingList, on_delete=models.CASCADE)
     item = models.ForeignKey(ShoppingItem, on_delete=models.CASCADE)
     completed = models.BooleanField(default=False)
-    quantity = models.PositiveSmallIntegerField(ugettext("item_quantity"), default=1)
+    quantity = models.PositiveSmallIntegerField(_("item_quantity"), default=1)
     date_created = models.DateTimeField(auto_now_add=True)
     date_updated = models.DateTimeField(auto_now=True)

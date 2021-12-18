@@ -1,3 +1,4 @@
+from datetime import datetime
 import json
 import re
 from collections import OrderedDict, defaultdict
@@ -19,7 +20,7 @@ from django.http import Http404, JsonResponse, QueryDict
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils import timezone
-from django.utils.translation import ugettext
+from django.utils.translation import gettext as _
 from django.views import View
 from geoip2.errors import AddressNotFoundError
 from schedule.models import Calendar, Event
@@ -363,9 +364,7 @@ class ProfileView(LoginRequiredMixin, View, GetUserMixin):
                 profile.save()
                 return JsonResponse({"success": True})
 
-            return JsonResponse(
-                ugettext("This value not allowed"), safe=False, status=403
-            )
+            return JsonResponse(_("This value not allowed"), safe=False, status=403)
 
         if any(
             [
@@ -388,9 +387,7 @@ class ProfileView(LoginRequiredMixin, View, GetUserMixin):
                     ", ".join(e.message_dict[field]), safe=False, status=422
                 )
 
-        return JsonResponse(
-            ugettext("You can't change this field"), safe=False, status=403
-        )
+        return JsonResponse(_("You can't change this field"), safe=False, status=403)
 
 
 @staff_member_required
@@ -404,7 +401,7 @@ def users_list(request):
 @login_required
 def card_order(request, username=None):
     """Change Flashcards order callback."""
-    if request.is_ajax():
+    if request.headers.get("x-requested-with") == "XMLHttpRequest":
         user = GetUserMixin().get_user(request, username)
 
         cards = Card.objects.filter(user=user)
@@ -415,14 +412,14 @@ def card_order(request, username=None):
                     card.order = order[str(card.id)]
                     card.save()
 
-        return JsonResponse(ugettext("The order was changed"), safe=False)
+        return JsonResponse(_("The order was changed"), safe=False)
     raise Http404
 
 
 @login_required
 def task_order(request, username=None):
     """Change Task order and status callback."""
-    if request.is_ajax():
+    if request.headers.get("x-requested-with") == "XMLHttpRequest":
         user = GetUserMixin().get_user(request, username)
         serialized_task = {}
         status = request.POST.get("status", "")
@@ -431,7 +428,7 @@ def task_order(request, username=None):
         except ValueError:
             task_id = None
 
-        if status in (status[0] for status in Task.STATUSES):
+        if status in {status[0] for status in Task.STATUSES}:
             tasks = Task.objects.filter(user=user)
             order = json.loads(request.POST.get("order", ""))
             with transaction.atomic():
@@ -459,7 +456,7 @@ def task_order(request, username=None):
 @login_required
 def link_order(request, username=None):
     """Change Links order callback."""
-    if request.is_ajax():
+    if request.headers.get("x-requested-with") == "XMLHttpRequest":
         user = GetUserMixin().get_user(request, username)
 
         links = Link.objects.filter(user=user)
@@ -470,15 +467,15 @@ def link_order(request, username=None):
                     link.weight = order[str(link.id)]
                     link.save()
 
-        return JsonResponse(ugettext("The order was changed"), safe=False)
+        return JsonResponse(_("The order was changed"), safe=False)
     raise Http404
 
 
 @login_required
 def user_events(request):
     """Get today's events."""
-    if request.is_ajax():
-        start = timezone.now()
+    if request.headers.get("x-requested-with") == "XMLHttpRequest":
+        start = datetime.now(tz=pytz.utc)
         end = start + timezone.timedelta(days=1)
         events = get_occurrences(start, end, request.user)
 
@@ -561,9 +558,7 @@ class DictionaryView(View, GetUserMixin):
             word.save()
             return JsonResponse({"redirect": request.path, "success": True})
 
-        return JsonResponse(
-            ugettext("You can't change this field"), safe=False, status=403
-        )
+        return JsonResponse(_("You can't change this field"), safe=False, status=403)
 
 
 def log_in(request):
@@ -675,7 +670,7 @@ class CodeView(View, GetUserMixin):
         active_page = "code"
         code_snippet = None
         code_snippets = ()
-        page_title = ugettext("Code snippets")
+        page_title = _("Code snippets")
         if slug:
             # Show single code snippet and edit form.
             code_snippet = get_object_or_404(Code, slug=slug)
@@ -715,7 +710,7 @@ class CodeView(View, GetUserMixin):
         user = self.get_user(request, username)
         code_snippet = None
         active_page = "code"
-        page_title = ugettext("Code snippets")
+        page_title = _("Code snippets")
         if slug:
             code_snippet = get_object_or_404(Code, slug=slug)
             active_page = "code/{}".format(code_snippet.title)

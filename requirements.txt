@@ -2,9 +2,9 @@ beautifulsoup4==4.10.0
 celery==5.2.1
 channels==3.0.4
 channels-redis==3.3.1
-django-easy-select2==1.5.7
-django-import-export==2.6.1
-Django==3.2.10
+-e git://github.com/mikekeda/django-easy-select2.git#egg=django-easy-select2
+django-import-export==2.7.0
+Django==4.0
 django-phonenumber-field==6.0.0
 django-redis==5.1.0
 django-scheduler==0.9.5
@@ -13,7 +13,7 @@ geoip2==4.5.0
 google-cloud-automl==2.5.2
 gunicorn==20.1.0
 Pillow==8.4.0
-phonenumbers==8.12.38
+phonenumbers==8.12.39
 psycopg2-binary==2.9.2
 pytz==2021.3
 requests==2.26.0
