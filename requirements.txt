@@ -1,5 +1,5 @@
 beautifulsoup4==4.10.0
-celery==5.2.1
+celery==5.2.2
 channels==3.0.4
 channels-redis==3.3.1
 -e git://github.com/mikekeda/django-easy-select2.git#egg=django-easy-select2
