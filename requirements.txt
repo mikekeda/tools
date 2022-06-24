@@ -1,6 +1,6 @@
 beautifulsoup4==4.11.1
 celery==5.2.7
-channels==3.0.4
+channels==3.0.5
 channels-redis==3.4.0
 django-easy-select2==1.5.8
 django-import-export==2.8.0
@@ -9,7 +9,7 @@ django-phonenumber-field==6.3.0
 django-redis==5.2.0
 django-scheduler==0.9.6
 django-widget-tweaks==1.4.12
-geoip2==4.5.0
+geoip2==4.6.0
 google-cloud-automl==2.7.3
 gunicorn==20.1.0
 Pillow==9.1.1
