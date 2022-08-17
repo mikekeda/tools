@@ -15,7 +15,7 @@ class ToolTaskTest(BaseTestCase):
     def setUpClass(cls):
         super().setUpClass()
         Profile.objects.create(user=cls.test_user, timezone="UTC")
-        Profile.objects.create(user=cls.test_admin, timezone="Europe/Kiev")
+        Profile.objects.create(user=cls.test_admin, timezone="Europe/Kyiv")
 
         now = datetime.now(tz=pytz.utc)
         now -= timezone.timedelta(

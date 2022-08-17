@@ -202,9 +202,9 @@ class ToolViewTest(BaseTestCase):
 
         # Set user timezone (event should be aware of user's timezone).
         profile = Profile.objects.get(user=self.test_user)
-        profile.timezone = "Europe/Kiev"
+        profile.timezone = "Europe/Kyiv"
         profile.save()
-        local_start = timezone.localtime(start, pytz.timezone("Europe/Kiev"))
+        local_start = timezone.localtime(start, pytz.timezone("Europe/Kyiv"))
         resp = self.client.get(
             reverse("events"), HTTP_X_REQUESTED_WITH="XMLHttpRequest"
         )
@@ -378,7 +378,7 @@ class ToolViewTest(BaseTestCase):
 
         # Set user timezone (event should be aware of user's timezone).
         profile = Profile.objects.get(user=self.test_user)
-        profile.timezone = "Europe/Kiev"
+        profile.timezone = "Europe/Kyiv"
         profile.save()
         # Edit user event.
         resp = self.client.post(
@@ -1403,12 +1403,12 @@ class ToolViewTest(BaseTestCase):
         # Change timezone (success).
         resp = self.client.post(
             reverse("user", kwargs={"username": "testuser"}),
-            {"name": "timezone", "value": "Europe/Kiev"},
+            {"name": "timezone", "value": "Europe/Kyiv"},
         )
         self.assertEqual(resp.status_code, 200)
         self.assertJSONEqual(str(resp.content, encoding="utf8"), {"success": True})
         profile = Profile.objects.get(user=user)
-        self.assertEqual(profile.timezone, "Europe/Kiev")
+        self.assertEqual(profile.timezone, "Europe/Kyiv")
 
         # Change not existing field (fail).
         resp = self.client.post(
