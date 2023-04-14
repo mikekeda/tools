@@ -1,0 +1,210 @@
+{% extends parent_template %}
+{% load i18n %}
+
+{% block title %}{% trans "Dota draft win probability" %}{% endblock %}
+{% block description %}{% trans "Predict Dota win probability based on draft" %}{% endblock description %}
+
+{% block content %}
+    <h2>{% trans "Dota win prediction" %}</h2>
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="clearfix">
+                <h4 class="pull-left">Team 1</h4>
+                <div id="team-1" class="team pull-left">
+                    <img src="" alt="" width="100">
+                    <img src="" alt="" width="100">
+                    <img src="" alt="" width="100">
+                    <img src="" alt="" width="100">
+                    <img src="" alt="" width="100">
+                </div>
+            </div>
+            <div class="clearfix">
+                <h4 class="pull-left">Team 2</h4>
+                <div id="team-2" class="team pull-left">
+                    <img src="" alt="" width="100">
+                    <img src="" alt="" width="100">
+                    <img src="" alt="" width="100">
+                    <img src="" alt="" width="100">
+                    <img src="" alt="" width="100">
+                </div>
+            </div>
+            <div class="clearfix"><h4>Team 1 win probability: <span id="win-probability"></span>%</h4></div>
+        </div>
+
+        <div class="col-sm-12">
+        <div class="pull-left">
+        <p>STRENGTH</p>
+            <div id="hero-list-npc_dota_hero_abaddon" class="hero-box pull-left" data-id="100"><img src="/static/img/dota/heros/abaddon.png" alt="npc_dota_hero_abaddon" width="60"></div>
+            <div id="hero-list-npc_dota_hero_alchemist" class="hero-box pull-left" data-id="71"><img src="/static/img/dota/heros/alchemist.png" alt="npc_dota_hero_alchemist" width="60"></div>
+            <div id="hero-list-npc_dota_hero_axe" class="hero-box pull-left" data-id="1"><img src="/static/img/dota/heros/axe.png" alt="npc_dota_hero_axe" width="60"></div>
+            <div id="hero-list-npc_dota_hero_beastmaster" class="hero-box pull-left" data-id="36"><img src="/static/img/dota/heros/beastmaster.png" alt="npc_dota_hero_beastmaster" width="60"></div>
+            <div id="hero-list-npc_dota_hero_brewmaster" class="hero-box pull-left" data-id="76"><img src="/static/img/dota/heros/brewmaster.png" alt="npc_dota_hero_brewmaster" width="60"></div>
+            <div id="hero-list-npc_dota_hero_bristleback" class="hero-box pull-left" data-id="97"><img src="/static/img/dota/heros/bristleback.png" alt="npc_dota_hero_bristleback" width="60"></div>
+            <div id="hero-list-npc_dota_hero_centaur" class="hero-box pull-left" data-id="94"><img src="/static/img/dota/heros/centaur.png" alt="npc_dota_hero_centaur" width="60"></div>
+            <div id="hero-list-npc_dota_hero_chaos_knight" class="hero-box pull-left" data-id="79"><img src="/static/img/dota/heros/chaos_knight.png" alt="npc_dota_hero_chaos_knight" width="60"></div>
+            <div id="hero-list-npc_dota_hero_rattletrap" class="hero-box pull-left" data-id="49"><img src="/static/img/dota/heros/rattletrap.png" alt="npc_dota_hero_rattletrap" width="60"></div>
+            <div id="hero-list-npc_dota_hero_dawnbreaker" class="hero-box pull-left" data-id="120"><img src="/static/img/dota/heros/dawnbreaker.png" alt="npc_dota_hero_dawnbreaker" width="60"></div>
+            <div id="hero-list-npc_dota_hero_doom_bringer" class="hero-box pull-left" data-id="67"><img src="/static/img/dota/heros/doom_bringer.png" alt="npc_dota_hero_doom_bringer" width="60"></div>
+            <div id="hero-list-npc_dota_hero_dragon_knight" class="hero-box pull-left" data-id="47"><img src="/static/img/dota/heros/dragon_knight.png" alt="npc_dota_hero_dragon_knight" width="60"></div>
+            <div id="hero-list-npc_dota_hero_earth_spirit" class="hero-box pull-left" data-id="105"><img src="/static/img/dota/heros/earth_spirit.png" alt="npc_dota_hero_earth_spirit" width="60"></div>
+            <div id="hero-list-npc_dota_hero_earthshaker" class="hero-box pull-left" data-id="6"><img src="/static/img/dota/heros/earthshaker.png" alt="npc_dota_hero_earthshaker" width="60"></div>
+            <div id="hero-list-npc_dota_hero_elder_titan" class="hero-box pull-left" data-id="101"><img src="/static/img/dota/heros/elder_titan.png" alt="npc_dota_hero_elder_titan" width="60"></div>
+            <div id="hero-list-npc_dota_hero_huskar" class="hero-box pull-left" data-id="57"><img src="/static/img/dota/heros/huskar.png" alt="npc_dota_hero_huskar" width="60"></div>
+            <div id="hero-list-npc_dota_hero_wisp" class="hero-box pull-left" data-id="89"><img src="/static/img/dota/heros/wisp.png" alt="npc_dota_hero_wisp" width="60"></div>
+            <div id="hero-list-npc_dota_hero_kunkka" class="hero-box pull-left" data-id="22"><img src="/static/img/dota/heros/kunkka.png" alt="npc_dota_hero_kunkka" width="60"></div>
+            <div id="hero-list-npc_dota_hero_legion_commander" class="hero-box pull-left" data-id="102"><img src="/static/img/dota/heros/legion_commander.png" alt="npc_dota_hero_legion_commander" width="60"></div>
+            <div id="hero-list-npc_dota_hero_life_stealer" class="hero-box pull-left" data-id="52"><img src="/static/img/dota/heros/life_stealer.png" alt="npc_dota_hero_life_stealer" width="60"></div>
+            <div id="hero-list-npc_dota_hero_lycan" class="hero-box pull-left" data-id="75"><img src="/static/img/dota/heros/lycan.png" alt="npc_dota_hero_lycan" width="60"></div>
+            <div id="hero-list-npc_dota_hero_magnataur" class="hero-box pull-left" data-id="95"><img src="/static/img/dota/heros/magnataur.png" alt="npc_dota_hero_magnataur" width="60"></div>
+            <div id="hero-list-npc_dota_hero_marci" class="hero-box pull-left" data-id="121"><img src="/static/img/dota/heros/marci.png" alt="npc_dota_hero_marci" width="60"></div>
+            <div id="hero-list-npc_dota_hero_mars" class="hero-box pull-left" data-id="119"><img src="/static/img/dota/heros/mars.png" alt="npc_dota_hero_mars" width="60"></div>
+            <div id="hero-list-npc_dota_hero_night_stalker" class="hero-box pull-left" data-id="58"><img src="/static/img/dota/heros/night_stalker.png" alt="npc_dota_hero_night_stalker" width="60"></div>
+            <div id="hero-list-npc_dota_hero_omniknight" class="hero-box pull-left" data-id="55"><img src="/static/img/dota/heros/omniknight.png" alt="npc_dota_hero_omniknight" width="60"></div>
+            <div id="hero-list-npc_dota_hero_phoenix" class="hero-box pull-left" data-id="108"><img src="/static/img/dota/heros/phoenix.png" alt="npc_dota_hero_phoenix" width="60"></div>
+            <div id="hero-list-npc_dota_hero_primal_beast" class="hero-box pull-left" data-id="122"><img src="/static/img/dota/heros/primal_beast.png" alt="npc_dota_hero_primal_beast" width="60"></div>
+            <div id="hero-list-npc_dota_hero_pudge" class="hero-box pull-left" data-id="13"><img src="/static/img/dota/heros/pudge.png" alt="npc_dota_hero_pudge" width="60"></div>
+            <div id="hero-list-npc_dota_hero_sand_king" class="hero-box pull-left" data-id="15"><img src="/static/img/dota/heros/sand_king.png" alt="npc_dota_hero_sand_king" width="60"></div>
+            <div id="hero-list-npc_dota_hero_slardar" class="hero-box pull-left" data-id="26"><img src="/static/img/dota/heros/slardar.png" alt="npc_dota_hero_slardar" width="60"></div>
+            <div id="hero-list-npc_dota_hero_snapfire" class="hero-box pull-left" data-id="118"><img src="/static/img/dota/heros/snapfire.png" alt="npc_dota_hero_snapfire" width="60"></div>
+            <div id="hero-list-npc_dota_hero_spirit_breaker" class="hero-box pull-left" data-id="69"><img src="/static/img/dota/heros/spirit_breaker.png" alt="npc_dota_hero_spirit_breaker" width="60"></div>
+            <div id="hero-list-npc_dota_hero_sven" class="hero-box pull-left" data-id="17"><img src="/static/img/dota/heros/sven.png" alt="npc_dota_hero_sven" width="60"></div>
+            <div id="hero-list-npc_dota_hero_tidehunter" class="hero-box pull-left" data-id="27"><img src="/static/img/dota/heros/tidehunter.png" alt="npc_dota_hero_tidehunter" width="60"></div>
+            <div id="hero-list-npc_dota_hero_shredder" class="hero-box pull-left" data-id="96"><img src="/static/img/dota/heros/shredder.png" alt="npc_dota_hero_shredder" width="60"></div>
+            <div id="hero-list-npc_dota_hero_tiny" class="hero-box pull-left" data-id="18"><img src="/static/img/dota/heros/tiny.png" alt="npc_dota_hero_tiny" width="60"></div>
+            <div id="hero-list-npc_dota_hero_treant" class="hero-box pull-left" data-id="81"><img src="/static/img/dota/heros/treant.png" alt="npc_dota_hero_treant" width="60"></div>
+            <div id="hero-list-npc_dota_hero_tusk" class="hero-box pull-left" data-id="98"><img src="/static/img/dota/heros/tusk.png" alt="npc_dota_hero_tusk" width="60"></div>
+            <div id="hero-list-npc_dota_hero_abyssal_underlord" class="hero-box pull-left" data-id="106"><img src="/static/img/dota/heros/abyssal_underlord.png" alt="npc_dota_hero_abyssal_underlord" width="60"></div>
+            <div id="hero-list-npc_dota_hero_undying" class="hero-box pull-left" data-id="83"><img src="/static/img/dota/heros/undying.png" alt="npc_dota_hero_undying" width="60"></div>
+            <div id="hero-list-npc_dota_hero_skeleton_king" class="hero-box pull-left" data-id="40"><img src="/static/img/dota/heros/skeleton_king.png" alt="npc_dota_hero_skeleton_king" width="60"></div>
+        </div>
+        <div class="pull-left">
+        <p>AGILITY</p>
+            <div id="hero-list-npc_dota_hero_antimage" class="hero-box pull-left" data-id="0"><img src="/static/img/dota/heros/antimage.png" alt="npc_dota_hero_antimage" width="60"></div>
+            <div id="hero-list-npc_dota_hero_arc_warden" class="hero-box pull-left" data-id="111"><img src="/static/img/dota/heros/arc_warden.png" alt="npc_dota_hero_arc_warden" width="60"></div>
+            <div id="hero-list-npc_dota_hero_bloodseeker" class="hero-box pull-left" data-id="3"><img src="/static/img/dota/heros/bloodseeker.png" alt="npc_dota_hero_bloodseeker" width="60"></div>
+            <div id="hero-list-npc_dota_hero_bounty_hunter" class="hero-box pull-left" data-id="60"><img src="/static/img/dota/heros/bounty_hunter.png" alt="npc_dota_hero_bounty_hunter" width="60"></div>
+            <div id="hero-list-npc_dota_hero_broodmother" class="hero-box pull-left" data-id="59"><img src="/static/img/dota/heros/broodmother.png" alt="npc_dota_hero_broodmother" width="60"></div>
+            <div id="hero-list-npc_dota_hero_clinkz" class="hero-box pull-left" data-id="54"><img src="/static/img/dota/heros/clinkz.png" alt="npc_dota_hero_clinkz" width="60"></div>
+            <div id="hero-list-npc_dota_hero_drow_ranger" class="hero-box pull-left" data-id="5"><img src="/static/img/dota/heros/drow_ranger.png" alt="npc_dota_hero_drow_ranger" width="60"></div>
+            <div id="hero-list-npc_dota_hero_ember_spirit" class="hero-box pull-left" data-id="104"><img src="/static/img/dota/heros/ember_spirit.png" alt="npc_dota_hero_ember_spirit" width="60"></div>
+            <div id="hero-list-npc_dota_hero_faceless_void" class="hero-box pull-left" data-id="39"><img src="/static/img/dota/heros/faceless_void.png" alt="npc_dota_hero_faceless_void" width="60"></div>
+            <div id="hero-list-npc_dota_hero_gyrocopter" class="hero-box pull-left" data-id="70"><img src="/static/img/dota/heros/gyrocopter.png" alt="npc_dota_hero_gyrocopter" width="60"></div>
+            <div id="hero-list-npc_dota_hero_hoodwink" class="hero-box pull-left" data-id="116"><img src="/static/img/dota/heros/hoodwink.png" alt="npc_dota_hero_hoodwink" width="60"></div>
+            <div id="hero-list-npc_dota_hero_juggernaut" class="hero-box pull-left" data-id="7"><img src="/static/img/dota/heros/juggernaut.png" alt="npc_dota_hero_juggernaut" width="60"></div>
+            <div id="hero-list-npc_dota_hero_lone_druid" class="hero-box pull-left" data-id="78"><img src="/static/img/dota/heros/lone_druid.png" alt="npc_dota_hero_lone_druid" width="60"></div>
+            <div id="hero-list-npc_dota_hero_luna" class="hero-box pull-left" data-id="46"><img src="/static/img/dota/heros/luna.png" alt="npc_dota_hero_luna" width="60"></div>
+            <div id="hero-list-npc_dota_hero_medusa" class="hero-box pull-left" data-id="92"><img src="/static/img/dota/heros/medusa.png" alt="npc_dota_hero_medusa" width="60"></div>
+            <div id="hero-list-npc_dota_hero_meepo" class="hero-box pull-left" data-id="80"><img src="/static/img/dota/heros/meepo.png" alt="npc_dota_hero_meepo" width="60"></div>
+            <div id="hero-list-npc_dota_hero_mirana" class="hero-box pull-left" data-id="8"><img src="/static/img/dota/heros/mirana.png" alt="npc_dota_hero_mirana" width="60"></div>
+            <div id="hero-list-npc_dota_hero_monkey_king" class="hero-box pull-left" data-id="112"><img src="/static/img/dota/heros/monkey_king.png" alt="npc_dota_hero_monkey_king" width="60"></div>
+            <div id="hero-list-npc_dota_hero_morphling" class="hero-box pull-left" data-id="9"><img src="/static/img/dota/heros/morphling.png" alt="npc_dota_hero_morphling" width="60"></div>
+            <div id="hero-list-npc_dota_hero_naga_siren" class="hero-box pull-left" data-id="87"><img src="/static/img/dota/heros/naga_siren.png" alt="npc_dota_hero_naga_siren" width="60"></div>
+            <div id="hero-list-npc_dota_hero_nyx_assassin" class="hero-box pull-left" data-id="86"><img src="/static/img/dota/heros/nyx_assassin.png" alt="npc_dota_hero_nyx_assassin" width="60"></div>
+            <div id="hero-list-npc_dota_hero_pangolier" class="hero-box pull-left" data-id="114"><img src="/static/img/dota/heros/pangolier.png" alt="npc_dota_hero_pangolier" width="60"></div>
+            <div id="hero-list-npc_dota_hero_phantom_assassin" class="hero-box pull-left" data-id="42"><img src="/static/img/dota/heros/phantom_assassin.png" alt="npc_dota_hero_phantom_assassin" width="60"></div>
+            <div id="hero-list-npc_dota_hero_phantom_lancer" class="hero-box pull-left" data-id="11"><img src="/static/img/dota/heros/phantom_lancer.png" alt="npc_dota_hero_phantom_lancer" width="60"></div>
+            <div id="hero-list-npc_dota_hero_razor" class="hero-box pull-left" data-id="14"><img src="/static/img/dota/heros/razor.png" alt="npc_dota_hero_razor" width="60"></div>
+            <div id="hero-list-npc_dota_hero_riki" class="hero-box pull-left" data-id="30"><img src="/static/img/dota/heros/riki.png" alt="npc_dota_hero_riki" width="60"></div>
+            <div id="hero-list-npc_dota_hero_nevermore" class="hero-box pull-left" data-id="10"><img src="/static/img/dota/heros/nevermore.png" alt="npc_dota_hero_nevermore" width="60"></div>
+            <div id="hero-list-npc_dota_hero_slark" class="hero-box pull-left" data-id="91"><img src="/static/img/dota/heros/slark.png" alt="npc_dota_hero_slark" width="60"></div>
+            <div id="hero-list-npc_dota_hero_sniper" class="hero-box pull-left" data-id="33"><img src="/static/img/dota/heros/sniper.png" alt="npc_dota_hero_sniper" width="60"></div>
+            <div id="hero-list-npc_dota_hero_spectre" class="hero-box pull-left" data-id="65"><img src="/static/img/dota/heros/spectre.png" alt="npc_dota_hero_spectre" width="60"></div>
+            <div id="hero-list-npc_dota_hero_templar_assassin" class="hero-box pull-left" data-id="44"><img src="/static/img/dota/heros/templar_assassin.png" alt="npc_dota_hero_templar_assassin" width="60"></div>
+            <div id="hero-list-npc_dota_hero_terrorblade" class="hero-box pull-left" data-id="107"><img src="/static/img/dota/heros/terrorblade.png" alt="npc_dota_hero_terrorblade" width="60"></div>
+            <div id="hero-list-npc_dota_hero_troll_warlord" class="hero-box pull-left" data-id="93"><img src="/static/img/dota/heros/troll_warlord.png" alt="npc_dota_hero_troll_warlord" width="60"></div>
+            <div id="hero-list-npc_dota_hero_ursa" class="hero-box pull-left" data-id="68"><img src="/static/img/dota/heros/ursa.png" alt="npc_dota_hero_ursa" width="60"></div>
+            <div id="hero-list-npc_dota_hero_vengefulspirit" class="hero-box pull-left" data-id="19"><img src="/static/img/dota/heros/vengefulspirit.png" alt="npc_dota_hero_vengefulspirit" width="60"></div>
+            <div id="hero-list-npc_dota_hero_venomancer" class="hero-box pull-left" data-id="38"><img src="/static/img/dota/heros/venomancer.png" alt="npc_dota_hero_venomancer" width="60"></div>
+            <div id="hero-list-npc_dota_hero_viper" class="hero-box pull-left" data-id="45"><img src="/static/img/dota/heros/viper.png" alt="npc_dota_hero_viper" width="60"></div>
+            <div id="hero-list-npc_dota_hero_weaver" class="hero-box pull-left" data-id="61"><img src="/static/img/dota/heros/weaver.png" alt="npc_dota_hero_weaver" width="60"></div>
+        </div>
+        <div class="pull-left">
+        <p>INTELLIGENCE</p>
+            <div id="hero-list-npc_dota_hero_ancient_apparition" class="hero-box pull-left" data-id="66"><img src="/static/img/dota/heros/ancient_apparition.png" alt="npc_dota_hero_ancient_apparition" width="60"></div>
+            <div id="hero-list-npc_dota_hero_bane" class="hero-box pull-left" data-id="2"><img src="/static/img/dota/heros/bane.png" alt="npc_dota_hero_bane" width="60"></div>
+            <div id="hero-list-npc_dota_hero_batrider" class="hero-box pull-left" data-id="63"><img src="/static/img/dota/heros/batrider.png" alt="npc_dota_hero_batrider" width="60"></div>
+            <div id="hero-list-npc_dota_hero_chen" class="hero-box pull-left" data-id="64"><img src="/static/img/dota/heros/chen.png" alt="npc_dota_hero_chen" width="60"></div>
+            <div id="hero-list-npc_dota_hero_crystal_maiden" class="hero-box pull-left" data-id="4"><img src="/static/img/dota/heros/crystal_maiden.png" alt="npc_dota_hero_crystal_maiden" width="60"></div>
+            <div id="hero-list-npc_dota_hero_dark_seer" class="hero-box pull-left" data-id="53"><img src="/static/img/dota/heros/dark_seer.png" alt="npc_dota_hero_dark_seer" width="60"></div>
+            <div id="hero-list-npc_dota_hero_dark_willow" class="hero-box pull-left" data-id="113"><img src="/static/img/dota/heros/dark_willow.png" alt="npc_dota_hero_dark_willow" width="60"></div>
+            <div id="hero-list-npc_dota_hero_dazzle" class="hero-box pull-left" data-id="48"><img src="/static/img/dota/heros/dazzle.png" alt="npc_dota_hero_dazzle" width="60"></div>
+            <div id="hero-list-npc_dota_hero_death_prophet" class="hero-box pull-left" data-id="41"><img src="/static/img/dota/heros/death_prophet.png" alt="npc_dota_hero_death_prophet" width="60"></div>
+            <div id="hero-list-npc_dota_hero_disruptor" class="hero-box pull-left" data-id="85"><img src="/static/img/dota/heros/disruptor.png" alt="npc_dota_hero_disruptor" width="60"></div>
+            <div id="hero-list-npc_dota_hero_enchantress" class="hero-box pull-left" data-id="56"><img src="/static/img/dota/heros/enchantress.png" alt="npc_dota_hero_enchantress" width="60"></div>
+            <div id="hero-list-npc_dota_hero_enigma" class="hero-box pull-left" data-id="31"><img src="/static/img/dota/heros/enigma.png" alt="npc_dota_hero_enigma" width="60"></div>
+            <div id="hero-list-npc_dota_hero_grimstroke" class="hero-box pull-left" data-id="115"><img src="/static/img/dota/heros/grimstroke.png" alt="npc_dota_hero_grimstroke" width="60"></div>
+            <div id="hero-list-npc_dota_hero_invoker" class="hero-box pull-left" data-id="72"><img src="/static/img/dota/heros/invoker.png" alt="npc_dota_hero_invoker" width="60"></div>
+            <div id="hero-list-npc_dota_hero_jakiro" class="hero-box pull-left" data-id="62"><img src="/static/img/dota/heros/jakiro.png" alt="npc_dota_hero_jakiro" width="60"></div>
+            <div id="hero-list-npc_dota_hero_keeper_of_the_light" class="hero-box pull-left" data-id="88"><img src="/static/img/dota/heros/keeper_of_the_light.png" alt="npc_dota_hero_keeper_of_the_light" width="60"></div>
+            <div id="hero-list-npc_dota_hero_leshrac" class="hero-box pull-left" data-id="50"><img src="/static/img/dota/heros/leshrac.png" alt="npc_dota_hero_leshrac" width="60"></div>
+            <div id="hero-list-npc_dota_hero_lich" class="hero-box pull-left" data-id="29"><img src="/static/img/dota/heros/lich.png" alt="npc_dota_hero_lich" width="60"></div>
+            <div id="hero-list-npc_dota_hero_lina" class="hero-box pull-left" data-id="23"><img src="/static/img/dota/heros/lina.png" alt="npc_dota_hero_lina" width="60"></div>
+            <div id="hero-list-npc_dota_hero_lion" class="hero-box pull-left" data-id="24"><img src="/static/img/dota/heros/lion.png" alt="npc_dota_hero_lion" width="60"></div>
+            <div id="hero-list-npc_dota_hero_furion" class="hero-box pull-left" data-id="51"><img src="/static/img/dota/heros/furion.png" alt="npc_dota_hero_furion" width="60"></div>
+            <div id="hero-list-npc_dota_hero_necrolyte" class="hero-box pull-left" data-id="34"><img src="/static/img/dota/heros/necrolyte.png" alt="npc_dota_hero_necrolyte" width="60"></div>
+            <div id="hero-list-npc_dota_hero_ogre_magi" class="hero-box pull-left" data-id="82"><img src="/static/img/dota/heros/ogre_magi.png" alt="npc_dota_hero_ogre_magi" width="60"></div>
+            <div id="hero-list-npc_dota_hero_oracle" class="hero-box pull-left" data-id="109"><img src="/static/img/dota/heros/oracle.png" alt="npc_dota_hero_oracle" width="60"></div>
+            <div id="hero-list-npc_dota_hero_obsidian_destroyer" class="hero-box pull-left" data-id="74"><img src="/static/img/dota/heros/obsidian_destroyer.png" alt="npc_dota_hero_obsidian_destroyer" width="60"></div>
+            <div id="hero-list-npc_dota_hero_puck" class="hero-box pull-left" data-id="12"><img src="/static/img/dota/heros/puck.png" alt="npc_dota_hero_puck" width="60"></div>
+            <div id="hero-list-npc_dota_hero_pugna" class="hero-box pull-left" data-id="43"><img src="/static/img/dota/heros/pugna.png" alt="npc_dota_hero_pugna" width="60"></div>
+            <div id="hero-list-npc_dota_hero_queenofpain" class="hero-box pull-left" data-id="37"><img src="/static/img/dota/heros/queenofpain.png" alt="npc_dota_hero_queenofpain" width="60"></div>
+            <div id="hero-list-npc_dota_hero_rubick" class="hero-box pull-left" data-id="84"><img src="/static/img/dota/heros/rubick.png" alt="npc_dota_hero_rubick" width="60"></div>
+            <div id="hero-list-npc_dota_hero_shadow_demon" class="hero-box pull-left" data-id="77"><img src="/static/img/dota/heros/shadow_demon.png" alt="npc_dota_hero_shadow_demon" width="60"></div>
+            <div id="hero-list-npc_dota_hero_shadow_shaman" class="hero-box pull-left" data-id="25"><img src="/static/img/dota/heros/shadow_shaman.png" alt="npc_dota_hero_shadow_shaman" width="60"></div>
+            <div id="hero-list-npc_dota_hero_silencer" class="hero-box pull-left" data-id="73"><img src="/static/img/dota/heros/silencer.png" alt="npc_dota_hero_silencer" width="60"></div>
+            <div id="hero-list-npc_dota_hero_skywrath_mage" class="hero-box pull-left" data-id="99"><img src="/static/img/dota/heros/skywrath_mage.png" alt="npc_dota_hero_skywrath_mage" width="60"></div>
+            <div id="hero-list-npc_dota_hero_storm_spirit" class="hero-box pull-left" data-id="16"><img src="/static/img/dota/heros/storm_spirit.png" alt="npc_dota_hero_storm_spirit" width="60"></div>
+            <div id="hero-list-npc_dota_hero_techies" class="hero-box pull-left" data-id="103"><img src="/static/img/dota/heros/techies.png" alt="npc_dota_hero_techies" width="60"></div>
+            <div id="hero-list-npc_dota_hero_tinker" class="hero-box pull-left" data-id="32"><img src="/static/img/dota/heros/tinker.png" alt="npc_dota_hero_tinker" width="60"></div>
+            <div id="hero-list-npc_dota_hero_visage" class="hero-box pull-left" data-id="90"><img src="/static/img/dota/heros/visage.png" alt="npc_dota_hero_visage" width="60"></div>
+            <div id="hero-list-npc_dota_hero_void_spirit" class="hero-box pull-left" data-id="117"><img src="/static/img/dota/heros/void_spirit.png" alt="npc_dota_hero_void_spirit" width="60"></div>
+            <div id="hero-list-npc_dota_hero_warlock" class="hero-box pull-left" data-id="35"><img src="/static/img/dota/heros/warlock.png" alt="npc_dota_hero_warlock" width="60"></div>
+            <div id="hero-list-npc_dota_hero_windrunner" class="hero-box pull-left" data-id="20"><img src="/static/img/dota/heros/windrunner.png" alt="npc_dota_hero_windrunner" width="60"></div>
+            <div id="hero-list-npc_dota_hero_winter_wyvern" class="hero-box pull-left" data-id="110"><img src="/static/img/dota/heros/winter_wyvern.png" alt="npc_dota_hero_winter_wyvern" width="60"></div>
+            <div id="hero-list-npc_dota_hero_witch_doctor" class="hero-box pull-left" data-id="28"><img src="/static/img/dota/heros/witch_doctor.png" alt="npc_dota_hero_witch_doctor" width="60"></div>
+            <div id="hero-list-npc_dota_hero_zuus" class="hero-box pull-left" data-id="21"><img src="/static/img/dota/heros/zuus.png" alt="npc_dota_hero_zuus" width="60"></div>
+        </div>
+        </div>
+    </div>
+    <script>
+        if("undefined" === typeof jQuery) {
+          window.onload = function() {
+            init_app();
+          };
+        }
+        else {
+          init_app();
+        }
+
+        function init_app() {
+            $(".hero-box").click(function(e) {
+                let $this = $( this );
+                let $img;
+                let $team1;
+                let $team2;
+
+                if ($this.hasClass("selected")) {
+                    $img = $('.team img[data-id="' + $this.data("id") + '"]');
+                    $img.attr("src", "").attr("data-id", "");
+                    $this.css("opacity", "1");
+                } else {
+                    $img = $('.team img[src=""]:first');
+                    if ($img.length) {
+                        $img.attr("data-id", $this.data("id")).attr("src", $this.find("img").attr("src"));
+                        $this.css("opacity", "0.5");
+                    }
+                    if (!$('.team img[src=""]:first').length) {
+                        $team1 = $.map($('#team-1 img'), function(e) { return $(e).attr("data-id"); });
+                        $team2 = $.map($('#team-2 img'), function(e) { return $(e).attr("data-id"); });
+                        $.get("/mv/dota-prediction?team1=" + $team1 + "&team2=" + $team2, function( data ) {
+                            $("#win-probability").html(data);
+                        });
+                    }
+                }
+
+                $this.toggleClass("selected" );
+            });
+
+        }
+    </script>
+{% endblock %}
