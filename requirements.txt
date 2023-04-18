@@ -12,6 +12,7 @@ django-widget-tweaks==1.4.12
 geoip2==4.6.0
 google-cloud-automl==2.11.1
 gunicorn==20.1.0
+numpy==1.24.2
 Pillow==9.5.0
 phonenumbers==8.13.10
 psycopg2-binary==2.9.6

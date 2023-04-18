@@ -41,7 +41,7 @@ def get_dota_prediction(starting_team_picks, second_team_picks):
     path = os.path.join(pwd, "../ml_models/DotaModel_t20_14_34_v2_l0.323_a0.876.pt")
 
     model = DotaModel().to(device)
-    model.load_state_dict(torch.load(path))
+    model.load_state_dict(torch.load(path, map_location=device))
 
     model.eval()
     with torch.no_grad():
