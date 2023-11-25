@@ -1,5 +1,5 @@
 beautifulsoup4==4.12.2
-celery==5.3.5
+celery==5.3.6
 channels==4.0.0
 channels-redis==4.1.0
 django-easy-select2==1.5.8
@@ -14,7 +14,7 @@ google-cloud-automl==2.11.4
 gunicorn==21.2.0
 numpy==1.26.2
 Pillow==10.1.0
-phonenumbers==8.13.25
+phonenumbers==8.13.26
 psycopg2-binary==2.9.9
 pytz==2023.3.post1
 requests==2.31.0
