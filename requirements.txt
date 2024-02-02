@@ -1,4 +1,4 @@
-beautifulsoup4==4.12.2
+beautifulsoup4==4.12.3
 celery==5.3.6
 channels==4.0.0
 channels-redis==4.2.0
@@ -10,14 +10,14 @@ django-redis==5.4.0
 django-scheduler==0.10.1
 django-widget-tweaks==1.5.0
 geoip2==4.8.0
-google-cloud-automl==2.12.0
+google-cloud-automl==2.13.0
 gunicorn==21.2.0
 numpy==1.26.3
 Pillow==10.2.0
-phonenumbers==8.13.27
+phonenumbers==8.13.29
 psycopg2-binary==2.9.9
-pytz==2023.3.post1
+pytz==2023.4
 requests==2.31.0
 social-auth-app-django==5.4.0
-social-auth-core==4.5.1
-torch==2.1.2
+social-auth-core==4.5.2
+torch==2.2.0
