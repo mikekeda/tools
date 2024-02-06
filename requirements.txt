@@ -4,7 +4,7 @@ channels==4.0.0
 channels-redis==4.2.0
 django-easy-select2==1.5.8
 django-import-export==3.3.7
-Django==5.0.1
+Django==5.0.2
 django-phonenumber-field==7.3.0
 django-redis==5.4.0
 django-scheduler==0.10.1
@@ -12,7 +12,7 @@ django-widget-tweaks==1.5.0
 geoip2==4.8.0
 google-cloud-automl==2.13.0
 gunicorn==21.2.0
-numpy==1.26.3
+numpy==1.26.4
 Pillow==10.2.0
 phonenumbers==8.13.29
 psycopg2-binary==2.9.9
