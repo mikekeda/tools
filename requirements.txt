@@ -14,7 +14,7 @@ google-cloud-automl==2.13.1
 gunicorn==21.2.0
 numpy==1.26.4
 Pillow==10.2.0
-phonenumbers==8.13.29
+phonenumbers==8.13.30
 psycopg2-binary==2.9.9
 pytz==2024.1
 requests==2.31.0
