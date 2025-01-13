@@ -7,7 +7,7 @@ django-import-export==4.3.1
 Django==5.1.3
 django-phonenumber-field==8.0.0
 django-redis==5.4.0
--e git+https://github.com/llazzaro/django-scheduler.git#egg=django-scheduler
+django-scheduler @ git+https://github.com/whoisearth/django-scheduler
 django-widget-tweaks==1.5.0
 geoip2==4.8.1
 google-cloud-automl==2.14.1
