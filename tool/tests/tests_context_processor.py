@@ -13,7 +13,6 @@ class ToolContextProcessorTest(BaseTestCase):
             {
                 "tools": [
                     {"name": "Canvas", "slug": "canvas"},
-                    {"name": "Dota draft", "slug": "dota-draft"},
                     {"name": "Exif info", "slug": "exif-info"},
                     {"name": "Image to base64", "slug": "image-to-base64"},
                     {"name": "Text manipulation", "slug": "text-manipulation"},

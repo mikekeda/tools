@@ -1,6 +1,6 @@
-# DataTables for jQuery with styling for [Bootstrap](http://getbootstrap.com/)
+# DataTables with [Bootstrap](https://getbootstrap.com/docs/3.3/) styling
 
-This package contains distribution files required to style [DataTables library](https://datatables.net) for [jQuery](http://jquery.com/) with styling for [Bootstrap](http://getbootstrap.com/).
+This package contains distribution files required to style [DataTables table enhancement library](https://datatables.net) with styling integration for [Bootstrap](https://getbootstrap.com/docs/3.3/).
 
 DataTables is a table enhancing library which adds features such as paging, ordering, search, scrolling and many more to a static HTML page. A comprehensive API is also available that can be used to manipulate the table. Please refer to the [DataTables web-site](//datatables.net) for a full range of documentation and examples.
 
@@ -9,36 +9,45 @@ DataTables is a table enhancing library which adds features such as paging, orde
 
 ### Browser
 
-For inclusion of this library using a standard `<script>` tag, rather than using this package, it is recommended that you use the [DataTables download builder](//datatables.net/download) which can create CDN or locally hosted packages for you, will all dependencies satisfied.
+To use DataTables with a simple `<script>` tag, rather than using this package, it is recommended that you use the [DataTables download builder](//datatables.net/download) which can create CDN or locally hosted packages for you, will all dependencies satisfied.
 
 ### npm
+
+For installation via npm, yarn and other similar package managers, install this package with your package manager - e.g.:
 
 ```
 npm install datatables.net-bs
 ```
 
-```
-var $ = require( 'jquery' );
-require( 'datatables.net-bs' )( window, $ );
-```
-
-### bower
+Then, to load and initialise DataTables in your code use:
 
 ```
-bower install --save datatables.net-bs
+import DataTable from 'datatables.net-bs';
+
+new DataTable('#myTable', {
+    // initalisation options
+});
 ```
 
+If you are using an old version of Node or a CommonJS loader, you might need to use the `require` syntax:
+
+```
+const DataTable = require('datatables.net-bs');
+
+new DataTable('#myTable', {
+    // initalisation options
+});
+```
 
 
 ## Documentation
 
-Full documentation of the DataTables options, API and plug-in interface are available on the DOCS_LINK. The site also contains information on the wide variety of plug-ins that are available for DataTables, which can be used to enhance and customise your table even further.
+Full documentation of the DataTables options, API and plug-in interface are available on the [website](https://datatables.net/reference/index). The site also contains information on the wide variety of plug-ins that are available for DataTables, which can be used to enhance and customise your table even further.
 
 
 ## Bug / Support
 
 Support for DataTables is available through the [DataTables forums](//datatables.net/forums) and [commercial support options](//datatables.net/support) are available.
-
 
 ### Contributing
 
@@ -48,3 +57,4 @@ If you are thinking of contributing code to DataTables, first of all, thank you!
 ## License
 
 This software is released under the [MIT license](//datatables.net/license). You are free to use, modify and distribute this software, but all copyright information must remain.
+

@@ -1,7 +1,7 @@
 {
   "name": "@eastdesire/jscolor",
-  "version": "2.3.3",
-  "description": "Simple web color picker with opacity channel. Supports CSS color formats such as RGBA and HEX.",
+  "version": "2.5.2",
+  "description": "Web color picker with opacity channel (alpha channel) and custom palette. Supports CSS colors such as rgba() and hex, including #rrggbbaa.",
   "main": "jscolor.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -13,10 +13,13 @@
   "keywords": [
     "JavaScript",
     "js",
-    "HEX",
-    "RGBA",
+    "hex",
+    "rgba",
+    "rrggbbaa",
     "color",
     "picker",
+    "palette",
+    "swatch",
     "input",
     "chooser",
     "selector",
@@ -33,7 +36,6 @@
     "tablet",
     "smartphone",
     "mobile",
-    "swatch",
     "popup",
     "widget",
     "dialog",

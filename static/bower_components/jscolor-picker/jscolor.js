@@ -10,12 +10,35 @@
  */
 
 
-"use strict";
+(function (global, factory) {
+
+	'use strict';
+
+	if (typeof module === 'object' && typeof module.exports === 'object') {
+		// Export jscolor as a module
+		module.exports = global.document ?
+			factory (global) :
+			function (win) {
+				if (!win.document) {
+					throw new Error('jscolor needs a window with document');
+				}
+				return factory(win);
+			}
+		return;
+	}
+
+	// Default use (no module export)
+	factory(global);
+
+})(typeof window !== 'undefined' ? window : this, function (window) { // BEGIN factory
+
+// BEGIN jscolor code
 
 
-if (!window.jscolor) {
+'use strict';
 
-window.jscolor = (function () { // BEGIN window.jscolor
+
+var jscolor = (function () { // BEGIN jscolor
 
 var jsc = {
 
@@ -24,35 +47,22 @@ var jsc = {
 
 	instances : [], // created instances of jscolor
 
-	triggerQueue : [], // events waiting to be triggered after init
+	readyQueue : [], // functions waiting to be called after init
 
 
 	register : function () {
-		document.addEventListener('DOMContentLoaded', jsc.init, false);
-		document.addEventListener('mousedown', jsc.onDocumentMouseDown, false);
-		document.addEventListener('keyup', jsc.onDocumentKeyUp, false);
-		window.addEventListener('resize', jsc.onWindowResize, false);
-	},
-
-
-	init : function () {
-		if (jsc.initialized) {
-			return;
-		}
-
-		jsc.pub.install();
-		jsc.initialized = true;
-
-		// trigger events waiting in the queue
-		while (jsc.triggerQueue.length) {
-			var ev = jsc.triggerQueue.shift();
-			jsc.triggerGlobal(ev);
+		if (typeof window !== 'undefined' && window.document) {
+			if (window.document.readyState !== 'loading') {
+				jsc.pub.init();
+			} else {
+				window.document.addEventListener('DOMContentLoaded', jsc.pub.init, false);
+			}
 		}
 	},
 
 
 	installBySelector : function (selector, rootNode) {
-		rootNode = rootNode ? jsc.node(rootNode) : document;
+		rootNode = rootNode ? jsc.node(rootNode) : window.document;
 		if (!rootNode) {
 			throw new Error('Missing root node');
 		}
@@ -145,8 +155,8 @@ var jsc = {
 
 
 	createEl : function (tagName) {
-		var el = document.createElement(tagName);
-		jsc.setData(el, 'gui', true)
+		var el = window.document.createElement(tagName);
+		jsc.setData(el, 'gui', true);
 		return el;
 	},
 
@@ -161,7 +171,7 @@ var jsc = {
 			var sel = nodeOrSelector;
 			var el = null;
 			try {
-				el = document.querySelector(sel);
+				el = window.document.querySelector(sel);
 			} catch (e) {
 				console.warn(e);
 				return null;
@@ -249,7 +259,7 @@ var jsc = {
 
 
 	isColorAttrSupported : (function () {
-		var elm = document.createElement('input');
+		var elm = window.document.createElement('input');
 		if (elm.setAttribute) {
 			elm.setAttribute('type', 'color');
 			if (elm.type.toLowerCase() == 'color') {
@@ -337,6 +347,12 @@ var jsc = {
 	},
 
 
+	setDataAttr : function (el, name, value) {
+		var attrName = 'data-' + name;
+		el.setAttribute(attrName, value);
+	},
+
+
 	_attachedGroupEvents : {},
 
 
@@ -366,24 +382,6 @@ var jsc = {
 	},
 
 
-	captureTarget : function (target) {
-		// IE
-		if (target.setCapture) {
-			jsc._capturedTarget = target;
-			jsc._capturedTarget.setCapture();
-		}
-	},
-
-
-	releaseTarget : function () {
-		// IE
-		if (jsc._capturedTarget) {
-			jsc._capturedTarget.releaseCapture();
-			jsc._capturedTarget = null;
-		}
-	},
-
-
 	triggerEvent : function (el, eventName, bubbles, cancelable) {
 		if (!el) {
 			return;
@@ -398,7 +396,7 @@ var jsc = {
 			});
 		} else {
 			// IE
-			ev = document.createEvent('Event');
+			ev = window.document.createEvent('Event');
 			ev.initEvent(eventName, bubbles, cancelable);
 		}
 
@@ -563,12 +561,79 @@ var jsc = {
 	},
 
 
+	appendCss : function (css) {
+		var head = document.querySelector('head');
+		var style = document.createElement('style');
+		style.innerText = css;
+		head.appendChild(style);
+	},
+
+
+	appendDefaultCss : function (css) {
+		jsc.appendCss(
+			[
+				'.jscolor-wrap, .jscolor-wrap div, .jscolor-wrap canvas { ' +
+				'position:static; display:block; visibility:visible; overflow:visible; margin:0; padding:0; ' +
+				'border:none; border-radius:0; outline:none; z-index:auto; float:none; ' +
+				'width:auto; height:auto; left:auto; right:auto; top:auto; bottom:auto; min-width:0; min-height:0; max-width:none; max-height:none; ' +
+				'background:none; clip:auto; opacity:1; transform:none; box-shadow:none; box-sizing:content-box; ' +
+				'}',
+				'.jscolor-wrap { clear:both; }',
+				'.jscolor-wrap .jscolor-picker { position:relative; }',
+				'.jscolor-wrap .jscolor-shadow { position:absolute; left:0; top:0; width:100%; height:100%; }',
+				'.jscolor-wrap .jscolor-border { position:relative; }',
+				'.jscolor-wrap .jscolor-palette { position:absolute; }',
+				'.jscolor-wrap .jscolor-palette-sw { position:absolute; display:block; cursor:pointer; }',
+				'.jscolor-wrap .jscolor-btn { position:absolute; overflow:hidden; white-space:nowrap; font:13px sans-serif; text-align:center; cursor:pointer; }',
+			].join('\n')
+		);
+	},
+
+
+	hexColor : function (r, g, b) {
+		return '#' + (
+			('0' + Math.round(r).toString(16)).slice(-2) +
+			('0' + Math.round(g).toString(16)).slice(-2) +
+			('0' + Math.round(b).toString(16)).slice(-2)
+		).toUpperCase();
+	},
+
+
+	hexaColor : function (r, g, b, a) {
+		return '#' + (
+			('0' + Math.round(r).toString(16)).slice(-2) +
+			('0' + Math.round(g).toString(16)).slice(-2) +
+			('0' + Math.round(b).toString(16)).slice(-2) +
+			('0' + Math.round(a * 255).toString(16)).slice(-2)
+		).toUpperCase();
+	},
+
+
+	rgbColor : function (r, g, b) {
+		return 'rgb(' +
+			Math.round(r) + ',' +
+			Math.round(g) + ',' +
+			Math.round(b) +
+		')';
+	},
+
+
+	rgbaColor : function (r, g, b, a) {
+		return 'rgba(' +
+			Math.round(r) + ',' +
+			Math.round(g) + ',' +
+			Math.round(b) + ',' +
+			(Math.round((a===undefined || a===null ? 1 : a) * 100) / 100) +
+		')';
+	},
+
+
 	linearGradient : (function () {
 
 		function getFuncName () {
 			var stdName = 'linear-gradient';
 			var prefixes = ['', '-webkit-', '-moz-', '-o-', '-ms-'];
-			var helper = document.createElement('div');
+			var helper = window.document.createElement('div');
 
 			for (var i = 0; i < prefixes.length; i += 1) {
 				var tryFunc = prefixes[i] + stdName;
@@ -659,7 +724,7 @@ var jsc = {
 
 
 	getViewPos : function () {
-		var doc = document.documentElement;
+		var doc = window.document.documentElement;
 		return [
 			(window.pageXOffset || doc.scrollLeft) - (doc.clientLeft || 0),
 			(window.pageYOffset || doc.scrollTop) - (doc.clientTop || 0)
@@ -668,7 +733,7 @@ var jsc = {
 
 
 	getViewSize : function () {
-		var doc = document.documentElement;
+		var doc = window.document.documentElement;
 		return [
 			(window.innerWidth || doc.clientWidth),
 			(window.innerHeight || doc.clientHeight),
@@ -734,45 +799,62 @@ var jsc = {
 	parseColorString : function (str) {
 		var ret = {
 			rgba: null,
-			format: null // 'hex' | 'rgb' | 'rgba'
+			format: null // 'hex' | 'hexa' | 'rgb' | 'rgba'
 		};
 
 		var m;
-		if (m = str.match(/^\W*([0-9A-F]{3}([0-9A-F]{3})?)\W*$/i)) {
+
+		if (m = str.match(/^\W*([0-9A-F]{3,8})\W*$/i)) {
 			// HEX notation
 
-			ret.format = 'hex';
-
-			if (m[1].length === 6) {
-				// 6-char notation
+			if (m[1].length === 8) {
+				// 8-char notation (= with alpha)
+				ret.format = 'hexa';
 				ret.rgba = [
-					parseInt(m[1].substr(0,2),16),
-					parseInt(m[1].substr(2,2),16),
-					parseInt(m[1].substr(4,2),16),
+					parseInt(m[1].slice(0,2),16),
+					parseInt(m[1].slice(2,4),16),
+					parseInt(m[1].slice(4,6),16),
+					parseInt(m[1].slice(6,8),16) / 255
+				];
+
+			} else if (m[1].length === 6) {
+				// 6-char notation
+				ret.format = 'hex';
+				ret.rgba = [
+					parseInt(m[1].slice(0,2),16),
+					parseInt(m[1].slice(2,4),16),
+					parseInt(m[1].slice(4,6),16),
 					null
 				];
-			} else {
+
+			} else if (m[1].length === 3) {
 				// 3-char notation
+				ret.format = 'hex';
 				ret.rgba = [
 					parseInt(m[1].charAt(0) + m[1].charAt(0),16),
 					parseInt(m[1].charAt(1) + m[1].charAt(1),16),
 					parseInt(m[1].charAt(2) + m[1].charAt(2),16),
 					null
 				];
-			}
-			return ret;
 
-		} else if (m = str.match(/^\W*rgba?\(([^)]*)\)\W*$/i)) {
+			} else {
+				return false;
+			}
+
+			return ret;
+		}
+
+		if (m = str.match(/^\W*rgba?\(([^)]*)\)\W*$/i)) {
 			// rgb(...) or rgba(...) notation
 
-			var params = m[1].split(',');
+			var par = m[1].split(',');
 			var re = /^\s*(\d+|\d*\.\d+|\d+\.\d*)\s*$/;
 			var mR, mG, mB, mA;
 			if (
-				params.length >= 3 &&
-				(mR = params[0].match(re)) &&
-				(mG = params[1].match(re)) &&
-				(mB = params[2].match(re))
+				par.length >= 3 &&
+				(mR = par[0].match(re)) &&
+				(mG = par[1].match(re)) &&
+				(mB = par[2].match(re))
 			) {
 				ret.format = 'rgb';
 				ret.rgba = [
@@ -783,8 +865,8 @@ var jsc = {
 				];
 
 				if (
-					params.length >= 4 &&
-					(mA = params[3].match(re))
+					par.length >= 4 &&
+					(mA = par[3].match(re))
 				) {
 					ret.format = 'rgba';
 					ret.rgba[3] = parseFloat(mA[1]) || 0;
@@ -793,6 +875,54 @@ var jsc = {
 			}
 		}
 
+		return false;
+	},
+
+
+	parsePaletteValue : function (mixed) {
+		var vals = [];
+
+		if (typeof mixed === 'string') { // input is a string of space separated color values
+			// rgb() and rgba() may contain spaces too, so let's find all color values by regex
+			mixed.replace(/#[0-9A-F]{3}\b|#[0-9A-F]{6}([0-9A-F]{2})?\b|rgba?\(([^)]*)\)/ig, function (val) {
+				vals.push(val);
+			});
+		} else if (Array.isArray(mixed)) { // input is an array of color values
+			vals = mixed;
+		}
+
+		// convert all values into uniform color format
+
+		var colors = [];
+
+		for (var i = 0; i < vals.length; i++) {
+			var color = jsc.parseColorString(vals[i]);
+			if (color) {
+				colors.push(color);
+			}
+		}
+
+		return colors;
+	},
+
+
+	containsTranparentColor : function (colors) {
+		for (var i = 0; i < colors.length; i++) {
+			var a = colors[i].rgba[3];
+			if (a !== null && a < 1.0) {
+				return true;
+			}
+		}
+		return false;
+	},
+
+
+	isAlphaFormat : function (format) {
+		switch (format.toLowerCase()) {
+		case 'hexa':
+		case 'rgba':
+			return true;
+		}
 		return false;
 	},
 
@@ -902,8 +1032,17 @@ var jsc = {
 
 	redrawPosition : function () {
 
-		if (jsc.picker && jsc.picker.owner) {
-			var thisObj = jsc.picker.owner;
+		if (!jsc.picker || !jsc.picker.owner) {
+			return; // picker is not shown
+		}
+
+		var thisObj = jsc.picker.owner;
+
+		if (thisObj.container !== window.document.body) {
+
+			jsc._drawPosition(thisObj, 0, 0, 'relative', false);
+
+		} else {
 
 			var tp, vp;
 
@@ -919,7 +1058,8 @@ var jsc = {
 
 			var ts = jsc.getElementSize(thisObj.targetElement); // target size
 			var vs = jsc.getViewSize(); // view size
-			var ps = jsc.getPickerOuterDims(thisObj); // picker size
+			var pd = jsc.getPickerDims(thisObj);
+			var ps = [pd.borderW, pd.borderH]; // picker outer size
 			var a, b, c;
 			switch (thisObj.position.toLowerCase()) {
 				case 'left': a=1; b=0; c=-1; break;
@@ -954,7 +1094,9 @@ var jsc = {
 				(pp[1] + ps[1] < tp[1] + ts[1]);
 
 			jsc._drawPosition(thisObj, x, y, positionValue, contractShadow);
+
 		}
+
 	},
 
 
@@ -962,8 +1104,14 @@ var jsc = {
 		var vShadow = contractShadow ? 0 : thisObj.shadowBlur; // px
 
 		jsc.picker.wrap.style.position = positionValue;
-		jsc.picker.wrap.style.left = x + 'px';
-		jsc.picker.wrap.style.top = y + 'px';
+
+		if ( // To avoid unnecessary repositioning during scroll
+			Math.round(parseFloat(jsc.picker.wrap.style.left)) !== Math.round(x) ||
+			Math.round(parseFloat(jsc.picker.wrap.style.top)) !== Math.round(y)
+		) {
+			jsc.picker.wrap.style.left = x + 'px';
+			jsc.picker.wrap.style.top = y + 'px';
+		}
 
 		jsc.setBoxShadow(
 			jsc.picker.boxS,
@@ -974,30 +1122,69 @@ var jsc = {
 
 
 	getPickerDims : function (thisObj) {
-		var dims = [
-			2 * thisObj.controlBorderWidth + 2 * thisObj.padding + thisObj.width,
-			2 * thisObj.controlBorderWidth + 2 * thisObj.padding + thisObj.height
-		];
+		var w = 2 * thisObj.controlBorderWidth + thisObj.width;
+		var h = 2 * thisObj.controlBorderWidth + thisObj.height;
+
 		var sliderSpace = 2 * thisObj.controlBorderWidth + 2 * jsc.getControlPadding(thisObj) + thisObj.sliderSize;
+
 		if (jsc.getSliderChannel(thisObj)) {
-			dims[0] += sliderSpace;
+			w += sliderSpace;
 		}
 		if (thisObj.hasAlphaChannel()) {
-			dims[0] += sliderSpace;
+			w += sliderSpace;
+		}
+
+		var pal = jsc.getPaletteDims(thisObj, w);
+
+		if (pal.height) {
+			h += pal.height + thisObj.padding;
 		}
 		if (thisObj.closeButton) {
-			dims[1] += 2 * thisObj.controlBorderWidth + thisObj.padding + thisObj.buttonHeight;
+			h += 2 * thisObj.controlBorderWidth + thisObj.padding + thisObj.buttonHeight;
 		}
-		return dims;
+
+		var pW = w + (2 * thisObj.padding);
+		var pH = h + (2 * thisObj.padding);
+
+		return {
+			contentW: w,
+			contentH: h,
+			paddedW: pW,
+			paddedH: pH,
+			borderW: pW + (2 * thisObj.borderWidth),
+			borderH: pH + (2 * thisObj.borderWidth),
+			palette: pal,
+		};
 	},
 
 
-	getPickerOuterDims : function (thisObj) {
-		var dims = jsc.getPickerDims(thisObj);
-		return [
-			dims[0] + 2 * thisObj.borderWidth,
-			dims[1] + 2 * thisObj.borderWidth
-		];
+	getPaletteDims : function (thisObj, width) {
+		var cols = 0, rows = 0, cellW = 0, cellH = 0, height = 0;
+		var sampleCount = thisObj._palette ? thisObj._palette.length : 0;
+
+		if (sampleCount) {
+			cols = thisObj.paletteCols;
+			rows = cols > 0 ? Math.ceil(sampleCount / cols) : 0;
+
+			// color sample's dimensions (includes border)
+			cellW = Math.max(1, Math.floor((width - ((cols - 1) * thisObj.paletteSpacing)) / cols));
+			cellH = thisObj.paletteHeight ? Math.min(thisObj.paletteHeight, cellW) : cellW;
+		}
+
+		if (rows) {
+			height =
+				rows * cellH +
+				(rows - 1) * thisObj.paletteSpacing;
+		}
+
+		return {
+			cols: cols,
+			rows: rows,
+			cellW: cellW,
+			cellH: cellH,
+			width: width,
+			height: height,
+		};
 	},
 
 
@@ -1025,59 +1212,6 @@ var jsc = {
 			}
 		}
 		return null;
-	},
-
-
-	onDocumentMouseDown : function (e) {
-		var target = e.target || e.srcElement;
-
-		if (target.jscolor && target.jscolor instanceof jsc.pub) { // clicked targetElement -> show picker
-			if (target.jscolor.showOnClick && !target.disabled) {
-				target.jscolor.show();
-			}
-		} else if (jsc.getData(target, 'gui')) { // clicked jscolor's GUI element
-			var control = jsc.getData(target, 'control');
-			if (control) {
-				// jscolor's control
-				jsc.onControlPointerStart(e, target, jsc.getData(target, 'control'), 'mouse');
-			}
-		} else {
-			// mouse is outside the picker's controls -> hide the color picker!
-			if (jsc.picker && jsc.picker.owner) {
-				jsc.picker.owner.tryHide();
-			}
-		}
-	},
-
-
-	onDocumentKeyUp : function (e) {
-		if (['Tab', 'Escape'].indexOf(jsc.eventKey(e)) !== -1) {
-			if (jsc.picker && jsc.picker.owner) {
-				jsc.picker.owner.tryHide();
-			}
-		}
-	},
-
-
-	onWindowResize : function (e) {
-		jsc.redrawPosition();
-	},
-
-
-	onParentScroll : function (e) {
-		// hide the picker when one of the parent elements is scrolled
-		if (jsc.picker && jsc.picker.owner) {
-			jsc.picker.owner.tryHide();
-		}
-	},
-
-
-	onPickerTouchStart : function (e) {
-		var target = e.target || e.srcElement;
-
-		if (jsc.getData(target, 'control')) {
-			jsc.onControlPointerStart(e, target, jsc.getData(target, 'control'), 'touch');
-		}
 	},
 
 
@@ -1127,14 +1261,70 @@ var jsc = {
 
 
 	_pointerOrigin : null,
-	_capturedTarget : null,
+
+
+	onDocumentKeyUp : function (e) {
+		if (['Tab', 'Escape'].indexOf(jsc.eventKey(e)) !== -1) {
+			if (jsc.picker && jsc.picker.owner) {
+				jsc.picker.owner.tryHide();
+			}
+		}
+	},
+
+
+	onWindowResize : function (e) {
+		jsc.redrawPosition();
+	},
+
+
+	onWindowScroll : function (e) {
+		jsc.redrawPosition();
+	},
+
+
+	onParentScroll : function (e) {
+		// hide the picker when one of the parent elements is scrolled
+		if (jsc.picker && jsc.picker.owner) {
+			jsc.picker.owner.tryHide();
+		}
+	},
+
+
+	onDocumentMouseDown : function (e) {
+		var target = e.target || e.srcElement;
+
+		if (target.jscolor && target.jscolor instanceof jsc.pub) { // clicked targetElement -> show picker
+			if (target.jscolor.showOnClick && !target.disabled) {
+				target.jscolor.show();
+			}
+		} else if (jsc.getData(target, 'gui')) { // clicked jscolor's GUI element
+			var control = jsc.getData(target, 'control');
+			if (control) {
+				// jscolor's control
+				jsc.onControlPointerStart(e, target, jsc.getData(target, 'control'), 'mouse');
+			}
+		} else {
+			// mouse is outside the picker's controls -> hide the color picker!
+			if (jsc.picker && jsc.picker.owner) {
+				jsc.picker.owner.tryHide();
+			}
+		}
+	},
+
+
+	onPickerTouchStart : function (e) {
+		var target = e.target || e.srcElement;
+
+		if (jsc.getData(target, 'control')) {
+			jsc.onControlPointerStart(e, target, jsc.getData(target, 'control'), 'touch');
+		}
+	},
 
 
 	onControlPointerStart : function (e, target, controlName, pointerType) {
 		var thisObj = jsc.getData(target, 'instance');
 
 		jsc.preventDefault(e);
-		jsc.captureTarget(target);
 
 		var registerDragEvents = function (doc, offset) {
 			jsc.attachGroupEvent('drag', doc, jsc._pointerMoveEvent[pointerType],
@@ -1143,7 +1333,7 @@ var jsc = {
 				jsc.onDocumentPointerEnd(e, target, controlName, pointerType));
 		};
 
-		registerDragEvents(document, [0, 0]);
+		registerDragEvents(window.document, [0, 0]);
 
 		if (window.parent && window.frameElement) {
 			var rect = window.frameElement.getBoundingClientRect();
@@ -1204,14 +1394,44 @@ var jsc = {
 		return function (e) {
 			var thisObj = jsc.getData(target, 'instance');
 			jsc.detachGroupEvents('drag');
-			jsc.releaseTarget();
 
 			// Always trigger changes AFTER detaching outstanding mouse handlers,
-			// in case some color change occured in user-defined onChange/onInput handler
-			// would intrude into current mouse events
+			// in case some color change that occured in user-defined onChange/onInput handler
+			// intruded into current mouse events
 			thisObj.trigger('input');
 			thisObj.trigger('change');
 		};
+	},
+
+
+	onPaletteSampleClick : function (e) {
+		var target = e.currentTarget;
+		var thisObj = jsc.getData(target, 'instance');
+		var color = jsc.getData(target, 'color');
+
+		// when format is flexible, use the original format of this color sample
+		if (thisObj.format.toLowerCase() === 'any') {
+			thisObj._setFormat(color.format); // adapt format
+			if (!jsc.isAlphaFormat(thisObj.getFormat())) {
+				color.rgba[3] = 1.0; // when switching to a format that doesn't support alpha, set full opacity
+			}
+		}
+
+		// if this color doesn't specify alpha, use alpha of 1.0 (if applicable)
+		if (color.rgba[3] === null) {
+			if (thisObj.paletteSetsAlpha === true || (thisObj.paletteSetsAlpha === 'auto' && thisObj._paletteHasTransparency)) {
+				color.rgba[3] = 1.0;
+			}
+		}
+
+		thisObj.fromRGBA.apply(thisObj, color.rgba);
+
+		thisObj.trigger('input');
+		thisObj.trigger('change');
+
+		if (thisObj.hideOnPaletteClick) {
+			thisObj.hide();
+		}
 	},
 
 
@@ -1249,8 +1469,9 @@ var jsc = {
 
 		if (yVal < 1.0) {
 			// if format is flexible and the current format doesn't support alpha, switch to a suitable one
-			if (thisObj.format.toLowerCase() === 'any' && thisObj.getFormat() !== 'rgba') {
-				thisObj._currentFormat = 'rgba';
+			var fmt = thisObj.getFormat();
+			if (thisObj.format.toLowerCase() === 'any' && !jsc.isAlphaFormat(fmt)) {
+				thisObj._setFormat(fmt === 'hex' ? 'hexa' : 'rgba');
 			}
 		}
 
@@ -1258,9 +1479,9 @@ var jsc = {
 	},
 
 
-	createPalette : function () {
+	createPadCanvas : function () {
 
-		var paletteObj = {
+		var ret = {
 			elm: null,
 			draw: null
 		};
@@ -1301,16 +1522,16 @@ var jsc = {
 			ctx.fillRect(0, 0, canvas.width, canvas.height);
 		};
 
-		paletteObj.elm = canvas;
-		paletteObj.draw = drawFunc;
+		ret.elm = canvas;
+		ret.draw = drawFunc;
 
-		return paletteObj;
+		return ret;
 	},
 
 
 	createSliderGradient : function () {
 
-		var sliderObj = {
+		var ret = {
 			elm: null,
 			draw: null
 		};
@@ -1332,16 +1553,16 @@ var jsc = {
 			ctx.fillRect(0, 0, canvas.width, canvas.height);
 		};
 
-		sliderObj.elm = canvas;
-		sliderObj.draw = drawFunc;
+		ret.elm = canvas;
+		ret.draw = drawFunc;
 
-		return sliderObj;
+		return ret;
 	},
 
 
 	createASliderGradient : function () {
 
-		var sliderObj = {
+		var ret = {
 			elm: null,
 			draw: null
 		};
@@ -1363,11 +1584,13 @@ var jsc = {
 			ctx.fillStyle = sqColor1;
 			ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-			for (var y = 0; y < canvas.height; y += sqSize * 2) {
-				// light gray squares
-				ctx.fillStyle = sqColor2;
-				ctx.fillRect(0, y, sqSize, sqSize);
-				ctx.fillRect(sqSize, y + sqSize, sqSize, sqSize);
+			if (sqSize > 0) { // to avoid infinite loop
+				for (var y = 0; y < canvas.height; y += sqSize * 2) {
+					// light gray squares
+					ctx.fillStyle = sqColor2;
+					ctx.fillRect(0, y, sqSize, sqSize);
+					ctx.fillRect(sqSize, y + sqSize, sqSize, sqSize);
+				}
 			}
 
 			var grad = ctx.createLinearGradient(0, 0, 0, canvas.height);
@@ -1378,10 +1601,10 @@ var jsc = {
 			ctx.fillRect(0, 0, canvas.width, canvas.height);
 		};
 
-		sliderObj.elm = canvas;
-		sliderObj.draw = drawFunc;
+		ret.elm = canvas;
+		ret.draw = drawFunc;
 
-		return sliderObj;
+		return ret;
 	},
 
 
@@ -1421,11 +1644,12 @@ var jsc = {
 
 
 	enumOpts : {
-		format: ['auto', 'any', 'hex', 'rgb', 'rgba'],
+		format: ['auto', 'any', 'hex', 'hexa', 'rgb', 'rgba'],
 		previewPosition: ['left', 'right'],
 		mode: ['hsv', 'hvs', 'hs', 'hv'],
 		position: ['left', 'right', 'top', 'bottom'],
 		alphaChannel: ['auto', true, false],
+		paletteSetsAlpha: ['auto', true, false],
 	},
 
 
@@ -1471,9 +1695,10 @@ var jsc = {
 
 		// General options
 		//
-		this.format = 'auto'; // 'auto' | 'any' | 'hex' | 'rgb' | 'rgba' - Format of the input/output value
+		this.format = 'auto'; // 'auto' | 'any' | 'hex' | 'hexa' | 'rgb' | 'rgba' - Format of the input/output value
 		this.value = undefined; // INITIAL color value in any supported format. To change it later, use method fromString(), fromHSVA(), fromRGBA() or channel()
 		this.alpha = undefined; // INITIAL alpha value. To change it later, call method channel('A', <value>)
+		this.random = false; // whether to randomize the initial color. Either true | false, or an array of ranges: [minV, maxV, minS, maxS, minH, maxH, minA, maxA]
 		this.onChange = undefined; // called when color changes. Value can be either a function or a string with JS code.
 		this.onInput = undefined; // called repeatedly as the color is being changed, e.g. while dragging a slider. Value can be either a function or a string with JS code.
 		this.valueElement = undefined; // element that will be used to display and input the color value
@@ -1489,14 +1714,20 @@ var jsc = {
 
 		// Color Picker options
 		//
-		this.width = 181; // width of color palette (in px)
-		this.height = 101; // height of color palette (in px)
+		this.width = 181; // width of the color spectrum (in px)
+		this.height = 101; // height of the color spectrum (in px)
 		this.mode = 'HSV'; // 'HSV' | 'HVS' | 'HS' | 'HV' - layout of the color picker controls
 		this.alphaChannel = 'auto'; // 'auto' | true | false - if alpha channel is enabled, the alpha slider will be visible. If 'auto', it will be determined according to color format
 		this.position = 'bottom'; // 'left' | 'right' | 'top' | 'bottom' - position relative to the target element
 		this.smartPosition = true; // automatically change picker position when there is not enough space for it
 		this.showOnClick = true; // whether to show the picker when user clicks its target element
 		this.hideOnLeave = true; // whether to automatically hide the picker when user leaves its target element (e.g. upon clicking the document)
+		this.palette = []; // colors to be displayed in the palette, specified as an array or a string of space separated color values (in any supported format)
+		this.paletteCols = 10; // number of columns in the palette
+		this.paletteSetsAlpha = 'auto'; // 'auto' | true | false - if true, palette colors that don't specify alpha will set alpha to 1.0
+		this.paletteHeight = 16; // maximum height (px) of a row in the palette
+		this.paletteSpacing = 4; // distance (px) between color samples in the palette
+		this.hideOnPaletteClick = false; // when set to true, clicking the palette will also hide the color picker
 		this.sliderSize = 16; // px
 		this.crossSize = 8; // px
 		this.closeButton = false; // whether to display the Close button
@@ -1528,81 +1759,6 @@ var jsc = {
 		this.maxV = 100; // max allowed value (brightness) (0 - 100)
 		this.minA = 0.0; // min allowed alpha (opacity) (0.0 - 1.0)
 		this.maxA = 1.0; // max allowed alpha (opacity) (0.0 - 1.0)
-
-
-		// let's process the DEPRECATED 'options' property (this will be later removed)
-		if (jsc.pub.options) {
-			// let's set custom default options, if specified
-			for (var opt in jsc.pub.options) {
-				if (jsc.pub.options.hasOwnProperty(opt)) {
-					try {
-						setOption(opt, jsc.pub.options[opt]);
-					} catch (e) {
-						console.warn(e);
-					}
-				}
-			}
-		}
-
-
-		// let's apply configuration presets
-		//
-		var presetsArr = [];
-
-		if (opts.preset) {
-			if (typeof opts.preset === 'string') {
-				presetsArr = opts.preset.split(/\s+/);
-			} else if (Array.isArray(opts.preset)) {
-				presetsArr = opts.preset.slice(); // slice() to clone
-			} else {
-				console.warn('Unrecognized preset value');
-			}
-		}
-
-		// always use the 'default' preset. If it's not listed, append it to the end.
-		if (presetsArr.indexOf('default') === -1) {
-			presetsArr.push('default');
-		}
-
-		// let's apply the presets in reverse order, so that should there be any overlapping options,
-		// the formerly listed preset will override the latter
-		for (var i = presetsArr.length - 1; i >= 0; i -= 1) {
-			var pres = presetsArr[i];
-			if (!pres) {
-				continue; // preset is empty string
-			}
-			if (!jsc.pub.presets.hasOwnProperty(pres)) {
-				console.warn('Unknown preset: %s', pres);
-				continue;
-			}
-			for (var opt in jsc.pub.presets[pres]) {
-				if (jsc.pub.presets[pres].hasOwnProperty(opt)) {
-					try {
-						setOption(opt, jsc.pub.presets[pres][opt]);
-					} catch (e) {
-						console.warn(e);
-					}
-				}
-			}
-		}
-
-
-		// let's set specific options for this color picker
-		var nonProperties = [
-			// these options won't be set as instance properties
-			'preset',
-		];
-		for (var opt in opts) {
-			if (opts.hasOwnProperty(opt)) {
-				if (nonProperties.indexOf(opt) === -1) {
-					try {
-						setOption(opt, opts[opt]);
-					} catch (e) {
-						console.warn(e);
-					}
-				}
-			}
-		}
 
 
 		// Getter: option(name)
@@ -1857,11 +2013,10 @@ var jsc = {
 				return false; // could not parse
 			}
 			if (this.format.toLowerCase() === 'any') {
-				this._currentFormat = color.format; // adapt format
-				if (this.getFormat() !== 'rgba') {
+				this._setFormat(color.format); // adapt format
+				if (!jsc.isAlphaFormat(this.getFormat())) {
 					color.rgba[3] = 1.0; // when switching to a format that doesn't support alpha, set full opacity
 				}
-				this.redraw(); // to show/hide the alpha slider according to current format
 			}
 			this.fromRGBA(
 				color.rgba[0],
@@ -1874,12 +2029,32 @@ var jsc = {
 		};
 
 
+		this.randomize = function (minV, maxV, minS, maxS, minH, maxH, minA, maxA) {
+			if (minV === undefined) { minV = 0; }
+			if (maxV === undefined) { maxV = 100; }
+			if (minS === undefined) { minS = 0; }
+			if (maxS === undefined) { maxS = 100; }
+			if (minH === undefined) { minH = 0; }
+			if (maxH === undefined) { maxH = 359; }
+			if (minA === undefined) { minA = 1; }
+			if (maxA === undefined) { maxA = 1; }
+
+			this.fromHSVA(
+				minH + Math.floor(Math.random() * (maxH - minH + 1)),
+				minS + Math.floor(Math.random() * (maxS - minS + 1)),
+				minV + Math.floor(Math.random() * (maxV - minV + 1)),
+				((100 * minA) + Math.floor(Math.random() * (100 * (maxA - minA) + 1))) / 100
+			);
+		};
+
+
 		this.toString = function (format) {
 			if (format === undefined) {
 				format = this.getFormat(); // format not specified -> use the current format
 			}
 			switch (format.toLowerCase()) {
 				case 'hex': return this.toHEXString(); break;
+				case 'hexa': return this.toHEXAString(); break;
 				case 'rgb': return this.toRGBString(); break;
 				case 'rgba': return this.toRGBAString(); break;
 			}
@@ -1888,30 +2063,40 @@ var jsc = {
 
 
 		this.toHEXString = function () {
-			return '#' + (
-				('0' + Math.round(this.channels.r).toString(16)).substr(-2) +
-				('0' + Math.round(this.channels.g).toString(16)).substr(-2) +
-				('0' + Math.round(this.channels.b).toString(16)).substr(-2)
-			).toUpperCase();
+			return jsc.hexColor(
+				this.channels.r,
+				this.channels.g,
+				this.channels.b
+			);
+		};
+
+
+		this.toHEXAString = function () {
+			return jsc.hexaColor(
+				this.channels.r,
+				this.channels.g,
+				this.channels.b,
+				this.channels.a
+			);
 		};
 
 
 		this.toRGBString = function () {
-			return ('rgb(' +
-				Math.round(this.channels.r) + ',' +
-				Math.round(this.channels.g) + ',' +
-				Math.round(this.channels.b) +
-			')');
+			return jsc.rgbColor(
+				this.channels.r,
+				this.channels.g,
+				this.channels.b
+			);
 		};
 
 
 		this.toRGBAString = function () {
-			return ('rgba(' +
-				Math.round(this.channels.r) + ',' +
-				Math.round(this.channels.g) + ',' +
-				Math.round(this.channels.b) + ',' +
-				(Math.round(this.channels.a * 100) / 100) +
-			')');
+			return jsc.rgbaColor(
+				this.channels.r,
+				this.channels.g,
+				this.channels.b,
+				this.channels.a
+			);
 		};
 
 
@@ -1968,11 +2153,16 @@ var jsc = {
 		};
 
 
+		this._setFormat = function (format) {
+			this._currentFormat = format.toLowerCase();
+		};
+
+
 		this.hasAlphaChannel = function () {
 			if (this.alphaChannel === 'auto') {
 				return (
 					this.format.toLowerCase() === 'any' || // format can change on the fly (e.g. from hex to rgba), so let's consider the alpha channel enabled
-					this.getFormat() === 'rgba' || // the current format supports alpha channel
+					jsc.isAlphaFormat(this.getFormat()) || // the current format supports alpha channel
 					this.alpha !== undefined || // initial alpha value is set, so we're working with alpha channel
 					this.alphaElement !== undefined // the alpha value is redirected, so we're working with alpha channel
 				);
@@ -1999,21 +2189,23 @@ var jsc = {
 
 
 		this.exposeColor = function (flags) {
+			var colorStr = this.toString();
+			var fmt = this.getFormat();
+
+			// reflect current color in data- attribute
+			jsc.setDataAttr(this.targetElement, 'current-color', colorStr);
 
 			if (!(flags & jsc.flags.leaveValue) && this.valueElement) {
-				var value = this.toString();
-
-				if (this.getFormat() === 'hex') {
-					if (!this.uppercase) { value = value.toLowerCase(); }
-					if (!this.hash) { value = value.replace(/^#/, ''); }
+				if (fmt === 'hex' || fmt === 'hexa') {
+					if (!this.uppercase) { colorStr = colorStr.toLowerCase(); }
+					if (!this.hash) { colorStr = colorStr.replace(/^#/, ''); }
 				}
-
-				this.setValueElementValue(value);
+				this.setValueElementValue(colorStr);
 			}
 
 			if (!(flags & jsc.flags.leaveAlpha) && this.alphaElement) {
-				var value = Math.round(this.channels.a * 100) / 100;
-				this.setAlphaElementValue(value);
+				var alphaVal = Math.round(this.channels.a * 100) / 100;
+				this.setAlphaElementValue(alphaVal);
 			}
 
 			if (!(flags & jsc.flags.leavePreview) && this.previewElement) {
@@ -2159,8 +2351,8 @@ var jsc = {
 
 
 		this._processParentElementsInDOM = function () {
-			if (this._linkedElementsProcessed) { return; }
-			this._linkedElementsProcessed = true;
+			if (this._parentElementsProcessed) { return; }
+			this._parentElementsProcessed = true;
 
 			var elm = this.targetElement;
 			do {
@@ -2193,6 +2385,13 @@ var jsc = {
 		};
 
 
+		this.set__palette = function (val) {
+			this.palette = val;
+			this._palette = jsc.parsePaletteValue(val);
+			this._paletteHasTransparency = jsc.containsTranparentColor(this._palette);
+		};
+
+
 		function setOption (option, value) {
 			if (typeof option !== 'string') {
 				throw new Error('Invalid value for option name: ' + option);
@@ -2222,16 +2421,26 @@ var jsc = {
 				}
 			}
 
-			if (!(option in THIS)) {
-				throw new Error('Unrecognized configuration option: ' + option);
+			var setter = 'set__' + option;
+
+			if (typeof THIS[setter] === 'function') { // a setter exists for this option
+				THIS[setter](value);
+				return true;
+
+			} else if (option in THIS) { // option exists as a property
+				THIS[option] = value;
+				return true;
 			}
 
-			THIS[option] = value;
-			return true;
+			throw new Error('Unrecognized configuration option: ' + option);
 		}
 
 
 		function getOption (option) {
+			if (typeof option !== 'string') {
+				throw new Error('Invalid value for option name: ' + option);
+			}
+
 			// deprecated option
 			if (jsc.deprecatedOpts.hasOwnProperty(option)) {
 				var oldOpt = option;
@@ -2246,11 +2455,16 @@ var jsc = {
 				}
 			}
 
-			if (!(option in THIS)) {
-				throw new Error('Unrecognized configuration option: ' + option);
+			var getter = 'get__' + option;
+
+			if (typeof THIS[getter] === 'function') { // a getter exists for this option
+				return THIS[getter](value);
+
+			} else if (option in THIS) { // option exists as a property
+				return THIS[option];
 			}
 
-			return THIS[option];
+			throw new Error('Unrecognized configuration option: ' + option);
 		}
 
 
@@ -2278,7 +2492,7 @@ var jsc = {
 					pad : jsc.createEl('div'),
 					padB : jsc.createEl('div'), // border
 					padM : jsc.createEl('div'), // mouse/touch area
-					padPal : jsc.createPalette(),
+					padCanvas : jsc.createPadCanvas(),
 					cross : jsc.createEl('div'),
 					crossBY : jsc.createEl('div'), // border Y
 					crossBX : jsc.createEl('div'), // border X
@@ -2300,11 +2514,12 @@ var jsc = {
 					asldPtrIB : jsc.createEl('div'), // slider pointer inner border
 					asldPtrMB : jsc.createEl('div'), // slider pointer middle border
 					asldPtrOB : jsc.createEl('div'), // slider pointer outer border
+					pal : jsc.createEl('div'), // palette
 					btn : jsc.createEl('div'),
-					btnT : jsc.createEl('span'), // text
+					btnT : jsc.createEl('div'), // text
 				};
 
-				jsc.picker.pad.appendChild(jsc.picker.padPal.elm);
+				jsc.picker.pad.appendChild(jsc.picker.padCanvas.elm);
 				jsc.picker.padB.appendChild(jsc.picker.pad);
 				jsc.picker.cross.appendChild(jsc.picker.crossBY);
 				jsc.picker.cross.appendChild(jsc.picker.crossBX);
@@ -2332,6 +2547,8 @@ var jsc = {
 				jsc.picker.box.appendChild(jsc.picker.asldB);
 				jsc.picker.box.appendChild(jsc.picker.asldM);
 
+				jsc.picker.box.appendChild(jsc.picker.pal);
+
 				jsc.picker.btn.appendChild(jsc.picker.btnT);
 				jsc.picker.box.appendChild(jsc.picker.btn);
 
@@ -2347,7 +2564,7 @@ var jsc = {
 
 			var displaySlider = !!jsc.getSliderChannel(THIS);
 			var displayAlphaSlider = THIS.hasAlphaChannel();
-			var dims = jsc.getPickerDims(THIS);
+			var pickerDims = jsc.getPickerDims(THIS);
 			var crossOuterSize = (2 * THIS.pointerBorderWidth + THIS.pointerThickness + 2 * THIS.crossSize);
 			var controlPadding = jsc.getControlPadding(THIS);
 			var borderRadius = Math.min(
@@ -2356,30 +2573,22 @@ var jsc = {
 			var padCursor = 'crosshair';
 
 			// wrap
-			p.wrap.className = 'jscolor-picker-wrap';
-			p.wrap.style.clear = 'both';
-			p.wrap.style.width = (dims[0] + 2 * THIS.borderWidth) + 'px';
-			p.wrap.style.height = (dims[1] + 2 * THIS.borderWidth) + 'px';
+			p.wrap.className = 'jscolor-wrap';
+			p.wrap.style.width = pickerDims.borderW + 'px';
+			p.wrap.style.height = pickerDims.borderH + 'px';
 			p.wrap.style.zIndex = THIS.zIndex;
 
 			// picker
 			p.box.className = 'jscolor-picker';
-			p.box.style.width = dims[0] + 'px';
-			p.box.style.height = dims[1] + 'px';
-			p.box.style.position = 'relative';
+			p.box.style.width = pickerDims.paddedW + 'px';
+			p.box.style.height = pickerDims.paddedH + 'px';
 
 			// picker shadow
-			p.boxS.className = 'jscolor-picker-shadow';
-			p.boxS.style.position = 'absolute';
-			p.boxS.style.left = '0';
-			p.boxS.style.top = '0';
-			p.boxS.style.width = '100%';
-			p.boxS.style.height = '100%';
+			p.boxS.className = 'jscolor-shadow';
 			jsc.setBorderRadius(p.boxS, borderRadius + 'px');
 
 			// picker border
-			p.boxB.className = 'jscolor-picker-border';
-			p.boxB.style.position = 'relative';
+			p.boxB.className = 'jscolor-border';
 			p.boxB.style.border = THIS.borderWidth + 'px solid';
 			p.boxB.style.borderColor = THIS.borderColor;
 			p.boxB.style.background = THIS.backgroundColor;
@@ -2402,8 +2611,8 @@ var jsc = {
 			p.pad.style.width = THIS.width + 'px';
 			p.pad.style.height = THIS.height + 'px';
 
-			// pad palettes (HSV and HVS)
-			p.padPal.draw(THIS.width, THIS.height, jsc.getPadYChannel(THIS));
+			// pad - color spectrum (HSV and HVS)
+			p.padCanvas.draw(THIS.width, THIS.height, jsc.getPadYChannel(THIS));
 
 			// pad border
 			p.padB.style.position = 'absolute';
@@ -2504,7 +2713,7 @@ var jsc = {
 			jsc.setData(p.sldM, {
 				instance: THIS,
 				control: 'sld',
-			})
+			});
 
 			// slider pointer inner and outer border
 			p.sldPtrIB.style.border =
@@ -2580,6 +2789,56 @@ var jsc = {
 			p.asldPtrS.style.height = jsc.pub.sliderInnerSpace + 'px';
 
 
+			// palette
+			p.pal.className = 'jscolor-palette';
+			p.pal.style.display = pickerDims.palette.rows ? 'block' : 'none';
+			p.pal.style.left = THIS.padding + 'px';
+			p.pal.style.top = (2 * THIS.controlBorderWidth + 2 * THIS.padding + THIS.height) + 'px';
+
+			// palette's color samples
+
+			p.pal.innerHTML = '';
+
+			var chessboard = jsc.genColorPreviewCanvas('rgba(0,0,0,0)');
+
+			var si = 0; // color sample's index
+			for (var r = 0; r < pickerDims.palette.rows; r++) {
+				for (var c = 0; c < pickerDims.palette.cols && si < THIS._palette.length; c++, si++) {
+					var sampleColor = THIS._palette[si];
+					var sampleCssColor = jsc.rgbaColor.apply(null, sampleColor.rgba);
+
+					var sc = jsc.createEl('div'); // color sample's color
+					sc.style.width = (pickerDims.palette.cellW - 2 * THIS.controlBorderWidth) + 'px';
+					sc.style.height = (pickerDims.palette.cellH - 2 * THIS.controlBorderWidth) + 'px';
+					sc.style.backgroundColor = sampleCssColor;
+
+					var sw = jsc.createEl('div'); // color sample's wrap
+					sw.className = 'jscolor-palette-sw';
+					sw.style.left =
+						(
+							pickerDims.palette.cols <= 1 ? 0 :
+							Math.round(10 * (c * ((pickerDims.contentW - pickerDims.palette.cellW) / (pickerDims.palette.cols - 1)))) / 10
+						) + 'px';
+					sw.style.top = (r * (pickerDims.palette.cellH + THIS.paletteSpacing)) + 'px';
+					sw.style.border = THIS.controlBorderWidth + 'px solid';
+					sw.style.borderColor = THIS.controlBorderColor;
+					if (sampleColor.rgba[3] !== null && sampleColor.rgba[3] < 1.0) { // only create chessboard background if the sample has transparency
+						sw.style.backgroundImage = 'url(\'' + chessboard.canvas.toDataURL() + '\')';
+						sw.style.backgroundRepeat = 'repeat';
+						sw.style.backgroundPosition = 'center center';
+					}
+					jsc.setData(sw, {
+						instance: THIS,
+						control: 'palette-sw',
+						color: sampleColor,
+					});
+					sw.addEventListener('click', jsc.onPaletteSampleClick, false);
+					sw.appendChild(sc);
+					p.pal.appendChild(sw);
+				}
+			}
+
+
 			// the Close button
 			function setBtnBorder () {
 				var insetColors = THIS.controlBorderColor.split(/\s+/);
@@ -2587,28 +2846,22 @@ var jsc = {
 				p.btn.style.borderColor = outsetColor;
 			}
 			var btnPadding = 15; // px
-			p.btn.className = 'jscolor-btn-close';
+			p.btn.className = 'jscolor-btn jscolor-btn-close';
 			p.btn.style.display = THIS.closeButton ? 'block' : 'none';
-			p.btn.style.position = 'absolute';
 			p.btn.style.left = THIS.padding + 'px';
 			p.btn.style.bottom = THIS.padding + 'px';
 			p.btn.style.padding = '0 ' + btnPadding + 'px';
-			p.btn.style.maxWidth = (dims[0] - 2 * THIS.padding - 2 * THIS.controlBorderWidth - 2 * btnPadding) + 'px';
-			p.btn.style.overflow = 'hidden';
+			p.btn.style.maxWidth = (pickerDims.contentW - 2 * THIS.controlBorderWidth - 2 * btnPadding) + 'px';
 			p.btn.style.height = THIS.buttonHeight + 'px';
-			p.btn.style.whiteSpace = 'nowrap';
 			p.btn.style.border = THIS.controlBorderWidth + 'px solid';
 			setBtnBorder();
 			p.btn.style.color = THIS.buttonColor;
-			p.btn.style.font = '12px sans-serif';
-			p.btn.style.textAlign = 'center';
-			p.btn.style.cursor = 'pointer';
 			p.btn.onmousedown = function () {
 				THIS.hide();
 			};
+			p.btnT.style.display = 'inline';
 			p.btnT.style.lineHeight = THIS.buttonHeight + 'px';
-			p.btnT.innerHTML = '';
-			p.btnT.appendChild(document.createTextNode(THIS.closeText));
+			p.btnT.innerText = THIS.closeText;
 
 			// reposition the pointers
 			redrawPad();
@@ -2626,11 +2879,7 @@ var jsc = {
 
 			// The redrawPosition() method needs picker.owner to be set, that's why we call it here,
 			// after setting the owner
-			if (THIS.container === document.body) {
-				jsc.redrawPosition();
-			} else {
-				jsc._drawPosition(THIS, 0, 0, 'relative', false);
-			}
+			jsc.redrawPosition();
 
 			if (p.wrap.parentNode !== THIS.container) {
 				THIS.container.appendChild(p.wrap);
@@ -2796,6 +3045,81 @@ var jsc = {
 		}
 
 
+		// let's process the DEPRECATED 'options' property (this will be later removed)
+		if (jsc.pub.options) {
+			// let's set custom default options, if specified
+			for (var opt in jsc.pub.options) {
+				if (jsc.pub.options.hasOwnProperty(opt)) {
+					try {
+						setOption(opt, jsc.pub.options[opt]);
+					} catch (e) {
+						console.warn(e);
+					}
+				}
+			}
+		}
+
+
+		// let's apply configuration presets
+		//
+		var presetsArr = [];
+
+		if (opts.preset) {
+			if (typeof opts.preset === 'string') {
+				presetsArr = opts.preset.split(/\s+/);
+			} else if (Array.isArray(opts.preset)) {
+				presetsArr = opts.preset.slice(); // slice() to clone
+			} else {
+				console.warn('Unrecognized preset value');
+			}
+		}
+
+		// always use the 'default' preset. If it's not listed, append it to the end.
+		if (presetsArr.indexOf('default') === -1) {
+			presetsArr.push('default');
+		}
+
+		// let's apply the presets in reverse order, so that should there be any overlapping options,
+		// the formerly listed preset will override the latter
+		for (var i = presetsArr.length - 1; i >= 0; i -= 1) {
+			var pres = presetsArr[i];
+			if (!pres) {
+				continue; // preset is empty string
+			}
+			if (!jsc.pub.presets.hasOwnProperty(pres)) {
+				console.warn('Unknown preset: %s', pres);
+				continue;
+			}
+			for (var opt in jsc.pub.presets[pres]) {
+				if (jsc.pub.presets[pres].hasOwnProperty(opt)) {
+					try {
+						setOption(opt, jsc.pub.presets[pres][opt]);
+					} catch (e) {
+						console.warn(e);
+					}
+				}
+			}
+		}
+
+
+		// let's set specific options for this color picker
+		var nonProperties = [
+			// these options won't be set as instance properties
+			'preset',
+		];
+		for (var opt in opts) {
+			if (opts.hasOwnProperty(opt)) {
+				if (nonProperties.indexOf(opt) === -1) {
+					try {
+						setOption(opt, opts[opt]);
+					} catch (e) {
+						console.warn(e);
+					}
+				}
+			}
+		}
+
+
 		//
 		// Install the color picker on chosen element(s)
 		//
@@ -2803,7 +3127,7 @@ var jsc = {
 
 		// Determine picker's container element
 		if (this.container === undefined) {
-			this.container = document.body; // default container is BODY element
+			this.container = window.document.body; // default container is BODY element
 
 		} else { // explicitly set to custom element
 			this.container = jsc.node(this.container);
@@ -2858,7 +3182,7 @@ var jsc = {
 				jsc.removeChildren(this.targetElement);
 
 				// let's insert a non-breaking space
-				this.targetElement.appendChild(document.createTextNode('\xa0'));
+				this.targetElement.appendChild(window.document.createTextNode('\xa0'));
 
 				// set min-width = previewSize, if not already greater
 				var compStyle = jsc.getCompStyle(this.targetElement);
@@ -2979,10 +3303,15 @@ var jsc = {
 		// let's also parse and expose the initial alpha value, if any
 		//
 		// Note: If the initial color value contains alpha value in it (e.g. in rgba format),
-		// this will overwrite it. So we should only process alpha input if there was any initial
+		// this will overwrite it. So we should only process alpha input if there was initial
 		// alpha explicitly set, otherwise we could needlessly lose initial value's alpha
 		if (initAlpha !== undefined) {
 			this.processAlphaInput(initAlpha);
+		}
+
+		if (this.random) {
+			// randomize the initial color value
+			this.randomize.apply(this, Array.isArray(this.random) ? this.random : []);
 		}
 
 	}
@@ -3029,9 +3358,9 @@ jsc.pub.presets['dark'] = {
 	buttonColor: 'rgba(240,240,240,1)',
 };
 
-jsc.pub.presets['small'] = { width:101, height:101, padding:10, sliderSize:14 };
-jsc.pub.presets['medium'] = { width:181, height:101, padding:12, sliderSize:16 }; // default size
-jsc.pub.presets['large'] = { width:271, height:151, padding:12, sliderSize:24 };
+jsc.pub.presets['small'] = { width:101, height:101, padding:10, sliderSize:14, paletteCols:8 };
+jsc.pub.presets['medium'] = { width:181, height:101, padding:12, sliderSize:16, paletteCols:10 }; // default size
+jsc.pub.presets['large'] = { width:271, height:151, padding:12, sliderSize:24, paletteCols:15 };
 
 jsc.pub.presets['thin'] = { borderWidth:1, controlBorderWidth:1, pointerBorderWidth:1 }; // default thickness
 jsc.pub.presets['thick'] = { borderWidth:2, controlBorderWidth:2, pointerBorderWidth:2 };
@@ -3047,6 +3376,34 @@ jsc.pub.chessboardColor2 = '#999999';
 
 // preview separator
 jsc.pub.previewSeparator = ['rgba(255,255,255,.65)', 'rgba(128,128,128,.65)'];
+
+
+// Initializes jscolor
+jsc.pub.init = function () {
+	if (jsc.initialized) {
+		return;
+	}
+
+	// attach some necessary handlers
+	window.document.addEventListener('mousedown', jsc.onDocumentMouseDown, false);
+	window.document.addEventListener('keyup', jsc.onDocumentKeyUp, false);
+	window.addEventListener('resize', jsc.onWindowResize, false);
+	window.addEventListener('scroll', jsc.onWindowScroll, false);
+
+	// append default CSS to HEAD
+	jsc.appendDefaultCss();
+
+	// install jscolor on current DOM
+	jsc.pub.install();
+
+	jsc.initialized = true;
+
+	// call functions waiting in the queue
+	while (jsc.readyQueue.length) {
+		var func = jsc.readyQueue.shift();
+		func();
+	}
+};
 
 
 // Installs jscolor on current DOM tree
@@ -3077,16 +3434,37 @@ jsc.pub.install = function (rootNode) {
 };
 
 
+// Registers function to be called as soon as jscolor is initialized (or immediately, if it already is).
+//
+jsc.pub.ready = function (func) {
+	if (typeof func !== 'function') {
+		console.warn('Passed value is not a function');
+		return false;
+	}
+
+	if (jsc.initialized) {
+		func();
+	} else {
+		jsc.readyQueue.push(func);
+	}
+	return true;
+};
+
+
 // Triggers given input event(s) (e.g. 'input' or 'change') on all color pickers.
 //
 // It is possible to specify multiple events separated with a space.
 // If called before jscolor is initialized, then the events will be triggered after initialization.
 //
 jsc.pub.trigger = function (eventNames) {
-	if (jsc.initialized) {
+	var triggerNow = function () {
 		jsc.triggerGlobal(eventNames);
+	};
+
+	if (jsc.initialized) {
+		triggerNow();
 	} else {
-		jsc.triggerQueue.push(eventNames);
+		jsc.pub.ready(triggerNow);
 	}
 };
 
@@ -3149,14 +3527,6 @@ jsc.pub.options = {};
 jsc.pub.lookupClass = 'jscolor';
 
 
-// DEPRECATED. Use jscolor.install() instead
-//
-jsc.pub.init = function () {
-	console.warn('jscolor.init() is DEPRECATED. Using jscolor.install() instead.' + jsc.docsRef);
-	return jsc.pub.install();
-};
-
-
 // DEPRECATED. Use data-jscolor attribute instead, which installs jscolor on given element.
 //
 // Install jscolor on all elements that have the specified class name
@@ -3172,8 +3542,16 @@ jsc.register();
 return jsc.pub;
 
 
-})(); // END window.jscolor
+})(); // END jscolor
 
-window.JSColor = window.jscolor; // 'JSColor' is an alias to 'jscolor'
 
-} // endif
+if (typeof window.jscolor === 'undefined') {
+	window.jscolor = window.JSColor = jscolor;
+}
+
+
+// END jscolor code
+
+return jscolor;
+
+}); // END factory

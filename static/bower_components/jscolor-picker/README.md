@@ -1,8 +1,11 @@
-# jscolor - JavaScript Color picker with Opacity
+# jscolor - JavaScript Color picker with Opacity (alpha)
 
-**jscolor.js** is a **HEX** and **RGBA** color picker with opacity (alpha channel) support.
+**jscolor.js** is a web color picker with [opacity (alpha channel) and customizable palette](https://jscolor.com/examples/).
 
-It aims to stay super easy both for developers to install and for web users to use.
+- Single file of plain JS with **no dependencies**
+- Supports CSS colors such as **rgba()** and **hex**, including **#rrggbbaa** notation.
+- [Download](https://jscolor.com/release/latest.zip) includes minified **jscolor.min.js**
+- Mobile friendly
 
 
 
@@ -11,24 +14,52 @@ It aims to stay super easy both for developers to install and for web users to u
 ```html
 <script src="jscolor.js"></script>
 
-Color: <input value="rgba(40,170,255,0.5)" data-jscolor="">
+Color: <input value="#3399FF80" data-jscolor="{}">
+```
+
+[Run example >](https://jscolor.com/#installation)
+
+
+
+## Configuration & Custom palette (swatch)
+
+```html
+<script>
+// These options apply to all color pickers on the page
+jscolor.presets.default = {
+	width: 201,
+	height: 81,
+	position: 'right',
+	previewPosition: 'right',
+	backgroundColor: '#f3f3f3',
+	borderColor: '#bbbbbb',
+	controlBorderColor: '#bbbbbb',
+	palette: [
+		'#000000', '#7d7d7d', '#870014', '#ec1c23', '#ff7e26',
+		'#fef100', '#22b14b', '#00a1e7', '#3f47cc', '#a349a4',
+		'#ffffff', '#c3c3c3', '#b87957', '#feaec9', '#ffc80d',
+		'#eee3af', '#b5e61d', '#99d9ea', '#7092be', '#c8bfe7',
+	],
+	paletteCols: 10,
+	hideOnPaletteClick: true,
+}
+</script>
 ```
 
 
 
-[<img src="https://jscolor.com/hosted/gui/jscolor-2.2.4.png" alt="Screenshots of jscolor">](https://jscolor.com/examples)
+## Screenshot
+
+[<img src="https://jscolor.com/hosted/gui/jscolor-2.4.5.png" alt="Screenshots of jscolor">](https://jscolor.com/examples/)
 
 
 
-## Usage examples
+## Links
 
-See https://jscolor.com/examples/
-
-
-
-## Documentation
-
-Documentation can be found at https://jscolor.com/docs/
+- [Online Configurator tool](https://jscolor.com/configure/)
+- [Sandbox](https://jscolor.com/sandbox/)
+- [Examples](https://jscolor.com/examples/)
+- [Download](https://jscolor.com/download/) including minified **jscolor.min.js**
 
 
 
@@ -36,7 +67,7 @@ Documentation can be found at https://jscolor.com/docs/
 
 
 * **No framework needed** \
-  jscolor.js is a completely self-sufficient JavaScript library consisting of only one file.
+  jscolor.js is a completely self-sufficient JavaScript library consisting of only one file of vanilla JavaScript.
   It doesn't need any frameworks (jQuery, Dojo, MooTools etc.) But it can certainly coexist alongside them.
 
 
