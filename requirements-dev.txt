@@ -1,7 +1,18 @@
-coverage==7.6.7
-django-debug-toolbar==4.4.6
+coverage==7.6.12
+django-debug-toolbar==	5.0.1
 -e git+https://github.com/mikekeda/django-jenkins.git#egg=django-jenkins
 pep8==1.7.1
 pyflakes==3.2.0
-pylint==3.3.1
+pylint==3.3.4
 pylint-django==2.6.1
+
+
+export TOOLS_DEBUG="True"
+export TOOLS_DB_NAME="build_tools"
+export TOOLS_DB_USER="build_tools_admin"
+export TOOLS_DB_PASSWORD="Y^k9rxW\&gt;3}6RH?GRnZh"
+export TOOLS_TWILIO_ACCOUNT_SID=""
+export TOOLS_TWILIO_AUTH_TOKEN=""
+export TOOLS_TWILIO_PHONE_NUMBER=""
+export CODACY_PROJECT_TOKEN="730c5aa223484f23a1d6f01b1d996d72"
+export CODACY_API_BASE_URL="https://app.codacy.com/gh/mikekeda/tools"

@@ -12,7 +12,7 @@ class BaseTestCase(TestCase):
     def setUpClass(cls):
         super().setUpClass()
         # Create usual user.
-        cls.password = User.objects.make_random_password()
+        cls.password = "qwerty"
         cls.test_user = User.objects.create_user(
             username="testuser", password=cls.password
         )

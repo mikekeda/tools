@@ -34,7 +34,6 @@ from tool.views.views import (
     ShoppingListsView,
     ShoppingListView,
 )
-from tool.views.ml_views import ml_dota_prediction
 
 sitemaps = {
     "static": StaticViewSitemap,
@@ -152,7 +151,6 @@ urlpatterns = [
         name="django.contrib.sitemaps.views.sitemap",
     ),
     path("admin/", admin.site.urls),
-    path("mv/dota-prediction", ml_dota_prediction, name="ml_dota_prediction"),
 ]
 admin.site.site_header = _("Tools administration")
 
