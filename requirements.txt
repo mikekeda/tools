@@ -4,7 +4,7 @@ channels==4.2.0
 channels-redis==4.2.1
 django-easy-select2==1.5.8
 django-import-export==4.3.7
-Django==5.1.6
+Django==5.1.7
 django-phonenumber-field==8.0.0
 django-redis==5.4.0
 django-scheduler @ git+https://github.com/whoisearth/django-scheduler
