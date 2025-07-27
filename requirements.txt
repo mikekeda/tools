@@ -1,9 +1,9 @@
 beautifulsoup4==4.13.4
 celery==5.5.3
 channels==4.2.2
-channels-redis==4.2.1
+channels-redis==4.3.0
 django-easy-select2==1.5.8
-django-import-export==4.3.8
+django-import-export==4.3.9
 Django==5.2.4
 django-phonenumber-field==8.1.0
 django-redis==6.0.0
