@@ -54,7 +54,12 @@ def save_and_add_slug(
     obj, force_insert=False, force_update=False, using=None, update_fields=None
 ):
     need_slug = not obj.pk
-    super(type(obj), obj).save(force_insert, force_update, using, update_fields)
+    super(type(obj), obj).save(
+        force_insert=force_insert,
+        force_update=force_update,
+        using=using,
+        update_fields=update_fields,
+    )
     if need_slug:
         obj.slug = "".join(random.sample(_char_map, 3)) + number_to_chars(obj.pk)
         obj.save()
@@ -351,7 +356,12 @@ class Link(models.Model):
                     description.attrs.get("content", ""), width=128, placeholder="..."
                 )
 
-        super().save(force_insert, force_update, using, update_fields)
+        super().save(
+            force_insert=force_insert,
+            force_update=force_update,
+            using=using,
+            update_fields=update_fields,
+        )
 
     def __str__(self):
         return f"{get_username_by_uid(self)}: {self.link}"

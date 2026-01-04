@@ -12,7 +12,7 @@ def get_item(obj: object, k: str):
 
 @register.filter
 def serialize(obj: object):
-    return serializers.serialize("json", [obj])[1:-1]
+    return serializers.serialize("json", [obj])[1:-2]
 
 
 @register.filter
