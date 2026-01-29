@@ -10,7 +10,7 @@ django-redis==6.0.0
 django-scheduler @ git+https://github.com/whoisearth/django-scheduler
 django-widget-tweaks==1.5.1
 geoip2==5.2.0
-google-cloud-automl==2.18.0
+google-cloud-automl==2.18.1
 gunicorn==24.1.1
 Pillow==12.1.0
 phonenumbers==9.0.22
