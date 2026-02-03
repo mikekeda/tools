@@ -4,14 +4,14 @@ channels==4.3.2
 channels-redis==4.3.0
 django-easy-select2==1.5.8
 django-import-export==4.4.0
-Django==6.0.1
+Django==6.0.2
 django-phonenumber-field==8.4.0
 django-redis==6.0.0
 django-scheduler @ git+https://github.com/whoisearth/django-scheduler
 django-widget-tweaks==1.5.1
 geoip2==5.2.0
 google-cloud-automl==2.18.1
-gunicorn==24.1.1
+gunicorn==25.0.1
 Pillow==12.1.0
 phonenumbers==9.0.22
 psycopg2-binary==2.9.11
