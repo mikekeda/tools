@@ -11,9 +11,9 @@ django-scheduler @ git+https://github.com/whoisearth/django-scheduler
 django-widget-tweaks==1.5.1
 geoip2==5.2.0
 google-cloud-automl==2.18.1
-gunicorn==25.0.1
+gunicorn==25.0.2
 Pillow==12.1.0
-phonenumbers==9.0.22
+phonenumbers==9.0.23
 psycopg2-binary==2.9.11
 pytz==2025.2
 requests==2.32.5
