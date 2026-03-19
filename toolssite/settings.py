@@ -235,7 +235,7 @@ LOGIN_URL = "/login"
 
 # Static files (CSS, JavaScript, Images)
 
-STATIC_ROOT = "/home/voron/sites/cdn/tools"
+STATIC_ROOT = "/home/debian/sites/cdn/tools"
 
 STATIC_URL = "/static/"
 if not DEBUG:
