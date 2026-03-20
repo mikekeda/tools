@@ -245,9 +245,6 @@ LOGIN_URL = "/login"
 STATIC_ROOT = "/home/debian/sites/cdn/tools"
 
 STATIC_URL = "/static/"
-if not DEBUG:
-    # Use Google bucket for production.
-    STATIC_URL = "https://storage.googleapis.com/cdn.mkeda.me/tools/"
 
 STATICFILES_DIRS = (("", os.path.join(BASE_DIR, "static")),)
 DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
