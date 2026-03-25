@@ -11,11 +11,11 @@ django-scheduler @ git+https://github.com/whoisearth/django-scheduler
 django-widget-tweaks==1.5.1
 geoip2==5.2.0
 google-cloud-automl==2.18.1
-gunicorn==25.1.0
+gunicorn==25.2.0
 Pillow==12.1.1
 phonenumbers==9.0.26
 psycopg2-binary==2.9.11
 pytz==2026.1.post1
-requests==2.32.5
+requests==2.33.0
 social-auth-app-django==5.7.0
 social-auth-core==4.8.5
