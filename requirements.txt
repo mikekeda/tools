@@ -16,6 +16,6 @@ Pillow==12.1.1
 phonenumbers==9.0.26
 psycopg2-binary==2.9.11
 pytz==2026.1.post1
-requests==2.33.0
+requests==2.33.1
 social-auth-app-django==5.7.0
 social-auth-core==4.8.5
