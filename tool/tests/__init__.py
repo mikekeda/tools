@@ -13,9 +13,7 @@ class BaseTestCase(TestCase):
         super().setUpClass()
         # Create usual user.
         cls.password = "qwerty"
-        cls.test_user = User.objects.create_user(
-            username="testuser", password=cls.password
-        )
+        cls.test_user = User.objects.create_user(username="testuser", password=cls.password)
         cls.test_user.save()
 
         # Create admin user.

@@ -87,9 +87,7 @@ class ToolEventAdmin(EventAdmin):
 class TaskAdmin(BaseModelAdmin):
     list_filter = ("user__username",)
 
-    formfield_overrides = {
-        models.TextField: {"widget": forms.Textarea(attrs={"class": "ckeditor"})}
-    }
+    formfield_overrides = {models.TextField: {"widget": forms.Textarea(attrs={"class": "ckeditor"})}}
 
     class Media:
         js = ("bower_components/ckeditor/ckeditor.js",)
@@ -105,9 +103,7 @@ class CodeAdmin(BaseModelAdmin):
     fields = ("title", "user", "link_to_code_snippet", "text", "labels")
     readonly_fields = ("link_to_code_snippet",)
 
-    formfield_overrides = {
-        models.TextField: {"widget": forms.Textarea(attrs={"class": "ckeditor"})}
-    }
+    formfield_overrides = {models.TextField: {"widget": forms.Textarea(attrs={"class": "ckeditor"})}}
 
     class Media:
         js = (

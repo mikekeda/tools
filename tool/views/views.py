@@ -57,9 +57,7 @@ class GetUserMixin:
     def get_user(request, username: str):
         """Get user by username and check access."""
         if not request.user.is_authenticated or (
-            not request.user.is_superuser
-            and username
-            and username != request.user.username
+            not request.user.is_superuser and username and username != request.user.username
         ):
             raise PermissionDenied
 
@@ -76,9 +74,7 @@ def tool(request, slug, username=None):
         if username:
             user = get_object_or_404(User, username=username)
 
-        return render(
-            request, slug + ".html", dict(active_page=slug, profile_user=user)
-        )
+        return render(request, slug + ".html", dict(active_page=slug, profile_user=user))
     except Exception as e:
         raise Http404 from e
 
@@ -136,9 +132,7 @@ class FlashcardsView(LoginRequiredMixin, View, GetUserMixin):
                     flashcard.save()
                 return redirect(form_action)
             except IntegrityError:
-                form.add_error(
-                    "word", f'Card with word "{flashcard.word}" already exists.'
-                )
+                form.add_error("word", f'Card with word "{flashcard.word}" already exists.')
 
         return render(
             request,
@@ -176,8 +170,7 @@ class TasksView(LoginRequiredMixin, View, GetUserMixin):
 
         profile, _ = Profile.objects.get_or_create(user=user)
         palette = {
-            str(i): getattr(profile, "palette_color_" + str(i), c)
-            for i, c in enumerate(default_palette_colors, 1)
+            str(i): getattr(profile, "palette_color_" + str(i), c) for i, c in enumerate(default_palette_colors, 1)
         }
         tasks_dict = OrderedDict([(k[0], []) for k in Task.STATUSES])
         for task in tasks:
@@ -209,8 +202,7 @@ class TasksView(LoginRequiredMixin, View, GetUserMixin):
 
         profile, _ = Profile.objects.get_or_create(user=user)
         palette = {
-            str(i): getattr(profile, "palette_color_" + str(i), c)
-            for i, c in enumerate(default_palette_colors, 1)
+            str(i): getattr(profile, "palette_color_" + str(i), c) for i, c in enumerate(default_palette_colors, 1)
         }
         tasks_dict = OrderedDict([(k[0], []) for k in Task.STATUSES])
 
@@ -224,9 +216,7 @@ class TasksView(LoginRequiredMixin, View, GetUserMixin):
             task = Task(user=user)
         form = TaskForm(data=post_object, instance=task)
         if form.is_valid():
-            first_task = (
-                Task.objects.filter(user=user, status="todo").order_by("weight").first()
-            )
+            first_task = Task.objects.filter(user=user, status="todo").order_by("weight").first()
             task = form.save(commit=False)
             if not post_id:
                 task.weight = first_task.weight - 1 if first_task else 0
@@ -261,9 +251,7 @@ class CalendarView(LoginRequiredMixin, View, GetUserMixin):
         """Get form."""
         user = self.get_user(request, username)
 
-        return render(
-            request, "calendar.html", dict(profile_user=user, form=EventForm())
-        )
+        return render(request, "calendar.html", dict(profile_user=user, form=EventForm()))
 
     def post(self, request, username=None):
         """Form submit."""
@@ -334,8 +322,7 @@ class ProfileView(LoginRequiredMixin, View, GetUserMixin):
                 profile_user=user,
                 profile=profile,
                 palette_colors=(
-                    getattr(profile, "palette_color_" + str(i), c)
-                    for i, c in enumerate(default_palette_colors, 1)
+                    getattr(profile, "palette_color_" + str(i), c) for i, c in enumerate(default_palette_colors, 1)
                 ),
                 is_current_user=True,
                 form=form,
@@ -382,9 +369,7 @@ class ProfileView(LoginRequiredMixin, View, GetUserMixin):
                 current_obj.save()
                 return JsonResponse({"success": True})
             except ValidationError as e:
-                return JsonResponse(
-                    ", ".join(e.message_dict[field]), safe=False, status=422
-                )
+                return JsonResponse(", ".join(e.message_dict[field]), safe=False, status=422)
 
         return JsonResponse(_("You can't change this field"), safe=False, status=403)
 
@@ -484,9 +469,7 @@ def user_events(request):
             if event.creator.profile.timezone:
                 user_timezone = pytz.timezone(event.creator.profile.timezone)
 
-            local_time = timezone.localtime(event.start, user_timezone).strftime(
-                "%H:%M"
-            )
+            local_time = timezone.localtime(event.start, user_timezone).strftime("%H:%M")
             user_events_list.append(local_time + " " + event.title)
         return JsonResponse(" and ".join(user_events_list), safe=False)
 
@@ -578,9 +561,7 @@ class CanvasView(View, GetUserMixin):
     # noinspection PyMethodMayBeStatic
     def get(self, _, slug):
         """Get canvas by slug."""
-        canvas = get_object_or_404(
-            Canvas.objects.values_list("canvas", flat=True), slug=slug
-        )
+        canvas = get_object_or_404(Canvas.objects.values_list("canvas", flat=True), slug=slug)
 
         return JsonResponse(canvas, safe=False)
 
@@ -590,11 +571,7 @@ class CanvasesView(View, GetUserMixin):
     def get(self, _, username=None):
         """Get list of user canvases."""
         user = get_object_or_404(User, username=username)
-        canvases = (
-            Canvas.objects.filter(user=user)
-            .order_by("-pk")
-            .values_list("slug", "canvas")
-        )
+        canvases = Canvas.objects.filter(user=user).order_by("-pk").values_list("slug", "canvas")
 
         return JsonResponse(dict(canvases), safe=False)
 
@@ -614,11 +591,7 @@ class CanvasesView(View, GetUserMixin):
             # Create a new canvas.
             Canvas(user=user, canvas=data).save()
 
-        canvases = (
-            Canvas.objects.filter(user=user)
-            .order_by("-pk")
-            .values_list("slug", "canvas")
-        )
+        canvases = Canvas.objects.filter(user=user).order_by("-pk").values_list("slug", "canvas")
 
         return JsonResponse(dict(canvases), safe=False)
 
@@ -727,20 +700,12 @@ class CodeView(View, GetUserMixin):
                 form.save_m2m()
 
                 # Save used programming languages as labels.
-                langs = set(
-                    re.findall('<code class="language-(.*?)">', code.text, re.DOTALL)
-                )
+                langs = set(re.findall('<code class="language-(.*?)">', code.text, re.DOTALL))
                 labels = Label.objects.filter(category="programing")
                 filtered_labels = []
                 for label in labels:
                     # Need to fit 'C++', 'C#', ' Objective-C'.
-                    if (
-                        label.title.lower()
-                        .replace("-", "")
-                        .replace("#", "s")
-                        .replace("+", "p", 2)
-                        in langs
-                    ):
+                    if label.title.lower().replace("-", "").replace("#", "s").replace("+", "p", 2) in langs:
                         filtered_labels.append(label)
                 code.labels.add(*filtered_labels)
             except IntegrityError:
@@ -781,11 +746,7 @@ class LinkView(View, GetUserMixin):
         except PermissionDenied:
             return redirect(reverse("login") + "?next=" + request.path)
 
-        links = (
-            Link.objects.select_related("category")
-            .filter(user=user)
-            .order_by("category__title", "weight")
-        )
+        links = Link.objects.select_related("category").filter(user=user).order_by("category__title", "weight")
         palette = set((link.color for link in links))
 
         categorized_links = defaultdict(list)
@@ -926,16 +887,11 @@ class ShoppingListView(View, GetUserMixin):
             return redirect(reverse("login") + "?next=" + request.path)
 
         shopping_list = get_object_or_404(
-            ShoppingList.objects.prefetch_related(
-                "shoppinglistitem_set", "shoppinglistitem_set__item"
-            ),
+            ShoppingList.objects.prefetch_related("shoppinglistitem_set", "shoppinglistitem_set__item"),
             pk=pk,
         )
 
-        total = sum(
-            item.quantity * item.item.price
-            for item in shopping_list.shoppinglistitem_set.all()
-        )
+        total = sum(item.quantity * item.item.price for item in shopping_list.shoppinglistitem_set.all())
 
         return render(
             request,

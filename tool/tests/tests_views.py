@@ -32,14 +32,8 @@ class ToolViewTest(BaseTestCase):
         self.assertTemplateUsed(resp, "canvas.html")
 
     def test_views_canvas_tool_list(self):
-        sample_1 = (
-            "data:image/gif;base64,"
-            + "R0lGODlhAQABAIAAAAUEBAAAACwAAAAAAQABAAACAkQBADs="
-        )
-        sample_2 = (
-            "data:image/gif;base64,"
-            + "R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"
-        )
+        sample_1 = "data:image/gif;base64," + "R0lGODlhAQABAIAAAAUEBAAAACwAAAAAAQABAAACAkQBADs="
+        sample_2 = "data:image/gif;base64," + "R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"
 
         resp = self.client.get(reverse("canvases", kwargs={"username": "testuser"}))
         self.assertEqual(resp.status_code, 200)
@@ -109,10 +103,7 @@ class ToolViewTest(BaseTestCase):
         self.assertEqual(sorted(list(resp.json().values()))[1], sample_1)
 
     def test_views_canvas(self):
-        sample_1 = (
-            "data:image/gif;base64,"
-            + "R0lGODlhAQABAIAAAAUEBAAAACwAAAAAAQABAAACAkQBADs="
-        )
+        sample_1 = "data:image/gif;base64," + "R0lGODlhAQABAIAAAAUEBAAAACwAAAAAAQABAAACAkQBADs="
 
         # Log in and try to save something.
         self.client.login(username="testuser", password=self.password)
@@ -156,9 +147,7 @@ class ToolViewTest(BaseTestCase):
 
     # Pages available only for registered users.
     def test_views_tool_notexisting_user(self):
-        resp = self.client.get(
-            reverse("user_tool", kwargs={"username": "notexisting", "slug": "text"})
-        )
+        resp = self.client.get(reverse("user_tool", kwargs={"username": "notexisting", "slug": "text"}))
         self.assertEqual(resp.status_code, 404)
         self.assertTemplateUsed(resp, "404.html")
 
@@ -171,9 +160,7 @@ class ToolViewTest(BaseTestCase):
         self.assertEqual(resp.status_code, 404)
         self.assertTemplateUsed(resp, "404.html")
 
-        resp = self.client.get(
-            reverse("events"), HTTP_X_REQUESTED_WITH="XMLHttpRequest"
-        )
+        resp = self.client.get(reverse("events"), HTTP_X_REQUESTED_WITH="XMLHttpRequest")
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(str(resp.content, encoding="utf8"), '""')
 
@@ -191,9 +178,7 @@ class ToolViewTest(BaseTestCase):
         )
         test_event1.save()
 
-        resp = self.client.get(
-            reverse("events"), HTTP_X_REQUESTED_WITH="XMLHttpRequest"
-        )
+        resp = self.client.get(reverse("events"), HTTP_X_REQUESTED_WITH="XMLHttpRequest")
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(
             str(resp.content, encoding="utf8"),
@@ -205,9 +190,7 @@ class ToolViewTest(BaseTestCase):
         profile.timezone = "Europe/Kyiv"
         profile.save()
         local_start = timezone.localtime(start, pytz.timezone("Europe/Kyiv"))
-        resp = self.client.get(
-            reverse("events"), HTTP_X_REQUESTED_WITH="XMLHttpRequest"
-        )
+        resp = self.client.get(reverse("events"), HTTP_X_REQUESTED_WITH="XMLHttpRequest")
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(
             str(resp.content, encoding="utf8"),
@@ -217,25 +200,19 @@ class ToolViewTest(BaseTestCase):
     def test_views_calendar_get(self):
         resp = self.client.get(reverse("calendar"))
         self.assertRedirects(resp, "/login?next=/calendar")
-        resp = self.client.get(
-            reverse("user_calendar", kwargs={"username": "testuser"})
-        )
+        resp = self.client.get(reverse("user_calendar", kwargs={"username": "testuser"}))
         self.assertRedirects(resp, "/login?next=/user/testuser/calendar")
         self.client.login(username="testuser", password=self.password)
         resp = self.client.get(reverse("calendar"))
         self.assertEqual(resp.status_code, 200)
         self.assertTemplateUsed(resp, "calendar.html")
-        resp = self.client.get(
-            reverse("user_calendar", kwargs={"username": "testuser"})
-        )
+        resp = self.client.get(reverse("user_calendar", kwargs={"username": "testuser"}))
         self.assertEqual(resp.status_code, 200)
         self.assertTemplateUsed(resp, "calendar.html")
 
         # Admin can see user's events.
         self.client.login(username="testadmin", password=self.password)
-        resp = self.client.get(
-            reverse("user_calendar", kwargs={"username": "testuser"})
-        )
+        resp = self.client.get(reverse("user_calendar", kwargs={"username": "testuser"}))
         self.assertEqual(resp.status_code, 200)
         self.assertTemplateUsed(resp, "calendar.html")
 
@@ -297,12 +274,8 @@ class ToolViewTest(BaseTestCase):
                 "rule": 2,
             },
         )
-        self.assertRedirects(
-            resp, reverse("user_calendar", kwargs={"username": "testuser"})
-        )
-        test_event_admin = Event.objects.get(
-            title="Test title admin", creator=self.test_user
-        )
+        self.assertRedirects(resp, reverse("user_calendar", kwargs={"username": "testuser"}))
+        test_event_admin = Event.objects.get(title="Test title admin", creator=self.test_user)
         self.assertEqual(test_event_admin.description, "Test description admin")
         self.assertEqual(test_event_admin.color_event, "#7DA2FF")
         self.client.logout()
@@ -368,9 +341,7 @@ class ToolViewTest(BaseTestCase):
                 "rule": 2,
             },
         )
-        self.assertRedirects(
-            resp, reverse("user_calendar", kwargs={"username": "testuser"})
-        )
+        self.assertRedirects(resp, reverse("user_calendar", kwargs={"username": "testuser"}))
         test_event = Event.objects.get(pk=test_event.pk)
         self.assertEqual(test_event.title, "Test title admin 2")
         self.assertEqual(test_event.description, "Test description admin 2")
@@ -393,16 +364,12 @@ class ToolViewTest(BaseTestCase):
                 "rule": 2,
             },
         )
-        self.assertRedirects(
-            resp, reverse("user_calendar", kwargs={"username": "testuser"})
-        )
+        self.assertRedirects(resp, reverse("user_calendar", kwargs={"username": "testuser"}))
         test_event = Event.objects.get(pk=test_event.pk)
         self.assertEqual(test_event.title, "Test title admin 3")
         self.assertEqual(test_event.description, "Test description admin 3")
         self.assertEqual(test_event.color_event, "#FFC677")
-        self.assertEqual(
-            test_event.start, datetime(2022, 2, 20, 9, 27, tzinfo=pytz.utc)
-        )
+        self.assertEqual(test_event.start, datetime(2022, 2, 20, 9, 27, tzinfo=pytz.utc))
         self.assertEqual(test_event.end, datetime(2022, 2, 21, 9, 28, tzinfo=pytz.utc))
 
     def test_views_calendar_delete(self):
@@ -462,17 +429,13 @@ class ToolViewTest(BaseTestCase):
     def test_views_dictionary_get(self):
         resp = self.client.get(reverse("dictionary"))
         self.assertRedirects(resp, "/login?next=/dictionary")
-        resp = self.client.get(
-            reverse("user_dictionary", kwargs={"username": "testuser"})
-        )
+        resp = self.client.get(reverse("user_dictionary", kwargs={"username": "testuser"}))
         self.assertRedirects(resp, "/login?next=/user/testuser/dictionary")
         self.client.login(username="testuser", password=self.password)
         resp = self.client.get(reverse("dictionary"))
         self.assertEqual(resp.status_code, 200)
         self.assertTemplateUsed(resp, "dictionary.html")
-        resp = self.client.get(
-            reverse("user_dictionary", kwargs={"username": "testuser"})
-        )
+        resp = self.client.get(reverse("user_dictionary", kwargs={"username": "testuser"}))
         self.assertEqual(resp.status_code, 200)
         self.assertTemplateUsed(resp, "dictionary.html")
 
@@ -557,9 +520,7 @@ class ToolViewTest(BaseTestCase):
             content_type="application/x-www-form-urlencoded",
         )
         self.assertEqual(resp.status_code, 403)
-        self.assertEqual(
-            str(resp.content, encoding="utf8"), '"You can\'t change this field"'
-        )
+        self.assertEqual(str(resp.content, encoding="utf8"), '"You can\'t change this field"')
 
         # Admin user - can edit any word for any user.
         self.client.login(username="testadmin", password=self.password)
@@ -585,25 +546,19 @@ class ToolViewTest(BaseTestCase):
     def test_views_flashcards_get(self):
         resp = self.client.get(reverse("flashcards"))
         self.assertRedirects(resp, "/login?next=/flashcards")
-        resp = self.client.get(
-            reverse("user_flashcards", kwargs={"username": "testuser"})
-        )
+        resp = self.client.get(reverse("user_flashcards", kwargs={"username": "testuser"}))
         self.assertRedirects(resp, "/login?next=/user/testuser/flashcards")
         self.client.login(username="testuser", password=self.password)
         resp = self.client.get(reverse("flashcards"))
         self.assertEqual(resp.status_code, 200)
         self.assertTemplateUsed(resp, "flashcards.html")
-        resp = self.client.get(
-            reverse("user_flashcards", kwargs={"username": "testuser"})
-        )
+        resp = self.client.get(reverse("user_flashcards", kwargs={"username": "testuser"}))
         self.assertEqual(resp.status_code, 200)
         self.assertTemplateUsed(resp, "flashcards.html")
 
         # Admin can see user's flashcards.
         self.client.login(username="testadmin", password=self.password)
-        resp = self.client.get(
-            reverse("user_flashcards", kwargs={"username": "testuser"})
-        )
+        resp = self.client.get(reverse("user_flashcards", kwargs={"username": "testuser"}))
         self.assertEqual(resp.status_code, 200)
         self.assertTemplateUsed(resp, "flashcards.html")
 
@@ -664,12 +619,8 @@ class ToolViewTest(BaseTestCase):
                 "difficulty": "easy",
             },
         )
-        self.assertRedirects(
-            resp, reverse("user_flashcards", kwargs={"username": "testuser"})
-        )
-        test_flashcard_admin = Card.objects.get(
-            word="Test flashcard admin", user=self.test_user
-        )
+        self.assertRedirects(resp, reverse("user_flashcards", kwargs={"username": "testuser"}))
+        test_flashcard_admin = Card.objects.get(word="Test flashcard admin", user=self.test_user)
         self.assertEqual(test_flashcard_admin.description, "Dummy text admin")
         self.client.logout()
 
@@ -722,9 +673,7 @@ class ToolViewTest(BaseTestCase):
                 "difficulty": "middle",
             },
         )
-        self.assertRedirects(
-            resp, reverse("user_flashcards", kwargs={"username": "testuser"})
-        )
+        self.assertRedirects(resp, reverse("user_flashcards", kwargs={"username": "testuser"}))
         test_flashcard = Card.objects.get(pk=test_flashcard.pk)
         self.assertEqual(test_flashcard.word, "Test flashcard admin 2")
         self.assertEqual(test_flashcard.description, "Dummy text admin 2")
@@ -748,16 +697,12 @@ class ToolViewTest(BaseTestCase):
         test_flashcard_admin.save()
         self.assertEqual(str(test_flashcard_admin), "Test flashcard admin")
         # Delete flashcard.
-        resp = self.client.delete(
-            reverse("flashcards_pk", kwargs={"pk": test_flashcard.pk})
-        )
+        resp = self.client.delete(reverse("flashcards_pk", kwargs={"pk": test_flashcard.pk}))
         self.assertRedirects(resp, "/login?next=/flashcards/" + str(test_flashcard.pk))
         self.client.login(username="testuser", password=self.password)
         resp = self.client.delete(reverse("flashcards_pk", kwargs={"pk": 77777}))
         self.assertEqual(resp.status_code, 404)
-        resp = self.client.delete(
-            reverse("flashcards_pk", kwargs={"pk": test_flashcard.pk})
-        )
+        resp = self.client.delete(reverse("flashcards_pk", kwargs={"pk": test_flashcard.pk}))
         self.assertEqual(resp.status_code, 200)
         self.assertJSONEqual(
             str(resp.content, encoding="utf8"),
@@ -768,29 +713,21 @@ class ToolViewTest(BaseTestCase):
 
         # Admin can delete a flashcard for any user.
         self.client.login(username="testadmin", password=self.password)
-        resp = self.client.delete(
-            reverse("flashcards_pk", kwargs={"pk": test_flashcard_admin.pk})
-        )
+        resp = self.client.delete(reverse("flashcards_pk", kwargs={"pk": test_flashcard_admin.pk}))
         self.assertEqual(resp.status_code, 200)
         self.assertJSONEqual(
             str(resp.content, encoding="utf8"),
             {"redirect": "/flashcards", "success": True},
         )
-        test_flashcard_admin_exists = Card.objects.filter(
-            pk=test_flashcard_admin.pk
-        ).exists()
+        test_flashcard_admin_exists = Card.objects.filter(pk=test_flashcard_admin.pk).exists()
         self.assertFalse(test_flashcard_admin_exists)
 
     def test_views_flashcards_order(self):
-        resp = self.client.post(
-            reverse("card_order", kwargs={"username": "testuser"}), {"order": "{}"}
-        )
+        resp = self.client.post(reverse("card_order", kwargs={"username": "testuser"}), {"order": "{}"})
         self.assertRedirects(resp, "/login?next=/user/testuser/card-order")
 
         self.client.login(username="testuser", password=self.password)
-        resp = self.client.post(
-            reverse("card_order", kwargs={"username": "testuser"}), {"order": "{}"}
-        )
+        resp = self.client.post(reverse("card_order", kwargs={"username": "testuser"}), {"order": "{}"})
         self.assertEqual(resp.status_code, 404)
         self.assertTemplateUsed(resp, "404.html")
 
@@ -856,9 +793,7 @@ class ToolViewTest(BaseTestCase):
                 "color": 5,
             },
         )
-        self.assertRedirects(
-            resp, reverse("user_tasks", kwargs={"username": "testuser"})
-        )
+        self.assertRedirects(resp, reverse("user_tasks", kwargs={"username": "testuser"}))
         test_task_admin = Task.objects.get(title="Test task admin", user=self.test_user)
         self.assertEqual(test_task_admin.description, "Dummy text admin")
         self.assertEqual(test_task_admin.color, 5)
@@ -912,18 +847,14 @@ class ToolViewTest(BaseTestCase):
                 "color": 2,
             },
         )
-        self.assertRedirects(
-            resp, reverse("user_tasks", kwargs={"username": "testuser"})
-        )
+        self.assertRedirects(resp, reverse("user_tasks", kwargs={"username": "testuser"}))
         test_flashcard = Task.objects.get(pk=test_task.pk)
         self.assertEqual(test_flashcard.title, "Test title admin 2")
         self.assertEqual(test_flashcard.description, "Dummy text admin 2")
         self.assertEqual(test_flashcard.color, 2)
 
         # Try to post not valid form.
-        resp = self.client.post(
-            reverse("user_tasks", kwargs={"username": "testuser"}), {}
-        )
+        resp = self.client.post(reverse("user_tasks", kwargs={"username": "testuser"}), {})
         self.assertEqual(resp.status_code, 200)
         self.assertTemplateUsed(resp, "tasks.html")
         test_flashcard = Task.objects.get(pk=test_task.pk)
@@ -956,21 +887,15 @@ class ToolViewTest(BaseTestCase):
         self.assertEqual(resp.status_code, 404)
         resp = self.client.delete(reverse("tasks_pk", kwargs={"pk": test_task.pk}))
         self.assertEqual(resp.status_code, 200)
-        self.assertJSONEqual(
-            str(resp.content, encoding="utf8"), {"redirect": "/tasks", "success": True}
-        )
+        self.assertJSONEqual(str(resp.content, encoding="utf8"), {"redirect": "/tasks", "success": True})
         test_task_exists = Task.objects.filter(pk=test_task.pk).exists()
         self.assertFalse(test_task_exists)
 
         # Admin can delete a task for any user.
         self.client.login(username="testadmin", password=self.password)
-        resp = self.client.delete(
-            reverse("tasks_pk", kwargs={"pk": test_task_admin.pk})
-        )
+        resp = self.client.delete(reverse("tasks_pk", kwargs={"pk": test_task_admin.pk}))
         self.assertEqual(resp.status_code, 200)
-        self.assertJSONEqual(
-            str(resp.content, encoding="utf8"), {"redirect": "/tasks", "success": True}
-        )
+        self.assertJSONEqual(str(resp.content, encoding="utf8"), {"redirect": "/tasks", "success": True})
         test_task_admin_exists = Task.objects.filter(pk=test_task_admin.pk).exists()
         self.assertFalse(test_task_admin_exists)
 
@@ -1023,9 +948,7 @@ class ToolViewTest(BaseTestCase):
         )
         self.assertRedirects(resp, "/code")
 
-        test_code_snippet = Code.objects.get(
-            title="Test code snippet", user=self.test_user
-        )
+        test_code_snippet = Code.objects.get(title="Test code snippet", user=self.test_user)
         self.assertEqual(test_code_snippet.text, "<pre><code>print(1)<code><pre>")
         # Title should be unique.
         resp = self.client.post(
@@ -1036,9 +959,7 @@ class ToolViewTest(BaseTestCase):
             },
         )
         self.assertEqual(resp.status_code, 200)
-        test_code_snippet = Code.objects.get(
-            title="Test code snippet", user=self.test_user
-        )
+        test_code_snippet = Code.objects.get(title="Test code snippet", user=self.test_user)
         self.assertEqual(test_code_snippet.text, "<pre><code>print(1)<code><pre>")
         # Text should not be empty.
         resp = self.client.post(
@@ -1049,16 +970,12 @@ class ToolViewTest(BaseTestCase):
             },
         )
         self.assertEqual(resp.status_code, 200)
-        test_code_snippet = Code.objects.get(
-            title="Test code snippet", user=self.test_user
-        )
+        test_code_snippet = Code.objects.get(title="Test code snippet", user=self.test_user)
         self.assertEqual(test_code_snippet.text, "<pre><code>print(1)<code><pre>")
         self.client.logout()
 
         # Get user code snippet.
-        resp = self.client.get(
-            reverse("code_slug", kwargs={"slug": test_code_snippet.slug})
-        )
+        resp = self.client.get(reverse("code_slug", kwargs={"slug": test_code_snippet.slug}))
         self.assertTemplateUsed(resp, "code.html")
         self.assertEqual(resp.status_code, 200)
         resp = self.client.get(reverse("code_slug", kwargs={"slug": "not-exists"}))
@@ -1082,9 +999,7 @@ class ToolViewTest(BaseTestCase):
             },
         )
         self.assertRedirects(resp, "/code")
-        test_code_snippet = Code.objects.get(
-            title="Test code snippet 2", user=self.test_user
-        )
+        test_code_snippet = Code.objects.get(title="Test code snippet 2", user=self.test_user)
         self.assertTrue(test_code_snippet)
         self.assertEqual(test_code_snippet.text, "<pre><code>print(2)<code><pre>")
         # Text should not be empty.
@@ -1096,35 +1011,23 @@ class ToolViewTest(BaseTestCase):
             },
         )
         self.assertEqual(resp.status_code, 200)
-        test_code_snippet = Code.objects.get(
-            title="Test code snippet 2", user=self.test_user
-        )
+        test_code_snippet = Code.objects.get(title="Test code snippet 2", user=self.test_user)
         self.assertEqual(test_code_snippet.text, "<pre><code>print(2)<code><pre>")
 
     def test_views_code_snippets_delete(self):
-        test_code_snippet = Code(
-            title="test1", text="code block 1", user=self.test_user
-        )
+        test_code_snippet = Code(title="test1", text="code block 1", user=self.test_user)
         test_code_snippet.save()
 
         # Delete code snippet.
-        resp = self.client.delete(
-            reverse("code_slug", kwargs={"slug": test_code_snippet.slug})
-        )
+        resp = self.client.delete(reverse("code_slug", kwargs={"slug": test_code_snippet.slug}))
         self.assertEqual(resp.status_code, 403)
         self.client.login(username="testuser", password=self.password)
         resp = self.client.delete(reverse("code_slug", kwargs={"slug": "not-exists"}))
         self.assertEqual(resp.status_code, 404)
-        resp = self.client.delete(
-            reverse("code_slug", kwargs={"slug": test_code_snippet.slug})
-        )
+        resp = self.client.delete(reverse("code_slug", kwargs={"slug": test_code_snippet.slug}))
         self.assertEqual(resp.status_code, 200)
-        self.assertJSONEqual(
-            str(resp.content, encoding="utf8"), {"redirect": "/code", "success": True}
-        )
-        test_code_snippet_exists = Code.objects.filter(
-            slug=test_code_snippet.slug
-        ).exists()
+        self.assertJSONEqual(str(resp.content, encoding="utf8"), {"redirect": "/code", "success": True})
+        test_code_snippet_exists = Code.objects.filter(slug=test_code_snippet.slug).exists()
         self.assertFalse(test_code_snippet_exists)
 
     def test_views_links_get(self):
@@ -1261,34 +1164,24 @@ class ToolViewTest(BaseTestCase):
         self.assertEqual(resp.status_code, 404)
         resp = self.client.delete(reverse("links_pk", kwargs={"pk": test_link.pk}))
         self.assertEqual(resp.status_code, 200)
-        self.assertJSONEqual(
-            str(resp.content, encoding="utf8"), {"redirect": "/links", "success": True}
-        )
+        self.assertJSONEqual(str(resp.content, encoding="utf8"), {"redirect": "/links", "success": True})
         test_link_exists = Link.objects.filter(pk=test_link.pk).exists()
         self.assertFalse(test_link_exists)
 
         # Admin can delete a flashcard for any user.
         self.client.login(username="testadmin", password=self.password)
-        resp = self.client.delete(
-            reverse("links_pk", kwargs={"pk": test_link_admin.pk})
-        )
+        resp = self.client.delete(reverse("links_pk", kwargs={"pk": test_link_admin.pk}))
         self.assertEqual(resp.status_code, 200)
-        self.assertJSONEqual(
-            str(resp.content, encoding="utf8"), {"redirect": "/links", "success": True}
-        )
+        self.assertJSONEqual(str(resp.content, encoding="utf8"), {"redirect": "/links", "success": True})
         test_link_admin_exists = Link.objects.filter(pk=test_link_admin.pk).exists()
         self.assertFalse(test_link_admin_exists)
 
     def test_views_links_order(self):
-        resp = self.client.post(
-            reverse("link_order", kwargs={"username": "testuser"}), {"order": "{}"}
-        )
+        resp = self.client.post(reverse("link_order", kwargs={"username": "testuser"}), {"order": "{}"})
         self.assertRedirects(resp, "/login?next=/user/testuser/link-order")
 
         self.client.login(username="testuser", password=self.password)
-        resp = self.client.post(
-            reverse("link_order", kwargs={"username": "testuser"}), {"order": "{}"}
-        )
+        resp = self.client.post(reverse("link_order", kwargs={"username": "testuser"}), {"order": "{}"})
         self.assertEqual(resp.status_code, 404)
         self.assertTemplateUsed(resp, "404.html")
 
@@ -1343,9 +1236,7 @@ class ToolViewTest(BaseTestCase):
         self.assertTemplateUsed(resp, "user_list.html")
 
     def test_views_update_profile(self):
-        resp = self.client.post(
-            reverse("user", kwargs={"username": "testuser"}), {"first_name": "test1"}
-        )
+        resp = self.client.post(reverse("user", kwargs={"username": "testuser"}), {"first_name": "test1"})
         self.assertRedirects(resp, "/login?next=/user/testuser")
         self.client.login(username="testuser", password=self.password)
         # Need to create profile for the users.
@@ -1416,9 +1307,7 @@ class ToolViewTest(BaseTestCase):
             {"name": "dummy_field", "value": "dummy_value"},
         )
         self.assertEqual(resp.status_code, 403)
-        self.assertEqual(
-            str(resp.content, encoding="utf8"), '"You can\'t change this field"'
-        )
+        self.assertEqual(str(resp.content, encoding="utf8"), '"You can\'t change this field"')
 
         # Admin can edit any profile.
         self.client.login(username="testadmin", password=self.password)

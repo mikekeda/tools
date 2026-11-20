@@ -69,9 +69,7 @@ class LinkForm(forms.ModelForm):
         self.fields["category"].queryset = Label.objects.filter(category="links")
 
         if user:
-            self.fields["category"].queryset = self.fields["category"].queryset.filter(
-                user=user
-            )
+            self.fields["category"].queryset = self.fields["category"].queryset.filter(user=user)
 
     class Meta:
         model = Link

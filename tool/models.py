@@ -21,12 +21,7 @@ from tool.widgets import ColorWidget
 
 User = get_user_model()
 
-TIMEZONES = sorted(
-    [
-        (tz, tz + " " + datetime.now(pytz.timezone(tz)).strftime("%z"))
-        for tz in pytz.common_timezones
-    ]
-)
+TIMEZONES = sorted([(tz, tz + " " + datetime.now(pytz.timezone(tz)).strftime("%z")) for tz in pytz.common_timezones])
 
 default_palette_colors = (
     "f5f5f5",
@@ -50,9 +45,7 @@ def number_to_chars(num: int) -> str:
     return "".join(map(str, digits[::-1]))
 
 
-def save_and_add_slug(
-    obj, force_insert=False, force_update=False, using=None, update_fields=None
-):
+def save_and_add_slug(obj, force_insert=False, force_update=False, using=None, update_fields=None):
     need_slug = not obj.pk
     super(type(obj), obj).save(
         force_insert=force_insert,
@@ -93,13 +86,9 @@ class ColorField(models.CharField):
 class Profile(models.Model):
     """Profile model."""
 
-    user = models.OneToOneField(
-        settings.AUTH_USER_MODEL, related_name="profile", on_delete=models.CASCADE
-    )
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, related_name="profile", on_delete=models.CASCADE)
     timezone = models.CharField(max_length=64, blank=True, null=True)
-    avatar = models.ImageField(
-        upload_to="avatars/", default="/media/avatars/no-avatar.png"
-    )
+    avatar = models.ImageField(upload_to="avatars/", default="/media/avatars/no-avatar.png")
     phone_number = PhoneNumberField(blank=True)
 
     def __str__(self):
@@ -107,9 +96,7 @@ class Profile(models.Model):
 
 
 for i, default_color in enumerate(default_palette_colors, 1):
-    Profile.add_to_class(
-        "palette_color_" + str(i), ColorField(max_length=6, default=default_color)
-    )
+    Profile.add_to_class("palette_color_" + str(i), ColorField(max_length=6, default=default_color))
 
 
 class Card(models.Model):
@@ -123,9 +110,7 @@ class Card(models.Model):
 
     word = models.CharField(max_length=60)
     description = models.TextField(blank=True, null=True)
-    difficulty = models.CharField(
-        max_length=10, choices=DIFFICULTIES, default="difficult"
-    )
+    difficulty = models.CharField(max_length=10, choices=DIFFICULTIES, default="difficult")
     user = models.ForeignKey(User, related_name="cards", on_delete=models.CASCADE)
     order = models.PositiveSmallIntegerField(default=0)
     created_date = models.DateTimeField(auto_now_add=True)
@@ -162,9 +147,7 @@ class Label(models.Model):
     )
 
     title = models.CharField(max_length=60)
-    user = models.ForeignKey(
-        User, related_name="labels", on_delete=models.CASCADE, null=True, blank=True
-    )
+    user = models.ForeignKey(User, related_name="labels", on_delete=models.CASCADE, null=True, blank=True)
     category = models.CharField(max_length=16, choices=CATEGORIES, default="programing")
     created = models.DateTimeField(auto_now_add=True)
     changed = models.DateTimeField(auto_now=True)
@@ -196,9 +179,7 @@ class Task(models.Model):
     title = models.CharField(max_length=60)
     description = models.TextField(blank=True, null=True)
     status = models.CharField(max_length=10, choices=STATUSES, default="todo")
-    resolution = models.CharField(
-        max_length=20, choices=RESOLUTIONS, blank=True, null=True
-    )
+    resolution = models.CharField(max_length=20, choices=RESOLUTIONS, blank=True, null=True)
     progress = models.PositiveSmallIntegerField(
         default=0, blank=True, validators=[MinValueValidator(0), MaxValueValidator(100)]
     )
@@ -229,9 +210,7 @@ class Canvas(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     changed = models.DateTimeField(auto_now=True)
 
-    def save(
-        self, force_insert=False, force_update=False, using=None, update_fields=None
-    ):
+    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
         save_and_add_slug(self, force_insert, force_update, using, update_fields)
 
     def preview(self):
@@ -249,16 +228,12 @@ class Code(models.Model):
 
     title = models.CharField(max_length=60)
     text = models.TextField(help_text=_("Double click on code block to copy or edit."))
-    user = models.ForeignKey(
-        User, related_name="code_fragments", on_delete=models.CASCADE
-    )
+    user = models.ForeignKey(User, related_name="code_fragments", on_delete=models.CASCADE)
     slug = models.CharField(max_length=10, unique=True)
     labels = models.ManyToManyField(
         Label,
         blank=True,
-        help_text=_(
-            "Used programming languages will be automatically" " saved as labels."
-        ),
+        help_text=_("Used programming languages will be automatically" " saved as labels."),
     )
     created = models.DateTimeField(auto_now_add=True)
     changed = models.DateTimeField(auto_now=True)
@@ -283,9 +258,7 @@ class Code(models.Model):
         code_snippets = cls.objects.filter(user=user)
         if label:
             code_snippets = code_snippets.filter(labels__title=label)
-        code_snippets = code_snippets.order_by("-pk").values_list(
-            "title", "slug", "labels__title", named=True
-        )
+        code_snippets = code_snippets.order_by("-pk").values_list("title", "slug", "labels__title", named=True)
 
         code_snippets_dict = {}
         for snippet in code_snippets:
@@ -295,9 +268,7 @@ class Code(models.Model):
                 snippet["labels__title"] = []
 
             if snippet["slug"] in code_snippets_dict:
-                code_snippets_dict[snippet["slug"]]["labels__title"] += snippet[
-                    "labels__title"
-                ]
+                code_snippets_dict[snippet["slug"]]["labels__title"] += snippet["labels__title"]
             else:
                 code_snippets_dict[snippet["slug"]] = snippet
 
@@ -306,9 +277,7 @@ class Code(models.Model):
 
         return code_snippets_dict.values()
 
-    def save(
-        self, force_insert=False, force_update=False, using=None, update_fields=None
-    ):
+    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
         save_and_add_slug(self, force_insert, force_update, using, update_fields)
 
     def __str__(self):
@@ -318,25 +287,19 @@ class Code(models.Model):
 class Link(models.Model):
     """Link model."""
 
-    link = models.CharField(
-        max_length=128, validators=[URLValidator(["http", "https"])]
-    )
+    link = models.CharField(max_length=128, validators=[URLValidator(["http", "https"])])
     title = models.CharField(max_length=64, blank=True, null=True)
     description = models.CharField(max_length=128, blank=True, null=True)
     color = ColorField(max_length=6, default="000000")
     weight = models.SmallIntegerField(default=0)
-    category = models.ForeignKey(
-        Label, related_name="links", on_delete=models.SET_NULL, blank=True, null=True
-    )
+    category = models.ForeignKey(Label, related_name="links", on_delete=models.SET_NULL, blank=True, null=True)
     user = models.ForeignKey(User, related_name="links", on_delete=models.CASCADE)
     created_date = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         unique_together = (("link", "user"),)
 
-    def save(
-        self, force_insert=False, force_update=False, using=None, update_fields=None
-    ):
+    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
         """Set link title and description."""
         try:
             res = requests.get(self.link)
@@ -346,15 +309,11 @@ class Link(models.Model):
         if res.status_code == 200:
             soup = BeautifulSoup(res.text, "html.parser")
             if soup.title:
-                self.title = textwrap.shorten(
-                    soup.title.string, width=64, placeholder="..."
-                )
+                self.title = textwrap.shorten(soup.title.string, width=64, placeholder="...")
 
             description = soup.find("meta", attrs={"name": "description"})
             if description:
-                self.description = textwrap.shorten(
-                    description.attrs.get("content", ""), width=128, placeholder="..."
-                )
+                self.description = textwrap.shorten(description.attrs.get("content", ""), width=128, placeholder="...")
 
         super().save(
             force_insert=force_insert,
@@ -383,9 +342,7 @@ class ShoppingItem(models.Model):
 
     name = models.CharField(_("item_name"), max_length=32, null=False)
     category = models.CharField(max_length=32, choices=CATEGORIES, default="fruit-veg")
-    price = models.DecimalField(
-        _("purchase_price"), max_digits=7, decimal_places=2, default=0.00
-    )
+    price = models.DecimalField(_("purchase_price"), max_digits=7, decimal_places=2, default=0.00)
     url = models.URLField(null=True)
     date_created = models.DateTimeField(auto_now_add=True)
     date_updated = models.DateTimeField(auto_now=True)
@@ -400,12 +357,8 @@ class ShoppingItem(models.Model):
 class ShoppingList(models.Model):
     """Model for a single shopping list."""
 
-    name = models.CharField(
-        _("list name"), max_length=32, null=False, default="Groceries"
-    )
-    user = models.ForeignKey(
-        User, related_name="shopping_lists", on_delete=models.CASCADE
-    )
+    name = models.CharField(_("list name"), max_length=32, null=False, default="Groceries")
+    user = models.ForeignKey(User, related_name="shopping_lists", on_delete=models.CASCADE)
     date = models.DateField(default=date.today)
     items = models.ManyToManyField(ShoppingItem, through="ShoppingListItem")
 

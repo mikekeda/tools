@@ -92,9 +92,7 @@ urlpatterns = [
         name="ajax_user_flashcards",
     ),
     path("flashcards/<int:pk>", FlashcardsView.as_view(), name="flashcards_pk"),
-    path(
-        "ajax/flashcards/<int:pk>", FlashcardsView.as_view(), name="ajax_flashcards_pk"
-    ),
+    path("ajax/flashcards/<int:pk>", FlashcardsView.as_view(), name="ajax_flashcards_pk"),
     path("tasks", TasksView.as_view(), name="tasks"),
     path("ajax/tasks", TasksView.as_view(), name="ajax_tasks"),
     path("user/<str:username>/tasks", TasksView.as_view(), name="user_tasks"),
@@ -115,9 +113,7 @@ urlpatterns = [
     path("ajax/code/<str:slug>", CodeView.as_view(), name="ajax_code_slug"),
     path("shopping_lists", ShoppingListsView.as_view(), name="shopping_lists"),
     path("shopping_lists/<int:pk>", ShoppingListView.as_view(), name="shopping_list"),
-    path(
-        "ajax/shopping_lists", ShoppingListsView.as_view(), name="ajax_shopping_lists"
-    ),
+    path("ajax/shopping_lists", ShoppingListsView.as_view(), name="ajax_shopping_lists"),
     path(
         "ajax/shopping_lists/<int:pk>",
         ShoppingListView.as_view(),

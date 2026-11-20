@@ -24,15 +24,13 @@ def get_occurrences(start, end, creator=None):
     query = Event.objects.filter(start__lte=end, rule__isnull=False)
     if creator:
         query = query.filter(creator=creator)
-    event_list = query.filter(
-        Q(end_recurring_period__gte=start) | Q(end_recurring_period__isnull=True)
-    ).select_related("creator")
+    event_list = query.filter(Q(end_recurring_period__gte=start) | Q(end_recurring_period__isnull=True)).select_related(
+        "creator"
+    )
     for event in event_list:
         # get_occurrences will not include event if event end equal to end,
         # so lets add 1 microsecond to end as workaround.
-        occurrences = event.get_occurrences(
-            start, end + timezone.timedelta(microseconds=1)
-        )
+        occurrences = event.get_occurrences(start, end + timezone.timedelta(microseconds=1))
         if any((start < occurrence.start <= end for occurrence in occurrences)):
             events.add(event)
 
@@ -46,9 +44,7 @@ def send_email_notifications():
     before = 60
 
     now = datetime.now(tz=pytz.utc)
-    now -= timezone.timedelta(
-        minutes=now.minute % interval, seconds=now.second, microseconds=now.microsecond
-    )
+    now -= timezone.timedelta(minutes=now.minute % interval, seconds=now.second, microseconds=now.microsecond)
 
     start = now + timezone.timedelta(minutes=before - interval)
     end = start + timezone.timedelta(minutes=interval)
@@ -63,9 +59,7 @@ def send_email_notifications():
         if event.description:
             text = event.description
 
-        event_time = timezone.localtime(
-            event.start, pytz.timezone(event.creator.profile.timezone)
-        ).strftime("%H:%M")
+        event_time = timezone.localtime(event.start, pytz.timezone(event.creator.profile.timezone)).strftime("%H:%M")
 
         subject = f"{event.title} will start today at {event_time}"
         html_content = render_to_string(
@@ -96,9 +90,7 @@ def daily_notification():
 
     user_events = {}
     for event in events:
-        local_now = timezone.localtime(
-            start, pytz.timezone(event.creator.profile.timezone)
-        )
+        local_now = timezone.localtime(start, pytz.timezone(event.creator.profile.timezone))
 
         if local_now.hour == sending_hour:
             if event.creator.username in user_events:
@@ -113,9 +105,9 @@ def daily_notification():
             name = f"{events[0].creator.first_name} {events[0].creator.last_name}"
 
         for event in events:
-            local_time = timezone.localtime(
-                event.start, pytz.timezone(event.creator.profile.timezone)
-            ).strftime("%H:%M")
+            local_time = timezone.localtime(event.start, pytz.timezone(event.creator.profile.timezone)).strftime(
+                "%H:%M"
+            )
 
             text += f"{local_time} {event.title}\n"
 

@@ -18,13 +18,9 @@ class ToolTaskTest(BaseTestCase):
         Profile.objects.create(user=cls.test_admin, timezone="Europe/Kyiv")
 
         now = datetime.now(tz=pytz.utc)
-        now -= timezone.timedelta(
-            minutes=now.minute % 15, seconds=now.second, microseconds=now.microsecond
-        )
+        now -= timezone.timedelta(minutes=now.minute % 15, seconds=now.second, microseconds=now.microsecond)
 
-        cal = Calendar.objects.create(
-            name=cls.test_user.username, slug=cls.test_user.username
-        )
+        cal = Calendar.objects.create(name=cls.test_user.username, slug=cls.test_user.username)
         cls.test_event1 = Event(
             title="Test event1",
             description="Test description 1",
@@ -36,9 +32,7 @@ class ToolTaskTest(BaseTestCase):
         )
         cls.test_event1.save()
 
-        cal = Calendar.objects.create(
-            name=cls.test_admin.username, slug=cls.test_admin.username
-        )
+        cal = Calendar.objects.create(name=cls.test_admin.username, slug=cls.test_admin.username)
         rule = Rule.objects.get(name="Daily")
         cls.test_event2 = Event(
             title="Test event2",
@@ -98,9 +92,7 @@ class ToolTaskTest(BaseTestCase):
                 send_mail_mock.assert_called_once()
 
                 with patch("tool.tasks.timezone.now") as now_mock:
-                    now_mock.return_value = timezone.datetime(
-                        2018, 7, 23, 19, 30, tzinfo=pytz.utc
-                    )
+                    now_mock.return_value = timezone.datetime(2018, 7, 23, 19, 30, tzinfo=pytz.utc)
                     time_mock.return_value.strftime.return_value = "20:30"
                     send_email_notifications()
                     self.assertEqual(send_mail_mock.call_count, 2)
