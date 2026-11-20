@@ -13,7 +13,7 @@ geoip2==5.4.0
 google-cloud-automl==2.21.0
 gunicorn==27.0.1
 Pillow==13.0.0
-phonenumbers==9.0.43
+phonenumbers==9.0.44
 psycopg2-binary==2.9.13
 pytz==2026.6
 requests==2.34.2
